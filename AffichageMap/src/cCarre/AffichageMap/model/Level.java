@@ -17,8 +17,6 @@ public class Level {
 		this.totalCoin = 0;
 		this.levelHeight = LevelData.LEVEL1.length;
 		this.Level = new char[this.levelHeight][this.levelLength];
-
-		System.out.println(this.levelHeight+" "+this.levelLength);
 		
         for (int i = 0; i < levelHeight; i++) {
             String line = LevelData.LEVEL1[i];

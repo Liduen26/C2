@@ -2,15 +2,21 @@ package cCarre.AffichageMap.view;
 
 import java.util.ArrayList;
 
+
 import cCarre.AffichageMap.Main;
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.Ground;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
+import cCarre.AffichageMap.model.Player;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
 
 
 public class MainController {
@@ -20,6 +26,7 @@ public class MainController {
     private ArrayList<Node> coins = new ArrayList<Node>();
     
     final int elementSize = 60;
+    Player player;
 
 	private Main mainApp;
 	
@@ -56,9 +63,33 @@ public class MainController {
 				}
 			}
 		}
-        Ground player = new Ground(5, 600, elementSize, elementSize, Color.BLUE, rootLayout);
+        player = new Player(5, 600, elementSize, elementSize, Color.BLUE, rootLayout);
+        
+        Timeline time1 = new Timeline(new KeyFrame(Duration.millis(16), e -> {
+        	update();
+        }));
+        
+        time1.setCycleCount(Animation.INDEFINITE);
+        time1.play();
 	}
-	
+	/*
+    private void movePlayerX(int value) {
+        player.setTranslateX(player.getTranslateX() + 1);
+    }
+    */
+    private void movePlayerX(int value) {
+        for (int i = 0; i < Math.abs(value); i++) {
+
+            player.setTranslateX(player.getTranslateX() + 1);
+        }
+    }
+    
+	private void update() {
+		// le joueur avance toujours
+        movePlayerX(5);
+        System.out.println(player.getTranslateX());
+    }
+
 	public void setMainApp(Main mainApp) {
 		this.mainApp = mainApp;
 	}
