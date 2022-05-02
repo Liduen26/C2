@@ -17,22 +17,15 @@ public class Level {
 		this.totalCoin = 0;
 		this.levelHeight = LevelData.LEVEL1.length;
 		this.Level = new char[this.levelHeight][this.levelLength];
+
 		System.out.println(this.levelHeight+" "+this.levelLength);
 		
         for (int i = 0; i < levelHeight; i++) {
             String line = LevelData.LEVEL1[i];
             for (int j = 0; j < levelLength; j++) {
-            	
-        		System.out.println(i);
-        		System.out.println(j);
-        		System.out.println(line.charAt(j));
-            	Level[j][i] = line.charAt(j);
-            	
-            	System.out.println(line.charAt(j));
+            	Level[i][j] = line.charAt(j);
             }
         }
-		
-		
 	}
 
 	public char[][] getLevel() {
