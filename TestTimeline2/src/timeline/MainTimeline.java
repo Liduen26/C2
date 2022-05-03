@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 public class MainTimeline extends Application {
 	
-	private Stage primaryStage;
+	Stage primaryStage;
 	private AnchorPane mainLayout;
 
 	@Override
@@ -49,6 +49,10 @@ public class MainTimeline extends Application {
 				public void handle(KeyEvent event) {
 					if(event.getCode() == KeyCode.SPACE) {
 						System.out.println("space");
+						controller.jump();
+					} else if(event.getCode() == KeyCode.Z) {
+							System.out.println("Z");
+						
 					}
 				};
 			});
