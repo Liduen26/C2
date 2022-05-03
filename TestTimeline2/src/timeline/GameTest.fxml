@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+
+<AnchorPane prefHeight="601.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="timeline.Controller">
+   <children>
+      <Line endX="700.300048828125" layoutX="108.0" layoutY="461.0" startX="-100.0" AnchorPane.bottomAnchor="140.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <Rectangle fx:id="square" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="30.0" layoutX="142.0" layoutY="429.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+      <Label layoutX="743.0" text="FPS" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0" />
+      <Label fx:id="fps" layoutX="773.0" layoutY="15.0" text="100" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+   </children>
+</AnchorPane>
