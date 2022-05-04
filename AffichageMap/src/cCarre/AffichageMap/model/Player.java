@@ -9,16 +9,14 @@ public class Player extends Rectangle{
 	boolean jump, fall, alive;
 
 	public Player(int x, int y, int width, int height, Color color, AnchorPane rootLayout) {
-		createPlayer(x, y, width, height, color, rootLayout);
-	}
-	
-    private void createPlayer(int x, int y, int w, int h, Color color, AnchorPane rootLayout) {
-        Rectangle entity = new Rectangle(w, h);
-        entity.setTranslateX(x);
-        entity.setTranslateY(y);
-        entity.setFill(color);
-        entity.getProperties().put("alive", true);
+		
+		this.setTranslateX(x);
+        this.setTranslateY(y);		
+        this.setWidth(width);
+        this.setHeight(height);
+        this.setFill(color);
+        this.getProperties().put("alive", true);
 
-        rootLayout.getChildren().add(entity);
-    }
+        rootLayout.getChildren().add(this);
+	}
 }
