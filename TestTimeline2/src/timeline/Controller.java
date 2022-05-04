@@ -28,14 +28,16 @@ public class Controller {
 	long newTime;
 	double dt; //dt par sec
 	double temps;
-	double dp;
 	int frame;
 	long time;
 	boolean jump = false;
 	double vitesse;
 	double distance;
 	
-	// init centre cube
+	//pour changer la vitesse
+	final int constV = 50; 
+	
+	// init var centre cube
 	double centreX ;
 	double centreY;
 
@@ -57,7 +59,7 @@ public class Controller {
 
 
 		//init vecteur vitesse
-		Point2D p1 = new Point2D.Double(centreX + 50, centreY);
+		Point2D p1 = new Point2D.Double(centreX + constV, centreY);
 		Line vVitesse = new Line(centreX,centreY,p1.getX(),p1.getY());
 		vVitesse.setStroke(Color.RED);
 		
@@ -85,11 +87,10 @@ public class Controller {
 			centreY = square.getLayoutY() + square.getHeight() / 2;
 			
 			
-			// distance entre centre du joueur et le point
-			dp = p1.distance(centreX,centreY);
-			//System.out.println(dp);
+			// distance vect entre centre du joueur et le point (vitesse)
+			vitesse = p1.distance(centreX,centreY) * 4;
+			//System.out.println(temps);
 			
-			vitesse = dp;
 			distance = vitesse * temps;
 			
 			// faire avancer					
