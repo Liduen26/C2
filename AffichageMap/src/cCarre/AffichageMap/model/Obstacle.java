@@ -9,20 +9,18 @@ public class Obstacle extends Polygon{
 	int elementSize;
 
 	public Obstacle(int x, int y, int width, int height, Color color, AnchorPane rootLayout) {
-		this.elementSize = width;
-		createTriangle(x, y, width, height, color, rootLayout);
-	}
-	
-    private void createTriangle(double x, double y, int w, int h, Color color, AnchorPane rootLayout) {
-        Polygon entity = new Polygon();
-        entity.getPoints().addAll(new Double[]{
-                x+elementSize/2, y, 
-                x, y+elementSize, 
-                x+elementSize, y+elementSize, 
+		this.elementSize = width;     
+		this.getPoints().addAll(new Double[]{
+                (double) (x+elementSize/2), (double) y, 
+                (double) x, (double) (y+elementSize), 
+                (double) (x+elementSize), (double) (y+elementSize), 
              }); 
 
-        entity.setFill(color);
+        this.setFill(color);
         
-        rootLayout.getChildren().add(entity);
-    }
+        rootLayout.getChildren().add(this);
+	}
+	
+
+    
 }
