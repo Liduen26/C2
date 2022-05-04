@@ -1,6 +1,7 @@
 package cCarre.AffichageMap.view;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import cCarre.AffichageMap.Main;
 import cCarre.AffichageMap.model.Coin;
@@ -12,7 +13,9 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -27,6 +30,10 @@ public class MainController {
     final int elementSize = 60;
     Player player;
     
+	// DELETE
+    private boolean jump = false;
+    double beforeJump;
+    
 
 	private Main mainApp;
 	
@@ -39,7 +46,6 @@ public class MainController {
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
 		char[][] Level = level.getLevel();
-		
 		
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x= 0; x < levelLength; x++) {
@@ -64,38 +70,55 @@ public class MainController {
 				}
 			}
 		}
-        player = new Player(5, 600, elementSize, elementSize, Color.BLUE, rootLayout);
+        player = new Player(5, 599, elementSize, elementSize, Color.BLUE, rootLayout);
         player.setFill(Color.PURPLE);
         
-		
-        
-        Timeline time1 = new Timeline(new KeyFrame(Duration.millis(16), e -> {
+        Timeline time1 = new Timeline(new KeyFrame(Duration.millis(20), e -> {
         	update();
         }));
         
         time1.setCycleCount(Animation.INDEFINITE);
         time1.play();
 	}
-	/*
-    private void movePlayerX(int value) {
-        player.setTranslateX(player.getTranslateX() + 1);
-    }
-    */
+
     private void movePlayerX(int value) {
         for (int i = 0; i < Math.abs(value); i++) {
-
-            player.setTranslateX(player.getTranslateX() + 1);
+            for (Node platform : platforms) {
+                if (player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+	                if (player.getLayoutX() + elementSize >= platform.getTranslateX()-1) {
+	                    player.setLayoutX(0);
+	                    return;
+	                }
+            	}
+            }
             player.setLayoutX(player.getLayoutX()+1);
-            System.out.println(player.getLayoutX());
         }
     }
     
 	private void update() {
 		// le joueur avance toujours
-        movePlayerX(5);
-        System.out.println("player.getTranslateX()");
+        movePlayerX(2);        
+        
+        if(jump == true && player.getLayoutY() > beforeJump-100) {
+        	System.out.println("PLAYER = "+player.getLayoutY());
+        	System.out.println("beforeJump = "+(beforeJump-50));
+        	player.setLayoutY(player.getLayoutY()-1);
+        }
+        else
+        	if(player.getTranslateY() != 599){
+        	System.out.println(player.getTranslateY());
+        	jump = false;
+        	player.setLayoutY(player.getTranslateY()+1);
+        	beforeJump = player.getTranslateY();
+        }
     }
-
+	
+    
+	// DELETE
+    public void jumpPlayer() {
+    	jump = true;
+    }
+   
 	public void setMainApp(Main mainApp) {
 		this.mainApp = mainApp;
 	}

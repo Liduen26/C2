@@ -11,7 +11,7 @@ public class Player extends Rectangle{
 	public Player(int x, int y, int width, int height, Color color, AnchorPane rootLayout) {
 		
 		this.setTranslateX(x);
-        this.setTranslateY(y);		
+        this.setTranslateY(y);
         this.setWidth(width);
         this.setHeight(height);
         this.setFill(color);

@@ -1,11 +1,14 @@
 package cCarre.AffichageMap;
 	
+import javafx.event.EventHandler;
 import java.io.IOException;
 
 import cCarre.AffichageMap.view.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -20,7 +23,6 @@ public class Main extends Application {
         this.primaryStage.setTitle("AffichageMap");
         this.primaryStage.setMaximized(true);
 
-      
         initMainLayout();
     }
     
@@ -40,6 +42,21 @@ public class Main extends Application {
             
             MainController controller = loader.getController();
             controller.setMainApp(this);
+
+            
+            scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent event) {
+                    if(event.getCode() == KeyCode.SPACE) {
+                        System.out.println("space");
+                        controller.jumpPlayer();
+                    } else if(event.getCode() == KeyCode.Z) {
+                        System.out.println("z");
+                    }
+                };
+            });
+            
+                 
             
             primaryStage.show();
         } catch (IOException e) {
