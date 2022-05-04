@@ -26,15 +26,18 @@ public class Controller {
 	// Vars ---------------
 	long oldTime;
 	long newTime;
-	long dt;
+	double dt; //dt par sec
+	double temps;
 	double dp;
 	int frame;
 	long time;
 	boolean jump = false;
+	double vitesse;
+	double distance;
 	
 	// init centre cube
-			double centreX ;
-			double centreY;
+	double centreX ;
+	double centreY;
 
 
 	public void setMainTimeline(MainTimeline main) {
@@ -67,50 +70,47 @@ public class Controller {
 		rootLayout.getChildren().add(vVitesse);
 		rootLayout.getChildren().add(vG);
 		
-		System.out.println("coo centre carée: " + centreX);
-		dp = p1.distance(centreX,centreY);
-		System.out.println("dp: "+dp);
+		
+	
 		
 		// init timeline	
-		Timeline timel = new Timeline(new KeyFrame(Duration.millis(1000 / 60), e -> {
-			// Calculs FPS
-			frame++;
-			oldTime = newTime;
-			newTime = System.nanoTime();
-			dt = newTime - oldTime;
+		Timeline timel = new Timeline(new KeyFrame(Duration.millis(1000 / 142), e -> {
+			
+			affFPS();
+			temps = dt / 1000000000; //dt par sec
 
-			// faire avancer					
-			square.setLayoutX(square.getLayoutX() + 1);
-			vVitesse.setLayoutX(vVitesse.getLayoutX() + 1);
-			vG.setLayoutX(vG.getLayoutX() + 1);
-			
-			
+		
 			// init centre cube
-		 centreX = square.getLayoutX() + square.getWidth() / 2;
-		 centreY = square.getLayoutY() + square.getHeight() / 2;
-
-			p1.setLocation(p1.getX() + 1, centreY);
-			p2.setLocation(centreX, p2.getY());
-			System.out.println("coo J1: "+centreX + " // "+"next coo: " + p1.getX());
-		//	System.out.println("coo centre carée: " + centreX);
-			System.out.println("dp: "+dp);
-
-
+			centreX = square.getLayoutX() + square.getWidth() / 2;
+			centreY = square.getLayoutY() + square.getHeight() / 2;
 			
+			
+			// distance entre centre du joueur et le point
 			dp = p1.distance(centreX,centreY);
-			System.out.println(dp);
+			//System.out.println(dp);
+			
+			vitesse = dp;
+			distance = vitesse * temps;
+			
+			// faire avancer					
+			square.setLayoutX(square.getLayoutX() + distance);
+			vVitesse.setLayoutX(vVitesse.getLayoutX() + distance);
+			vG.setLayoutX(vG.getLayoutX() + distance);
+			
+			//actualiser position des points 
+			p1.setLocation(p1.getX() + distance, centreY);
+			p2.setLocation(centreX, p2.getY() + distance);
 
+			System.out.println("coordonée: " + centreX);
+			System.out.println("distance: "+ distance);
+			System.out.println("Temps : " + temps + "\n dt : " + dt + "\n");
+
+
+
+					
 			// faire sauter
 			if(jump == true) {
-				System.out.println("jump");	
-
-			}
-
-			// Affichage FPS
-			if(System.currentTimeMillis() - time >= 1000) {
-				fps.setText("FPS : " + frame);
-				frame = 0;
-				time = System.currentTimeMillis();				
+				
 			}
 		}));
 
@@ -119,9 +119,23 @@ public class Controller {
 		timel.play();
 
 	}
+	
+	private double affFPS () {
+		// Calculs FPS
+		frame++;
+		oldTime = newTime;
+		newTime = System.nanoTime();
+		dt = newTime - oldTime;
+		
+		// Affichage FPS
+		if(System.currentTimeMillis() - time >= 1000) {
+			fps.setText("FPS : " + frame);
+			frame = 0;
+			time = System.currentTimeMillis();				
+		} return dt;
+	}
 
 	public void jump() { jump = true; }
-	// lie le taille vvitesse avec vitesse et temps avec distance via la liaison precedente
 
 
 }
