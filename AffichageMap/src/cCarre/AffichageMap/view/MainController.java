@@ -1,7 +1,6 @@
 package cCarre.AffichageMap.view;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import cCarre.AffichageMap.Main;
 import cCarre.AffichageMap.model.Coin;
@@ -13,9 +12,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -31,9 +28,11 @@ public class MainController {
     Player player;
     
 	// DELETE
+    boolean canJump = true;
+    double jumpHeight = 150;
     private boolean jump = false;
-    double beforeJump;
-    
+    double ground = 599;
+    double beforeJump = ground - jumpHeight;
 
 	private Main mainApp;
 	
@@ -84,39 +83,67 @@ public class MainController {
     private void movePlayerX(int value) {
         for (int i = 0; i < Math.abs(value); i++) {
             for (Node platform : platforms) {
-                if (player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-	                if (player.getLayoutX() + elementSize >= platform.getTranslateX()-1) {
-	                    player.setLayoutX(0);
-	                    return;
-	                }
-            	}
+                if(player.getBoundsInParent().intersects(platform.getBoundsInParent())){
+                    boolean rightBorder = player.getTranslateX() >= ((platform.getTranslateX() + elementSize) - player.getWidth());
+                    boolean leftBorder = player.getTranslateX() <= (platform.getTranslateX() + player.getWidth());
+                    
+                    if (rightBorder || leftBorder) {
+                    	System.out.println("BOOOOM");
+                    	death();
+                        return;
+                    }
+                }
             }
-            player.setLayoutX(player.getLayoutX()+1);
+            player.setTranslateX(player.getTranslateX()+1);
+        }
+    }
+    // DELETE
+    private void movePlayerY(int value) {
+    	for (int i = 0; i < Math.abs(value); i++) {
+	        for (Node platform : platforms) {
+	            if (player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+	                    boolean onGround = player.getTranslateY()+player.getHeight() >= platform.getTranslateY();
+	                    if (onGround) {
+	                    	canJump = true;
+	                    	jump = false;
+	                    	player.setTranslateY(player.getTranslateY()-2);
+	                    }
+	            }
+	        }
+	        // Si le joueur appuie sur sauter
+	        if(jump == true && player.getTranslateY() > beforeJump-jumpHeight) {
+	        	player.setTranslateY(player.getTranslateY()-1);
+	        }
+	        else{
+	        	jump = false;
+	        	player.setTranslateY(player.getTranslateY()+1);
+	        	beforeJump = player.getTranslateY();
+	        }
+	        // Si il tombe de la map
+	        if(player.getTranslateY() > 1000) {
+	        	death();
+	        }
         }
     }
     
 	private void update() {
 		// le joueur avance toujours
-        movePlayerX(2);        
-        
-        if(jump == true && player.getLayoutY() > beforeJump-100) {
-        	System.out.println("PLAYER = "+player.getLayoutY());
-        	System.out.println("beforeJump = "+(beforeJump-50));
-        	player.setLayoutY(player.getLayoutY()-1);
-        }
-        else
-        	if(player.getTranslateY() != 599){
-        	System.out.println(player.getTranslateY());
-        	jump = false;
-        	player.setLayoutY(player.getTranslateY()+1);
-        	beforeJump = player.getTranslateY();
-        }
+        movePlayerX(6);
+        // DELETE
+        movePlayerY(10);
     }
 	
+	public void death() {
+		player.setTranslateX(0);
+		player.setTranslateY(599);
+	}
     
 	// DELETE
     public void jumpPlayer() {
-    	jump = true;
+    	if(canJump) {
+    		jump = true;
+    		canJump = false;
+    	}
     }
    
 	public void setMainApp(Main mainApp) {
