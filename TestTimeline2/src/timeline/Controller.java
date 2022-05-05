@@ -33,6 +33,7 @@ public class Controller {
 	boolean jump = false;
 	double vitesse;
 	double distance;
+	double verticalVelocity = 0;
 	
 	//pour changer la vitsse
 	final int constV = 30; 
@@ -73,8 +74,11 @@ public class Controller {
 		Line vVert = new Line(centreX,centreY,p3.getX(),p3.getY());
 		vVert.setStroke(Color.GREEN);
 
+
 		rootLayout.getChildren().add(vVitesse);
 		rootLayout.getChildren().add(vG);
+		rootLayout.getChildren().add(vVert);
+
 		
 		// init timeline	
 		Timeline timel = new Timeline(new KeyFrame(Duration.millis(1000 / 142), e -> {
@@ -82,7 +86,7 @@ public class Controller {
 			centreX = square.getTranslateX() + square.getWidth() / 2;
 			centreY = square.getTranslateY() + square.getHeight() / 2;
 			
-			double verticalVelocity = centreY;
+			
 			double gravity = p2.distance(centreX, centreY);
 			double jumpForce = 40;
 			
@@ -90,44 +94,44 @@ public class Controller {
 			dt = affFPS();
 			temps = dt / 1000000000; //dt par sec
 		
-			
-			
+					
 			// faire sauter
 			if(jump == true) {
 				verticalVelocity = jumpForce;
+				jump = false; 
 			}
-			
-			p3.setLocation(centreX, p3.getY() - verticalVelocity);
-			vVert.setTranslateY(p3.getY());
-			
-			System.out.println(centreX + " " + p3.getY() + " " + verticalVelocity);
-			System.out.println("x : " + vVert.getTranslateX() + " / y : " + vVert.getTranslateY());
-			
+					
 			
 			// distance vect entre centre du joueur et le point (vitesse)
 			vitesse = p1.distance(centreX,centreY) * 4;
-			//System.out.println(temps);
-			
 			distance = vitesse * temps;
 			
 			// Déplacements X			
 			square.setTranslateX(square.getTranslateX() + distance);
 			vVitesse.setTranslateX(vVitesse.getTranslateX() + distance);
 			vG.setTranslateX(vG.getTranslateX() + distance);
-			vVert.setTranslateX(vVert.getTranslateX() + distance);
+			//vVert.setTranslateX(vVert.getTranslateX() + distance);
+			vVert.setTranslateX(vVert.getTranslateX()+ distance);
+			//vVert.setTranslateY(vVert.getTranslateY());
+
 			
 			// Déplacements Y
 //			square.setTranslateX(square.getTranslateX() + distance);
 //			vVitesse.setTranslateX(vVitesse.getTranslateX() + distance);
 //			vG.setTranslateX(vG.getTranslateX() + distance);
+			vVert.setEndY(p3.getY());
+
 			
 			//actualiser position des points 
 			p1.setLocation(p1.getX() + distance, centreY);
 			p2.setLocation(centreX, p2.getY() + distance);
-
+			p3.setLocation(centreX, centreY - verticalVelocity);
+			
 //			System.out.println("coordonée: " + centreX);
 //			System.out.println("distance: "+ distance);
 //			System.out.println("Temps : " + temps + "\n dt : " + dt + "\n");
+//			System.out.println("coo Y sqr: "+centreY + " coo Y pt: " + p3.getY() + " Vertvelo: " + verticalVelocity);
+//			System.out.println("x : " + vVert.getTranslateX() + " / vvert y : " + vVert.getTranslateY()+ "coo sqr Y: "+ square.getTranslateY());
 
 					
 			
