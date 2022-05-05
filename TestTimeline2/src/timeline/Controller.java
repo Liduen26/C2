@@ -52,11 +52,11 @@ public class Controller {
 		//init temp
 		newTime = System.nanoTime();
 		time = System.currentTimeMillis();
+		
 
 		// init centre cube
-		 centreX = square.getLayoutX() + square.getWidth() / 2;
-		 centreY = square.getLayoutY() + square.getHeight() / 2;
-
+		centreX = square.getTranslateX() + square.getWidth() / 2;
+		centreY = square.getTranslateY() + square.getHeight() / 2;
 
 		//init vecteur vitesse
 		Point2D p1 = new Point2D.Double(centreX + constV, centreY);
@@ -71,19 +71,16 @@ public class Controller {
 		//init vecteur vertical
 		Point2D p3 = new Point2D.Double(centreX, centreY);
 		Line vVert = new Line(centreX,centreY,p3.getX(),p3.getY());
-		vG.setStroke(Color.GREEN);
+		vVert.setStroke(Color.GREEN);
 
 		rootLayout.getChildren().add(vVitesse);
 		rootLayout.getChildren().add(vG);
 		
-		
-	
-		
 		// init timeline	
 		Timeline timel = new Timeline(new KeyFrame(Duration.millis(1000 / 142), e -> {
 			// init centre cube
-			centreX = square.getLayoutX() + square.getWidth() / 2;
-			centreY = square.getLayoutY() + square.getHeight() / 2;
+			centreX = square.getTranslateX() + square.getWidth() / 2;
+			centreY = square.getTranslateY() + square.getHeight() / 2;
 			
 			double verticalVelocity = centreY;
 			double gravity = p2.distance(centreX, centreY);
@@ -101,9 +98,10 @@ public class Controller {
 			}
 			
 			p3.setLocation(centreX, p3.getY() - verticalVelocity);
-			vVert.setLayoutY(p3.getY());
+			vVert.setTranslateY(p3.getY());
 			
-			System.out.println("x : " + vVert.getLayoutX() + " / y : " + vVert.getLayoutY());
+			System.out.println(centreX + " " + p3.getY() + " " + verticalVelocity);
+			System.out.println("x : " + vVert.getTranslateX() + " / y : " + vVert.getTranslateY());
 			
 			
 			// distance vect entre centre du joueur et le point (vitesse)
@@ -113,15 +111,15 @@ public class Controller {
 			distance = vitesse * temps;
 			
 			// Déplacements X			
-			square.setLayoutX(square.getLayoutX() + distance);
-			vVitesse.setLayoutX(vVitesse.getLayoutX() + distance);
-			vG.setLayoutX(vG.getLayoutX() + distance);
-			vVert.setLayoutX(vVert.getLayoutX() + distance);
+			square.setTranslateX(square.getTranslateX() + distance);
+			vVitesse.setTranslateX(vVitesse.getTranslateX() + distance);
+			vG.setTranslateX(vG.getTranslateX() + distance);
+			vVert.setTranslateX(vVert.getTranslateX() + distance);
 			
 			// Déplacements Y
-//			square.setLayoutX(square.getLayoutX() + distance);
-//			vVitesse.setLayoutX(vVitesse.getLayoutX() + distance);
-//			vG.setLayoutX(vG.getLayoutX() + distance);
+//			square.setTranslateX(square.getTranslateX() + distance);
+//			vVitesse.setTranslateX(vVitesse.getTranslateX() + distance);
+//			vG.setTranslateX(vG.getTranslateX() + distance);
 			
 			//actualiser position des points 
 			p1.setLocation(p1.getX() + distance, centreY);
