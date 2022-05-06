@@ -32,7 +32,8 @@ public class Controller {
 	long time;
 	boolean jump = false;
 	double vitesse;
-	double distance;
+	double distanceX;
+	double distanceY;
 	double verticalVelocity = 0;
 	
 	//pour changer la vitsse
@@ -65,7 +66,7 @@ public class Controller {
 		vVitesse.setStroke(Color.RED);
 		
 		//init vecteur gravité
-		Point2D p2 = new Point2D.Double(centreX, centreY + 50);
+		Point2D p2 = new Point2D.Double(centreX, centreY + 1000);
 		Line vG = new Line(centreX,centreY,p2.getX(),p2.getY());
 		vG.setStroke(Color.PURPLE);
 
@@ -76,7 +77,7 @@ public class Controller {
 
 
 		rootLayout.getChildren().add(vVitesse);
-		rootLayout.getChildren().add(vG);
+		//rootLayout.getChildren().add(vG);
 		rootLayout.getChildren().add(vVert);
 
 		
@@ -87,8 +88,10 @@ public class Controller {
 			centreY = square.getTranslateY() + square.getHeight() / 2;
 			
 			
-			double gravity = p2.distance(centreX, centreY);
-			double jumpForce = 40;
+		//	double gravity = p2.distance(centreX, centreY);
+			double gravity = -100;
+
+			double jumpForce = 15;
 			
 			
 			dt = affFPS();
@@ -102,33 +105,44 @@ public class Controller {
 			}
 					
 			
-			// distance vect entre centre du joueur et le point (vitesse)
+			// distanceX vect entre centre du joueur et le point (vitesse)
 			vitesse = p1.distance(centreX,centreY) * 4;
-			distance = vitesse * temps;
+			
+			if(square.getTranslateY() < 432) {
+			System.out.println("ca marche ou pas ?" + verticalVelocity);
+			
+			verticalVelocity -= gravity * temps;}
+
+			distanceX = vitesse * temps;
+			distanceY = verticalVelocity * temps;
+
 			
 			// Déplacements X			
-			square.setTranslateX(square.getTranslateX() + distance);
-			vVitesse.setTranslateX(vVitesse.getTranslateX() + distance);
-			vG.setTranslateX(vG.getTranslateX() + distance);
-			//vVert.setTranslateX(vVert.getTranslateX() + distance);
-			vVert.setTranslateX(vVert.getTranslateX()+ distance);
+			square.setTranslateX(square.getTranslateX() + distanceX);
+			vVitesse.setTranslateX(vVitesse.getTranslateX() + distanceX);
+			vG.setTranslateX(vG.getTranslateX() + distanceX);
+			//vVert.setTranslateX(vVert.getTranslateX() + distanceX);
+			vVert.setTranslateX(vVert.getTranslateX()+ distanceX);
 			//vVert.setTranslateY(vVert.getTranslateY());
 
 			
 			// Déplacements Y
-//			square.setTranslateX(square.getTranslateX() + distance);
-//			vVitesse.setTranslateX(vVitesse.getTranslateX() + distance);
-//			vG.setTranslateX(vG.getTranslateX() + distance);
+			square.setTranslateY(square.getTranslateY() - distanceY);
+			vVitesse.setTranslateY(vVitesse.getTranslateY()- distanceY);
+			vG.setTranslateY(vG.getTranslateY()- distanceY);
+			vVert.setTranslateY(vVert.getTranslateY()- distanceY);
 			vVert.setEndY(p3.getY());
 
 			
 			//actualiser position des points 
-			p1.setLocation(p1.getX() + distance, centreY);
-			p2.setLocation(centreX, p2.getY() + distance);
-			p3.setLocation(centreX, centreY - verticalVelocity);
+			p1.setLocation(p1.getX() + distanceX, centreY);
+			p2.setLocation(p2.getX() + distanceX, centreY);
+		//	p3.setLocation(p3.getX() + distanceX, centreY - verticalVelocity);
+			p3.setLocation(p3.getX() + distanceX, centreY ); System.out.println(centreY);
+
 			
 //			System.out.println("coordonée: " + centreX);
-//			System.out.println("distance: "+ distance);
+//			System.out.println("distanceX: "+ distanceX);
 //			System.out.println("Temps : " + temps + "\n dt : " + dt + "\n");
 //			System.out.println("coo Y sqr: "+centreY + " coo Y pt: " + p3.getY() + " Vertvelo: " + verticalVelocity);
 //			System.out.println("x : " + vVert.getTranslateX() + " / vvert y : " + vVert.getTranslateY()+ "coo sqr Y: "+ square.getTranslateY());
