@@ -23,10 +23,10 @@ public class MainController {
     private ArrayList<Node> platforms = new ArrayList<Node>();
     private ArrayList<Node> triangles = new ArrayList<Node>();
     private ArrayList<Node> coins = new ArrayList<Node>();
-    
+
     final int elementSize = 60;
     Player player;
-    
+
 	// DELETE
     boolean canJump = true;
     double jumpHeight = 150;
@@ -97,27 +97,27 @@ public class MainController {
             player.setTranslateX(player.getTranslateX()+1);
         }
     }
+    
     // DELETE
     private void movePlayerY(int value) {
     	for (int i = 0; i < Math.abs(value); i++) {
-	        for (Node platform : platforms) {
-	            if (player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-	                    boolean onGround = player.getTranslateY()+player.getHeight() >= platform.getTranslateY();
-	                    if (onGround) {
-	                    	canJump = true;
-	                    	jump = false;
-	                    	player.setTranslateY(player.getTranslateY()-2);
-	                    }
-	            }
-	        }
+	    	if (playerOnGround()) {
+	    		System.out.println("ON GROUND");
+	        	canJump = true;
+	        	jump = false;
+	        	player.setTranslateY(player.getTranslateY()-2);
+	         }
 	        // Si le joueur appuie sur sauter
 	        if(jump == true && player.getTranslateY() > beforeJump-jumpHeight) {
 	        	player.setTranslateY(player.getTranslateY()-1);
 	        }
 	        else{
 	        	jump = false;
-	        	player.setTranslateY(player.getTranslateY()+1);
-	        	beforeJump = player.getTranslateY();
+	        	if(!playerOnGround()) {
+		    		System.out.println("NOT ON GROUND");
+	        		player.setTranslateY(player.getTranslateY()+1);
+	        	}
+        	beforeJump = player.getTranslateY();
 	        }
 	        // Si il tombe de la map
 	        if(player.getTranslateY() > 1000) {
@@ -126,10 +126,20 @@ public class MainController {
         }
     }
     
+    public boolean playerOnGround() {
+        for (Node platform : platforms) {
+            if (player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+            	if(player.getTranslateY()+player.getHeight() >= platform.getTranslateY()){
+                	return true;
+                }
+            }
+        }
+    return false;
+    }
+
 	private void update() {
 		// le joueur avance toujours
         movePlayerX(6);
-        // DELETE
         movePlayerY(10);
     }
 	
