@@ -37,7 +37,8 @@ public class Controller {
 	double verticalVelocity = 0;
 	
 	//pour changer la vitsse
-	final int constV = 30; 
+	int constV = 30; 
+	final int constGrav = 100;
 	
 	// init var centre cube
 	double centreX ;
@@ -65,8 +66,8 @@ public class Controller {
 		Line vVitesse = new Line(centreX,centreY,p1.getX(),p1.getY());
 		vVitesse.setStroke(Color.RED);
 		
-		//init vecteur gravité
-		Point2D p2 = new Point2D.Double(centreX, centreY + 1000);
+		//init vecteur gravitï¿½
+		Point2D p2 = new Point2D.Double(centreX, centreY + constGrav);
 		Line vG = new Line(centreX,centreY,p2.getX(),p2.getY());
 		vG.setStroke(Color.PURPLE);
 
@@ -77,7 +78,7 @@ public class Controller {
 
 
 		rootLayout.getChildren().add(vVitesse);
-		//rootLayout.getChildren().add(vG);
+		rootLayout.getChildren().add(vG);
 		rootLayout.getChildren().add(vVert);
 
 		
@@ -88,75 +89,78 @@ public class Controller {
 			centreY = square.getTranslateY() + square.getHeight() / 2;
 			
 			
-		//	double gravity = p2.distance(centreX, centreY);
-			double gravity = -100;
+			double gravity = p2.distance(centreX, centreY);
+			gravity = 200;
 
-			double jumpForce = 15;
+			double jumpForce = 150;
 			
 			
 			dt = affFPS();
 			temps = dt / 1000000000; //dt par sec
 		
-					
-			// faire sauter
-			if(jump == true) {
-				verticalVelocity = jumpForce;
-				jump = false; 
-			}
-					
-			
 			// distanceX vect entre centre du joueur et le point (vitesse)
 			vitesse = p1.distance(centreX,centreY) * 4;
 			
-			if(square.getTranslateY() < 432) {
-			System.out.println("ca marche ou pas ?" + verticalVelocity);
 			
-			verticalVelocity -= gravity * temps;}
+			// Est-ce que le cube est au sol ?
+			if(square.getTranslateY() >= 432) {
+				verticalVelocity = 0;
+				
+				// Saut si oui
+				if(jump == true) {
+					verticalVelocity = jumpForce;
+					jump = false; 
+				}
+			} else {
+				verticalVelocity -= gravity * temps;
+			}
 
+			System.out.println(verticalVelocity);
 			distanceX = vitesse * temps;
 			distanceY = verticalVelocity * temps;
 
-			
-			// Déplacements X			
-			square.setTranslateX(square.getTranslateX() + distanceX);
-			vVitesse.setTranslateX(vVitesse.getTranslateX() + distanceX);
-			vG.setTranslateX(vG.getTranslateX() + distanceX);
-			//vVert.setTranslateX(vVert.getTranslateX() + distanceX);
-			vVert.setTranslateX(vVert.getTranslateX()+ distanceX);
-			//vVert.setTranslateY(vVert.getTranslateY());
+			// Met a jour les position
+			depl(vVitesse, vG, vVert, p1, p2, p3);
 
-			
-			// Déplacements Y
-			square.setTranslateY(square.getTranslateY() - distanceY);
-			vVitesse.setTranslateY(vVitesse.getTranslateY()- distanceY);
-			vG.setTranslateY(vG.getTranslateY()- distanceY);
-			vVert.setTranslateY(vVert.getTranslateY()- distanceY);
-			vVert.setEndY(p3.getY());
-
-			
-			//actualiser position des points 
-			p1.setLocation(p1.getX() + distanceX, centreY);
-			p2.setLocation(p2.getX() + distanceX, centreY);
-		//	p3.setLocation(p3.getX() + distanceX, centreY - verticalVelocity);
-			p3.setLocation(p3.getX() + distanceX, centreY ); System.out.println(centreY);
-
-			
-//			System.out.println("coordonée: " + centreX);
-//			System.out.println("distanceX: "+ distanceX);
-//			System.out.println("Temps : " + temps + "\n dt : " + dt + "\n");
-//			System.out.println("coo Y sqr: "+centreY + " coo Y pt: " + p3.getY() + " Vertvelo: " + verticalVelocity);
-//			System.out.println("x : " + vVert.getTranslateX() + " / vvert y : " + vVert.getTranslateY()+ "coo sqr Y: "+ square.getTranslateY());
-
-					
-			
-			
+			dontGoOut();
 			
 		}));
 
-		//TL luncher
+		//TL launcher
 		timel.setCycleCount(Animation.INDEFINITE);
 		timel.play();
 
+	}
+	
+	
+	private void dontGoOut() {
+		if(square.getTranslateX() >= 800 || square.getTranslateX() <= 0) {
+			constV = constV * -1;
+			// marche po :(
+		}	
+	}
+
+
+	private void depl(Line vVitesse, Line vG, Line vVert, Point2D p1, Point2D p2, Point2D p3) {
+		// Dï¿½placements X			
+		square.setTranslateX(square.getTranslateX() + distanceX);
+		vVitesse.setTranslateX(vVitesse.getTranslateX() + distanceX);
+		vG.setTranslateX(vG.getTranslateX() + distanceX);
+		vVert.setTranslateX(vVert.getTranslateX() + distanceX);
+
+		
+		// Dï¿½placements Y
+		square.setTranslateY(square.getTranslateY() - distanceY);
+		vVitesse.setTranslateY(vVitesse.getTranslateY() - distanceY);
+		vG.setTranslateY(vG.getTranslateY() - distanceY);
+		vVert.setStartY(centreY);
+		vVert.setEndY(p3.getY());
+
+		
+		//actualiser position des points 
+		p1.setLocation(p1.getX() + distanceX, centreY);
+		p2.setLocation(p2.getX() + distanceX, centreY + constGrav);
+		p3.setLocation(p3.getX() + distanceX, centreY - verticalVelocity);
 	}
 	
 	private double affFPS () {
