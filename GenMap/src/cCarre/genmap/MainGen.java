@@ -4,8 +4,11 @@ import java.io.IOException;
 
 import cCarre.genmap.view.GenController;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -17,7 +20,7 @@ public class MainGen extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("Fourmilière");
+		this.primaryStage.setTitle("Editeur de Map");
 		this.primaryStage.setMaximized(true);
 		
 		// Initialisation et ouverture de la fenètre
@@ -40,7 +43,7 @@ public class MainGen extends Application {
 			controller.setMainGen(this);
 			
 			primaryStage.show();
-			
+						
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

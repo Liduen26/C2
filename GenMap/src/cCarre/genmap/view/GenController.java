@@ -1,18 +1,94 @@
 package cCarre.genmap.view;
 
 import cCarre.genmap.MainGen;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 public class GenController {
 	private MainGen mainGen;
 	
 	@FXML
-	private void initialize() {
-		System.out.println("init");
-
-	}
+    private AnchorPane root;
+	
+	private boolean drag;
 	
 	public void setMainGen(MainGen mainGen) {
 		this.mainGen = mainGen;
+	}
+	
+	@FXML
+	private void initialize() {
+		System.out.println("init");
+		
+		int widthCell = 40;
+		
+		double rWidth = 1920 / widthCell;
+		double rHeight = 1000 / widthCell;
+		System.out.println(rHeight);
+		
+		GridPane grille = new GridPane();
+		grille.setHgap(widthCell);
+		grille.setVgap(widthCell);
+		grille.setGridLinesVisible(true);
+		
+		root.getChildren().add(grille);
+		
+		for(int y = 0; y < rHeight; y++) {
+			for(int x = 0; x < rWidth; x++) {
+				Rectangle r = new Rectangle();
+				grille.add(r, x, y);
+			}
+		}
+		
+		
+		// Event qui attendent le drag de la fenètre
+		grille.setOnMousePressed(e -> {
+			handleDrag(e);
+		});
+		grille.setOnMouseReleased(e -> {
+			drag = false;
+			drag();
+		});
+		
+		
+	}
+	
+	private void handleDrag(MouseEvent e) {
+		if(e.getButton() == MouseButton.MIDDLE) {
+			System.out.println("midOn !");
+			drag = true;
+			drag();
+		} 
+	}
+	
+	public void drag() {
+		Timeline timel = new Timeline(new KeyFrame(Duration.millis(1000 / 142), e -> {
+				
+			System.out.println("uii");	
+			
+			
+		}));
+		timel.setCycleCount(Timeline.INDEFINITE);
+		
+		System.out.println("here i remain");
+		if(drag == false) {
+			System.out.println("stopped");
+			timel.stop();
+		} else {
+			timel.play();
+		}
+	}
+	public void dragOff() {
+		drag = false;
 	}
 }
