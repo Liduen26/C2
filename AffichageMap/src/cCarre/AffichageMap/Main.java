@@ -23,7 +23,6 @@ public class Main extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("AffichageMap");
         this.primaryStage.setMaximized(true);
-
         initMainLayout();
     }
     
@@ -36,7 +35,9 @@ public class Main extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/mainLayout.fxml"));
             mainLayout = (AnchorPane) loader.load();
-            
+            // Background color
+            mainLayout.setStyle("-fx-background-color: BLACK;");
+
             // Show the scene containing the root layout.
             Scene scene = new Scene(mainLayout);
             primaryStage.setScene(scene);
@@ -44,7 +45,7 @@ public class Main extends Application {
             MainController controller = loader.getController();
             controller.setMainApp(this);
 
-            
+
             scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
                 @Override
                 public void handle(KeyEvent event) {

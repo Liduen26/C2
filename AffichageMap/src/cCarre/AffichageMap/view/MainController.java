@@ -19,7 +19,6 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
@@ -74,7 +73,7 @@ public class MainController {
                         nodes.add(triangle);
 						break;
 					case '3' :
-						Coin coin = new Coin(x*elementSize, y*elementSize, elementSize, elementSize, Color.YELLOW, rootLayout);
+						Coin coin = new Coin(x*elementSize+10, y*elementSize, 40, 40, Color.YELLOW, rootLayout);
 						coins.add(coin);
 						break;
 
@@ -85,9 +84,6 @@ public class MainController {
         nodes.add(player);
         
         // NOUVEAU
-        //nodes.add(new Circle(90, 60, 30));
-        //nodes.add(new Circle(40, 200, 30));
-        //nodes.add(new Obstacle(50, 50, 60, 60, Color.RED, rootLayout));
         for (Shape block : nodes) {
             setDragListeners(block);
           }
@@ -144,7 +140,7 @@ public class MainController {
 	        	}
         	beforeJump = player.getTranslateY();
 	        }
-	        // Si il tombe de la map
+	        // Le joueur sort de la map
 	        if(player.getTranslateY() > 1000) {
 	        	death();
 	        }
@@ -198,7 +194,7 @@ public class MainController {
     	}
     }
     
-    
+    // -------------------------- Drag and Drop (pour les tests) -------------------------- 
     public void setDragListeners(final Shape block) {
         final Delta dragDelta = new Delta();
 
@@ -223,12 +219,13 @@ public class MainController {
           }
         });
       }
-    
+    // -------------------------- Drag and Drop (pour les tests) -------------------------- 
+
+    // Collisions avec les obstacles (triangles)
     private void checkShapeIntersection(Shape block) {
         boolean collisionDetected = false;
         for (Shape static_bloc : nodes) {
           if (static_bloc != block) {
-            //static_bloc.setFill(Color.GREEN);
 
             Shape intersect = Shape.intersect(block, static_bloc);
             if (intersect.getBoundsInLocal().getWidth() != -1) {
@@ -238,10 +235,7 @@ public class MainController {
         }
 
         if (collisionDetected) {
-          //block.setFill(Color.BLUE);
           death();
-        } else {
-          //block.setFill(Color.GREEN);
         }
       }
     
