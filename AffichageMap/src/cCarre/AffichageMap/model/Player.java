@@ -17,6 +17,6 @@ public class Player extends Rectangle{
         this.setFill(color);
         this.getProperties().put("alive", true);
 
-        rootLayout.getChildren().add(this);
+        //rootLayout.getChildren().add(this);
 	}
 }
