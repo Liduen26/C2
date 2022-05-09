@@ -76,7 +76,7 @@ public class Controller {
 		Line vVert = new Line(centreX,centreY,p3.getX(),p3.getY());
 		vVert.setStroke(Color.GREEN);
 
-
+		// Ajout des vecteurs à la fenètre
 		rootLayout.getChildren().add(vVitesse);
 		rootLayout.getChildren().add(vG);
 		rootLayout.getChildren().add(vVert);
@@ -89,9 +89,7 @@ public class Controller {
 			centreY = square.getTranslateY() + square.getHeight() / 2;
 			
 			
-			double gravity = p2.distance(centreX, centreY);
-			gravity = 200;
-
+			double gravity = p2.distance(centreX, centreY) * 2;
 			double jumpForce = 150;
 			
 			
@@ -115,7 +113,6 @@ public class Controller {
 				verticalVelocity -= gravity * temps;
 			}
 
-			System.out.println(verticalVelocity);
 			distanceX = vitesse * temps;
 			distanceY = verticalVelocity * temps;
 

@@ -1,0 +1,52 @@
+package cCarre.genmap;
+	
+import java.io.IOException;
+
+import cCarre.genmap.view.GenController;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+
+
+public class MainGen extends Application {
+	private Stage primaryStage;
+	private AnchorPane mainLayout;
+	
+	@Override
+	public void start(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("Fourmilière");
+		this.primaryStage.setMaximized(true);
+		
+		// Initialisation et ouverture de la fenètre
+		initMainLayout();
+	}
+	
+	public void initMainLayout() {
+		try {
+			// Chargement du layout principal
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainGen.class.getResource("view/GenLayout.fxml"));
+			mainLayout = (AnchorPane) loader.load();
+			
+			// Affichage de la scène contenant le layout précédemment chargé
+			Scene scene = new Scene(mainLayout);
+			primaryStage.setScene(scene);
+			
+			// Mise en relation avec le controller
+			GenController controller = loader.getController();
+			controller.setMainGen(this);
+			
+			primaryStage.show();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
+}
