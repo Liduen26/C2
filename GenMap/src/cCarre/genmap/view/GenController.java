@@ -1,11 +1,8 @@
 package cCarre.genmap.view;
 
 import cCarre.genmap.MainGen;
-import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -21,6 +18,7 @@ public class GenController {
     private AnchorPane root;
 	
 	private boolean drag;
+	Timeline timel;
 	
 	public void setMainGen(MainGen mainGen) {
 		this.mainGen = mainGen;
@@ -65,28 +63,22 @@ public class GenController {
 	
 	private void handleDrag(MouseEvent e) {
 		if(e.getButton() == MouseButton.MIDDLE) {
-			System.out.println("midOn !");
 			drag = true;
 			drag();
 		} 
 	}
 	
 	public void drag() {
-		Timeline timel = new Timeline(new KeyFrame(Duration.millis(1000 / 142), e -> {
+		System.out.println("heyy");
+		timel = new Timeline(new KeyFrame(Duration.millis(1000 / 142), e -> {
+			if(drag == true) {
+				System.out.println("ui");
 				
-			System.out.println("uii");	
-			
-			
+			} 
 		}));
 		timel.setCycleCount(Timeline.INDEFINITE);
+		timel.play();
 		
-		System.out.println("here i remain");
-		if(drag == false) {
-			System.out.println("stopped");
-			timel.stop();
-		} else {
-			timel.play();
-		}
 	}
 	public void dragOff() {
 		drag = false;
