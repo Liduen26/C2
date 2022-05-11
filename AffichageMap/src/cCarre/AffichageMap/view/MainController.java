@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import cCarre.AffichageMap.Main;
 import cCarre.AffichageMap.model.Coin;
+import cCarre.AffichageMap.model.FinishLine;
 import cCarre.AffichageMap.model.Ground;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
@@ -26,14 +27,13 @@ import javafx.util.Duration;
 public class MainController {
 	
     private ArrayList<Node> platforms = new ArrayList<Node>();
-    private ArrayList<Node> triangles = new ArrayList<Node>();
     private ArrayList<Node> coins = new ArrayList<Node>();
-    
-    // NOUVEAU
-    private ArrayList<Shape> nodes;
+    private ArrayList<Node> finishLines = new ArrayList<Node>();
+    private ArrayList<Shape> nodes; // Pour les triangles
 
     final int elementSize = 60;
     Player player;
+    int spawnX, spawnY;
 
 	// DELETE
     boolean running = true;
@@ -55,7 +55,7 @@ public class MainController {
 		int levelHeight = level.getLevelHeight();
 		char[][] Level = level.getLevel();
         nodes = new ArrayList<>();
-		
+        
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x= 0; x < levelLength; x++) {
 				
@@ -69,18 +69,24 @@ public class MainController {
 						break;
 					case '2' :
                         Obstacle triangle = new Obstacle(x*elementSize, y*elementSize, elementSize, elementSize, Color.RED, rootLayout);
-                        triangles.add(triangle);
                         nodes.add(triangle);
 						break;
 					case '3' :
-						Coin coin = new Coin(x*elementSize+10, y*elementSize, 40, 40, Color.YELLOW, rootLayout);
+						Coin coin = new Coin(x*elementSize+10, y*elementSize+10, 40, 40, Color.YELLOW, rootLayout);
 						coins.add(coin);
 						break;
-
+					case '8' :
+						spawnX = x*elementSize;
+						spawnY = y*elementSize-1;
+						break;
+					case '9' :
+                        FinishLine finishBlock = new FinishLine(x*elementSize, y*elementSize, elementSize, elementSize, Color.GREEN, rootLayout);
+                        finishLines.add(finishBlock);
+						break;
 				}
 			}
 		}
-        player = new Player(5, 599, elementSize, elementSize, Color.BLUE, rootLayout);
+        player = new Player(spawnX, spawnY, elementSize, elementSize, Color.BLUE, rootLayout);
         nodes.add(player);
         
         // NOUVEAU
@@ -89,8 +95,16 @@ public class MainController {
           }
         rootLayout.getChildren().addAll(nodes);
         // NOUVEAU
-          
-        Timeline time1 = new Timeline(new KeyFrame(Duration.millis(20), e -> {
+        
+        player.translateXProperty().addListener((obs, old, newValue) -> {
+            int offset = newValue.intValue();
+
+            if (offset > 300 && offset < level.getLevelWidth() - 300) {
+                rootLayout.setLayoutX(-(offset - 300));
+            }
+        });
+
+        Timeline time1 = new Timeline(new KeyFrame(Duration.millis(16), e -> {
         	if(running == true) {
                 checkShapeIntersection(player);
             	update();
@@ -161,6 +175,13 @@ public class MainController {
 
 	private void update() {
 		
+        for (Node finishBlock : finishLines) {
+            if (player.getBoundsInParent().intersects(finishBlock.getBoundsInParent())) {
+            	System.out.println("VICTOIRE");
+            	running = false;
+            }
+        }
+		
         for (Node coin : coins) {
             if (player.getBoundsInParent().intersects(coin.getBoundsInParent())) {
                 coin.getProperties().put("alive", false);
@@ -182,8 +203,9 @@ public class MainController {
     }
 	
 	public void death() {
-		player.setTranslateX(0);
-		player.setTranslateY(599);
+		player.setTranslateX(spawnX);
+		player.setTranslateY(spawnY);
+    	rootLayout.setLayoutX(-(player.getTranslateX())); // TP la caméra au début du jeu
 	}
     
 	// DELETE

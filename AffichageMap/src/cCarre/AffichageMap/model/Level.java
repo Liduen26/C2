@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 public class Level {
 	private final int idLevel;
 	private int levelLength;
+	private int levelWidth;
 	private int totalCoin;
 	private int levelHeight;
 	private char[][] Level;
@@ -14,6 +15,7 @@ public class Level {
 	public Level() {
 		this.idLevel = 0;
 		this.levelLength = LevelData.LEVEL1[0].length();
+		this.levelWidth = LevelData.LEVEL1[0].length() * 60;
 		this.totalCoin = 0;
 		this.levelHeight = LevelData.LEVEL1.length;
 		this.Level = new char[this.levelHeight][this.levelLength];
@@ -48,6 +50,10 @@ public class Level {
 
 	public void setLevelLength(int levelLength) {
 		this.levelLength = levelLength;
+	}
+	
+	public int getLevelWidth(){
+		return levelWidth;
 	}
 
 	public int getTotalCoin() {

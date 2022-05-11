@@ -36,7 +36,7 @@ public class Main extends Application {
             loader.setLocation(Main.class.getResource("view/mainLayout.fxml"));
             mainLayout = (AnchorPane) loader.load();
             // Background color
-            mainLayout.setStyle("-fx-background-color: BLACK;");
+            //mainLayout.setStyle("-fx-background-color: BLACK;");
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(mainLayout);
