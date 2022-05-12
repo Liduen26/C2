@@ -1,7 +1,6 @@
 package cCarre.genmap.model;
 
 import javafx.scene.Parent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -17,20 +16,39 @@ public class Cell extends Parent {
 		back.setFill(Color.FLORALWHITE);
 		back.setWidth(width);
 		back.setHeight(width);
+		this.setPickOnBounds(false);
 		this.getChildren().add(back);
 		
-		this.setOnMouseDragged(e -> {
-			if(e.getButton() == MouseButton.PRIMARY) {
-				System.out.println("heyy " + x);
-				if(!occuped) {
-					paint();
-				} 
-			}
-			
+//		this.setOnMousePressed(event -> {
+//			this.setOnMouseMoved(e -> {
+////				if(e.getButton() == MouseButton.PRIMARY) {
+//					System.out.println("heyy " + x);
+//					
+////				}
+//			});
+//		});
+		
+		this.setOnMousePressed(e -> {
+			ToolBar.setClick(true);
+			e.setDragDetect(true);
+		});
+//		
+//		this.setOnMouseMoved(e -> {
+//			System.out.println("slt " + x);
+//			ToolBar.isClick();
+//		});
+		
+		this.setOnDragOver(e -> {
+			System.out.println("hey");
 		});
 		
-		
-		
+	}
+	
+	public void onPaint() {
+		if(!occuped) {
+			paint();
+			System.out.println("paint " + x);
+		} 
 	}
 	
 	private void paint() {

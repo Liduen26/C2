@@ -2,7 +2,10 @@ package cCarre.genmap.model;
 
 public class ToolBar {
 	private static String item;
+	private static boolean click;
 	
+	
+
 	// Objet servant à récupérer les état des btns 
 	public ToolBar() {
 		
@@ -18,5 +21,13 @@ public class ToolBar {
 		} 
 		
 		return item;			
+	}
+	
+	public static boolean isClick() {
+		return click;
+	}
+
+	public static void setClick(boolean click) {
+		ToolBar.click = click;
 	}
 }

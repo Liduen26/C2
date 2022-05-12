@@ -10,6 +10,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Rectangle;
 
 public class GenController {
 	@SuppressWarnings("unused")
@@ -90,6 +91,11 @@ public class GenController {
 				if((grille.getLayoutX() + delta) < 0 && (grille.getLayoutX() + delta) > -mostRight) {
 					grille.setLayoutX(grille.getLayoutX() + delta);
 				}
+			} else if(e.getButton() == MouseButton.PRIMARY) {
+//				Rectangle r = (Rectangle) e.getTarget();
+////				Cell c = (Cell) r.getParent();
+//				System.out.println(r.getParent());
+////				c.onPaint();
 			}
 		});
 		
@@ -103,5 +109,5 @@ public class GenController {
 				ToolBar.getItem();
 			});
 		}
-	}
+	}	
 }
