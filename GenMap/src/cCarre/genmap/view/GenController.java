@@ -51,6 +51,7 @@ public class GenController {
 		grille.setVgap(1);
 //		grille.setPadding(new Insets(5, 5, 5, 5));
 		grille.setGridLinesVisible(true);
+		grille.setPickOnBounds(false);
 		
 		root.getChildren().add(grille);
 		
