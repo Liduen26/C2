@@ -24,26 +24,30 @@ public class Cell extends Parent {
 		
 		this.setOnMousePressed(e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
-				e.setDragDetect(true);
 				System.out.println("slt");
-				paint();
+				onPaint();
 			}
 		});
 		
-		this.setOnMouseDragged (e -> {
+		this.setOnDragDetected(e -> {
+			this.startFullDrag();
+		});
+		
+		this.setOnMouseDragOver (e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
 				System.out.println("hey" + x);
-				paint();
+				onPaint();
 			}
 		});
 		
 		
 	}
 	
+	
+	
 	public void onPaint() {
 		if(!occuped) {
 			paint();
-			System.out.println("paint " + x);
 		} 
 	}
 	
@@ -70,8 +74,9 @@ public class Cell extends Parent {
 			
 			this.getChildren().add(obst);
 			break;
-		default:
 			
+		default:
+			occuped = false;
 			break;
 		}
 		
