@@ -17,9 +17,7 @@ public class Obstacle extends Polygon{
              }); 
 
         this.setFill(color);
-        //rootLayout.getChildren().add(this);
+        
+        rootLayout.getChildren().add(this);
 	}
-	
-
-    
 }

@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import cCarre.AffichageMap.Main;
 import cCarre.AffichageMap.model.Coin;
-import cCarre.AffichageMap.model.FinishLine;
+import cCarre.AffichageMap.model.FinishBlock;
 import cCarre.AffichageMap.model.Ground;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
@@ -13,11 +13,10 @@ import cCarre.AffichageMap.model.Player;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Cursor;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
@@ -25,246 +24,258 @@ import javafx.util.Duration;
 
 
 public class MainController {
-	
-    private ArrayList<Node> platforms = new ArrayList<Node>();
-    private ArrayList<Node> coins = new ArrayList<Node>();
-    private ArrayList<Node> finishLines = new ArrayList<Node>();
-    private ArrayList<Shape> nodes; // Pour les triangles
 
-    final int elementSize = 60;
-    Player player;
-    int spawnX, spawnY;
-
-	// DELETE
-    boolean running = true;
-    boolean canJump = true;
-    double jumpHeight = 150;
-    private boolean jump = false;
-    double ground = 599;
-    double beforeJump = ground - jumpHeight;
 
 	private Main mainApp;
+
+	private ArrayList<Shape> platforms = new ArrayList<Shape>();
+	private ArrayList<Shape> triangles = new ArrayList<Shape>();
+	private ArrayList<Shape> finishBlocks = new ArrayList<Shape>();
+	private ArrayList<Shape> coins = new ArrayList<Shape>();
+
+	final int elementSize = 60;
+
+
+	// Vars ---------------
+	long oldTime;
+	long newTime;
+	double dt; //dt par sec
+	double temps;
+	int frame;
+	long time;
+	boolean jump = false;
+	double vitesse;
+	double distanceX;
+	double distanceY;
+	double verticalVelocity = 0;
+	boolean onGround = false;
 	
+	boolean canJump = false;
+	int spawnX, spawnY;
+	boolean running = true;
+	//pour changer la vitsse
+	int constV = 270; 
+	final int constGrav = 700;
+
+	public void setMainApp(Main mainApp) {
+		this.mainApp = mainApp;
+	}
+
+	@FXML
+	private Player player;
+
 	@FXML
 	private AnchorPane rootLayout;
-	
+
 	@FXML
 	private void initialize() {
+
+
+		//init temps
+		newTime = System.nanoTime();
+		time = System.currentTimeMillis();
+
+
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
 		char[][] Level = level.getLevel();
-        nodes = new ArrayList<>();
-        
+
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x= 0; x < levelLength; x++) {
-				
+
 				switch(Level[y][x]) {
-					case '0' :
-						// ici c'est vide
-						break;
-					case '1' :
-						Ground platform = new Ground(x*elementSize, y*elementSize, elementSize, elementSize, Color.BROWN, rootLayout);
-                        platforms.add(platform);
-						break;
-					case '2' :
-                        Obstacle triangle = new Obstacle(x*elementSize, y*elementSize, elementSize, elementSize, Color.RED, rootLayout);
-                        nodes.add(triangle);
-						break;
-					case '3' :
-						Coin coin = new Coin(x*elementSize+10, y*elementSize+10, 40, 40, Color.YELLOW, rootLayout);
-						coins.add(coin);
-						break;
-					case '8' :
-						spawnX = x*elementSize;
-						spawnY = y*elementSize-1;
-						break;
-					case '9' :
-                        FinishLine finishBlock = new FinishLine(x*elementSize, y*elementSize, elementSize, elementSize, Color.GREEN, rootLayout);
-                        finishLines.add(finishBlock);
-						break;
+				case '0' :
+					// ici c'est vide
+					break;
+				case '1' :
+					Ground platform = new Ground(x*elementSize, y*elementSize, elementSize, elementSize, Color.BROWN, rootLayout);
+					platforms.add(platform);
+					break;
+				case '2' :
+					Obstacle triangle = new Obstacle(x*elementSize, y*elementSize, elementSize, elementSize, Color.RED, rootLayout);
+					triangles.add(triangle);
+					break;
+				case '3' :
+					Coin coin = new Coin(x*elementSize+15, y*elementSize+15, 30, 30, Color.YELLOW, rootLayout);
+					coins.add(coin);
+					break;
+				case '8' :
+					spawnX = x*elementSize;
+					spawnY = y*elementSize-1;
+					break;
+				case '9' :
+					FinishBlock finishBlock = new FinishBlock(x*elementSize, y*elementSize, elementSize, elementSize, Color.GREEN, rootLayout);
+					finishBlocks.add(finishBlock);
+					break;
 				}
 			}
 		}
-        player = new Player(spawnX, spawnY, elementSize, elementSize, Color.BLUE, rootLayout);
-        nodes.add(player);
-        
-        // NOUVEAU
-        for (Shape block : nodes) {
-            setDragListeners(block);
-          }
-        rootLayout.getChildren().addAll(nodes);
-        // NOUVEAU
-        
+		player = new Player(spawnX, spawnY, elementSize, elementSize, Color.BLUE, rootLayout, constGrav, constV);
+		
+		// La caméra suit le joueur
         player.translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
-
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
             }
         });
+		
+		//player.setFill(Color.PURPLE);
+		Timeline time1 = new Timeline(new KeyFrame(Duration.millis(1000 / 142), e -> {
+			
+			if(running) {
+				
+			double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
+			double jumpForce = 600;
 
-        Timeline time1 = new Timeline(new KeyFrame(Duration.millis(16), e -> {
-        	if(running == true) {
-                checkShapeIntersection(player);
-            	update();
-        	}
-        }));
-        
-        time1.setCycleCount(Animation.INDEFINITE);
-        time1.play();
+			dt = affFPS();
+			temps = dt / 1000000000; //dt par sec
+
+			// distanceX vect entre centre du joueur et le point (vitesse)
+			vitesse = player.p1.distance(player.centreX,player.centreY);
+			
+			// Est-ce que le cube est au sol ?
+			if(playerOnGround() == true) {
+				verticalVelocity = 0;
+				
+				// Saut si oui
+				if(jump == true) {
+					verticalVelocity = jumpForce;
+					jump = false; 
+				}
+			} else {
+				verticalVelocity -= gravity * temps;
+			}
+
+			distanceX = vitesse * temps;
+			distanceY = verticalVelocity * temps;
+
+			// Met a jour les position
+			player.depl(distanceX, distanceY, jumpForce, verticalVelocity);
+			
+			platfCollision(); // Check plateforme collision
+			triangleCollision();// Check triangle collision
+			coinCollision();// Check coin collision
+			
+			// Si le joueur touche la ligne d'arrivée
+            boolean collisionDetected = false;
+            for (Shape finishBlock : finishBlocks) {
+            	if (finishBlock != player.playerRectangle) {
+
+            		Shape intersect = Shape.intersect(player.playerRectangle, finishBlock);
+            		if (intersect.getBoundsInLocal().getWidth() != -1) {
+            			collisionDetected = true;
+            		}
+            	}
+
+            	if (collisionDetected) {
+            		running = false;
+            	}
+            }
+            
+			// meurt quand tombe dans le vide
+			if(player.getTranslateY()>800) {
+				player.death(spawnX, spawnY, rootLayout);
+			}
+			// Empeche de charger un saut pendant un saut
+			if(jump == true) {
+				canJump = false;
+			}
+		}
+		}));
+
+		time1.setCycleCount(Animation.INDEFINITE);
+		time1.play();
 	}
 
-    private void movePlayerX(int value) {
-        for (int i = 0; i < Math.abs(value); i++) {
-            for (Node platform : platforms) {
-                if(player.getBoundsInParent().intersects(platform.getBoundsInParent())){
-                    boolean rightBorder = player.getTranslateX() >= ((platform.getTranslateX() + elementSize) - player.getWidth());
-                    boolean leftBorder = player.getTranslateX() <= (platform.getTranslateX() + player.getWidth());
-                    
-                    if (rightBorder || leftBorder) {
-                    	System.out.println("BOOOOM");
-                    	death();
-                        return;
-                    }
-                }
-            }
-            player.setTranslateX(player.getTranslateX()+1);
+	private void platfCollision() {
+		onGround = false;
+		for (Shape platform : platforms) {
+        	if (platform != player.playerRectangle) {
+        		Shape intersect = Shape.intersect(player.playerRectangle, platform);
+        		if (intersect.getBoundsInLocal().getHeight() != -1) {
+        			// Collision cotée
+        			if(player.getTranslateY()+45>platform.getTranslateY()) {
+        				player.death(spawnX,spawnY, rootLayout);
+        				verticalVelocity = 0;
+        			}
+        			// sol
+        			else {
+        				verticalVelocity = 0;
+        				player.setTranslateY(platform.getTranslateY()-player.getHeight());
+        				onGround = true;
+        				canJump = true;
+        			}
+        		}
+        	}
         }
-    }
+	}
+	
+    private void triangleCollision() {
+        boolean collisionDetected = false;
+        for (Shape triangle : triangles) {
+          if (triangle != player.playerRectangle) {
+            Shape intersect = Shape.intersect(player.playerRectangle, triangle);
+            if (intersect.getBoundsInLocal().getWidth() != -1) {
+              collisionDetected = true;
+            }
+          }
+        }
+        if (collisionDetected) {
+			player.death(spawnX,spawnY, rootLayout);
+        }
+      }
     
-    // DELETE
-    private void movePlayerY(int value) {
-    	for (int i = 0; i < Math.abs(value); i++) {
-    		// Le joueur est sur le sol
-	    	if (playerOnGround()) {
-	        	canJump = true;
-	        	jump = false;
-	        	player.setTranslateY(player.getTranslateY()-2);
-	         }
-	        // Le joueur jump
-	        if(jump == true && player.getTranslateY() > beforeJump-jumpHeight) {
-	        	player.setTranslateY(player.getTranslateY()-1);
-	        }
-	        // Le joueur est en l'air
-	        else{
-	        	jump = false;
-	        	if(!playerOnGround()) {
-	        		player.setTranslateY(player.getTranslateY()+1);
-	        	}
-        	beforeJump = player.getTranslateY();
-	        }
-	        // Le joueur sort de la map
-	        if(player.getTranslateY() > 1000) {
-	        	death();
-	        }
-        }
-    }
-    
-    // Joueur sur le sol
-    public boolean playerOnGround() {
-        for (Node platform : platforms) {
-            if (player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-            	if(player.getTranslateY()+player.getHeight() >= platform.getTranslateY()){
-                	return true;
-                }
+    private void coinCollision() {
+    	// Check si le joueur touche une piece et change le statut de la piece
+        for (Shape coin : coins) {
+          if (coin != player.playerRectangle) {
+            Shape intersect = Shape.intersect(player.playerRectangle, coin);
+            if (intersect.getBoundsInLocal().getWidth() != -1) {
+            	coin.getProperties().put("alive", false);
             }
-        }
-    return false;
-    }
-
-	private void update() {
-		
-        for (Node finishBlock : finishLines) {
-            if (player.getBoundsInParent().intersects(finishBlock.getBoundsInParent())) {
-            	System.out.println("VICTOIRE");
-            	running = false;
-            }
-        }
-		
-        for (Node coin : coins) {
-            if (player.getBoundsInParent().intersects(coin.getBoundsInParent())) {
-                coin.getProperties().put("alive", false);
-            }
+          }
         }
         
         // On supprime les coins ramassés avec iterator car on ne peut pas delete quand on boucle sur la liste
-        for (Iterator<Node> it = coins.iterator(); it.hasNext(); ) {
+        for (Iterator<Shape> it = coins.iterator(); it.hasNext(); ) {
             Node coin = it.next();
             if (!(Boolean)coin.getProperties().get("alive")) {
                 it.remove();
                 rootLayout.getChildren().remove(coin);
             }
         }
-        
-		// le joueur avance toujours
-        movePlayerX(6);
-        movePlayerY(10);
-    }
-	
-	public void death() {
-		player.setTranslateX(spawnX);
-		player.setTranslateY(spawnY);
-    	rootLayout.setLayoutX(-(player.getTranslateX())); // TP la caméra au début du jeu
+      }
+
+	public boolean playerOnGround() {
+		return onGround;
 	}
-    
-	// DELETE
-    public void jumpPlayer() {
-    	if(canJump) {
-    		jump = true;
-    		canJump = false;
-    	}
-    }
-    
-    // -------------------------- Drag and Drop (pour les tests) -------------------------- 
-    public void setDragListeners(final Shape block) {
-        final Delta dragDelta = new Delta();
 
-        block.setOnMousePressed(new EventHandler<MouseEvent>() {
-          @Override public void handle(MouseEvent mouseEvent) {
-            // record a delta distance for the drag and drop operation.
-            dragDelta.x = block.getLayoutX() - mouseEvent.getSceneX();
-            dragDelta.y = block.getLayoutY() - mouseEvent.getSceneY();
-            block.setCursor(Cursor.NONE);
-          }
-        });
-        block.setOnMouseReleased(new EventHandler<MouseEvent>() {
-          @Override public void handle(MouseEvent mouseEvent) {
-            block.setCursor(Cursor.HAND);
-          }
-        });
-        block.setOnMouseDragged(new EventHandler<MouseEvent>() {
-          @Override public void handle(MouseEvent mouseEvent) {
-            block.setLayoutX(mouseEvent.getSceneX() + dragDelta.x);
-            block.setLayoutY(mouseEvent.getSceneY() + dragDelta.y);
-            checkShapeIntersection(block);
-          }
-        });
-      }
-    // -------------------------- Drag and Drop (pour les tests) -------------------------- 
+	private double affFPS () {
+		// Calculs FPS
+		frame++;
+		oldTime = newTime;
+		newTime = System.nanoTime(); 
+		dt = newTime - oldTime;
 
-    // Collisions avec les obstacles (triangles)
-    private void checkShapeIntersection(Shape block) {
-        boolean collisionDetected = false;
-        for (Shape static_bloc : nodes) {
-          if (static_bloc != block) {
+		// Affichage FPS
+		if(System.currentTimeMillis() - time >= 1000) {
+			//fps.setText("FPS : " + frame);
+			System.out.println("FPS : " + frame);
+			frame = 0;
+			time = System.currentTimeMillis();				
+		} 
 
-            Shape intersect = Shape.intersect(block, static_bloc);
-            if (intersect.getBoundsInLocal().getWidth() != -1) {
-              collisionDetected = true;
-            }
-          }
-        }
+		return dt;
+	}
 
-        if (collisionDetected) {
-          death();
-        }
-      }
-    
-    class Delta { double x, y; }
-   
-	public void setMainApp(Main mainApp) {
-		this.mainApp = mainApp;
+	public void jump() {
+		if(jump == false && canJump == true) {
+			jump = true;
+			canJump = false;
+		}
+		 
 	}
 
 }

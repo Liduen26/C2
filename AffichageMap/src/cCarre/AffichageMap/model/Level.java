@@ -7,8 +7,8 @@ import javafx.scene.paint.Color;
 public class Level {
 	private final int idLevel;
 	private int levelLength;
-	private int levelWidth;
 	private int totalCoin;
+	private int levelWidth;
 	private int levelHeight;
 	private char[][] Level;
 	
@@ -26,6 +26,10 @@ public class Level {
             	Level[i][j] = line.charAt(j);
             }
         }
+	}
+	
+	public int getLevelWidth(){
+		return levelWidth;
 	}
 
 	public char[][] getLevel() {
@@ -50,10 +54,6 @@ public class Level {
 
 	public void setLevelLength(int levelLength) {
 		this.levelLength = levelLength;
-	}
-	
-	public int getLevelWidth(){
-		return levelWidth;
 	}
 
 	public int getTotalCoin() {

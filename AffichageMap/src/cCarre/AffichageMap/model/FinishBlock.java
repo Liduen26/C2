@@ -4,9 +4,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class FinishLine extends Rectangle{
+public class FinishBlock extends Rectangle{
 
-	public FinishLine(int x, int y, int width, int height, Color color, AnchorPane rootLayout) {
+	public FinishBlock(int x, int y, int width, int height, Color color, AnchorPane rootLayout) {
         this.setTranslateX(x);
         this.setTranslateY(y);
         this.setWidth(width);
@@ -16,4 +16,6 @@ public class FinishLine extends Rectangle{
 
         rootLayout.getChildren().add(this);
 	}
+	
+    
 }

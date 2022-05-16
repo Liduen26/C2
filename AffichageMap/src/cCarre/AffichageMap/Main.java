@@ -10,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 
@@ -23,6 +22,7 @@ public class Main extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("AffichageMap");
         this.primaryStage.setMaximized(true);
+
         initMainLayout();
     }
     
@@ -35,9 +35,7 @@ public class Main extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/mainLayout.fxml"));
             mainLayout = (AnchorPane) loader.load();
-            // Background color
-            //mainLayout.setStyle("-fx-background-color: BLACK;");
-
+            
             // Show the scene containing the root layout.
             Scene scene = new Scene(mainLayout);
             primaryStage.setScene(scene);
@@ -45,21 +43,19 @@ public class Main extends Application {
             MainController controller = loader.getController();
             controller.setMainApp(this);
 
-
+            
             scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
                 @Override
                 public void handle(KeyEvent event) {
                     if(event.getCode() == KeyCode.SPACE) {
                         System.out.println("space");
-                        controller.jumpPlayer();
+                        controller.jump();
                     } else if(event.getCode() == KeyCode.Z) {
                         System.out.println("z");
                     }
                 };
             });
-            
-                 
-            
+
             primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
