@@ -40,7 +40,7 @@ public class GenController {
 	@FXML
 	private void initialize() {
 		// Init de la grille (fait � la va-vite, faudra am�liorer toute cette merde ;D) -------
-		final int widthCell = 40;
+		final int widthCell = 60;
 		
 		double rWidth = 1920 / widthCell;
 		double rHeight = 1000 / widthCell;
