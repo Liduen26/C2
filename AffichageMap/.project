@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-<<<<<<<< HEAD:GenMap/.project
-	<name>GenMap</name>
-========
-	<name>c²</name>
->>>>>>>> main:c²/.project
+	<name>AffichageMap</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -14,7 +10,6 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-<<<<<<<< HEAD:GenMap/.project
 		<buildCommand>
 			<name>org.eclipse.xtext.ui.shared.xtextBuilder</name>
 			<arguments>
@@ -29,10 +24,6 @@
 	<natures>
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
-========
-	</buildSpec>
-	<natures>
->>>>>>>> main:c²/.project
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
 </projectDescription>
