@@ -55,4 +55,16 @@ public class GameMenuController {
 			controller.jump();
 		});
 	}
+	public void GoToEditLevel(ActionEvent event) throws IOException {
+		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../genmap/view/genLayout.fxml"));
+		Scene tableViewScene = new Scene(tableViewParent);
+		
+		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
+		
+		window.setScene(tableViewScene);
+		window.setMaximized(true);
+		window.setHeight(1080);
+		window.setWidth(1920);
+		window.show();
+	}
 }
