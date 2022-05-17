@@ -5,9 +5,10 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import test.adressApp.adress.view.RootLayoutController;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class Main extends Application {
 		this.primaryStage.setTitle("Cï¿½");
 		
 		// Set the application icon.
-//        this.primaryStage.getIcons().add(new Image("file:ressources/images/21254.png"));
+        this.primaryStage.getIcons().add(new Image("file:///C:/Users/amaur/eclipse-workspace/c/c²/c²/ressources/images/clogo.png"));
 
 		initBaseMenu();
 	}
