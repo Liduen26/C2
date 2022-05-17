@@ -30,7 +30,6 @@ public class Cell extends Parent {
 		this.setOnMousePressed(e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
 				e.setDragDetect(true);
-				System.out.println("slt");
 				onPaint();
 			} else if(e.getButton() == MouseButton.SECONDARY) {
 				e.setDragDetect(true);
@@ -43,10 +42,8 @@ public class Cell extends Parent {
 		});
 		this.setOnMouseDragOver (e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
-				System.out.println("hey" + x);
 				onPaint();
 			} else if(e.getButton() == MouseButton.SECONDARY) {
-				System.out.println("hey" + x);
 				erase();
 			}
 		});
@@ -55,7 +52,7 @@ public class Cell extends Parent {
 	public void onPaint() {
 		if(!occuped) {
 			paint();
-		} 
+		}
 	}
 	
 	private void paint() {
@@ -75,17 +72,14 @@ public class Cell extends Parent {
 			
 		case "obstacleBtn":
 			Polygon triangle = new Polygon();
-			this.getPoints().addAll(new Double[]{
-	                (double) (x+elementSize/2), (double) y, 
-	                (double) x, (double) (y+elementSize), 
-	                (double) (x+elementSize), (double) (y+elementSize), 
+			triangle.getPoints().addAll(new Double[]{
+	                (double) (width / 2), (double) 0, 
+	                (double) 0, (double) (width), 
+	                (double) (width), (double) (width), 
 	             });
-			Rectangle obst = new Rectangle();
-			obst.setWidth(width);
-			obst.setHeight(width);
-			obst.setFill(Color.RED);
+			triangle.setFill(Color.RED);
 			
-			this.getChildren().add(obst);
+			this.getChildren().add(triangle);
 			break;
 			
 		default:
