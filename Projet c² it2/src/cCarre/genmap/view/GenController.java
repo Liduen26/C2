@@ -2,7 +2,12 @@ package cCarre.genmap.view;
 
 import java.io.IOException;
 
+import com.google.common.eventbus.Subscribe;
+
 import cCarre.genmap.MainGen;
+import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.AddLengthGrilleEvent;
+import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import cCarre.genmap.model.Cell;
 import cCarre.genmap.model.ToolBar;
 import javafx.event.ActionEvent;
@@ -36,6 +41,7 @@ public class GenController {
     private Button obstacleBtn;
 	
 	// Vars --------------------------
+    private GridPane grille;
 	private double oldX;
 	private double newX;
 	private double mostRight;
@@ -52,22 +58,16 @@ public class GenController {
 		double rWidth = 1920 / widthCell;
 		double rHeight = 1000 / widthCell;
 		
-		GridPane grille = new GridPane();
+		grille = new GridPane();
 		grille.setHgap(1);
 		grille.setVgap(1);
-//		grille.setPadding(new Insets(5, 5, 5, 5));
 		grille.setGridLinesVisible(true);
-		grille.setPickOnBounds(false);
 		
 		root.getChildren().add(grille);
 		
 		for(int y = 0; y < rHeight; y++) {
-			for(int x = 0; x < rWidth; x++) {
+			for(int x = 0; x < rWidth -2; x++) {
 				Cell cell = new Cell(widthCell, x, y);
-				
-				if(x == 6 && y == 6) {
-					mostRight = x * widthCell;
-				}
 				
 				grille.add(cell, x, y);
 			}
@@ -92,7 +92,7 @@ public class GenController {
 				delta = newX - oldX;
 				
 //				System.out.println("old : " + oldX + " / new : " + newX + " / delta : " + delta);
-				System.out.println(-mostRight +" / " + grille.getLayoutX());
+//				System.out.println(-mostRight +" / " + grille.getLayoutX());
 				
 				// Déplace uniqument si c'est pas < à 0
 				if((grille.getLayoutX() + delta) < 0 && (grille.getLayoutX() + delta) > -mostRight) {
@@ -101,7 +101,10 @@ public class GenController {
 			}
 		});
 		
-		// Tracking des btns de la toolBar -----------------------------------------------------------------
+		Ebus.get().register(this);
+		
+		
+		// Tracking des btns de la toolBar --------------------------------------------------------
 		for(Node btn : toolBar.getChildren()) {
 			btn.setOnMouseClicked(e -> {
 				final Node btnAct = (Node) e.getSource();
@@ -111,7 +114,30 @@ public class GenController {
 				ToolBar.getItem();
 			});
 		}
-	}	
+	}
+	
+	
+	// Ecoute le bus d'évent pour savoir si la taille de la grille doit changer -------------------
+	@Subscribe
+	private void handleAddLenght(AddLengthGrilleEvent e) {
+		System.out.println(e.getX());
+	}
+	
+	@Subscribe
+	private void handleRemoveLenght(RemoveLengthGrilleEvent e) {
+		int x = 0;
+		for(Node cell : grille.getChildren()) {
+			Parent p = (Parent) cell;
+			Cell c = (Cell) p;
+			if(!c.getChildrenUnmodifiable().isEmpty()) {
+				x = (c.getX() > x) ? c.getX() : x;
+			}
+		}
+		
+		System.out.println(x);
+	}
+	
+	// btn Retour ---------------------------------------------------------------------------------
 	public void GoToBaseMenu(ActionEvent event) throws IOException {
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../../Menu/BaseMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
