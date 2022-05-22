@@ -2,6 +2,7 @@ package cCarre.genmap.model;
 
 import java.util.ArrayList;
 
+import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import javafx.scene.Node;
@@ -17,7 +18,12 @@ public class Cell extends Parent {
 	private int x, y;
 	private Rectangle back;
 	
+	public Cell(Node cell) {
+		super();
+	}
+
 	public Cell(int width, int x, int y) {
+		super();
 		this.width = width;
 		this.x = x;
 		this.y = y;
@@ -37,7 +43,7 @@ public class Cell extends Parent {
 				e.setDragDetect(true);
 				erase();
 				// Cause une erreur mais ça marche qu'averc ça }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-//				this.startFullDrag();
+				this.startFullDrag();
 			}
 		});
 		this.setOnDragDetected(e -> {
@@ -50,6 +56,7 @@ public class Cell extends Parent {
 				erase();
 			}
 		});
+		
 	}
 	
 	private void onPaint() {
@@ -62,6 +69,7 @@ public class Cell extends Parent {
 	private void paint() {
 		occuped = true;
 		
+		// Regarde quel item est sélectionné pour la peinture
 		String item = ToolBar.getItem();
 		
 		switch (item) {
@@ -91,14 +99,12 @@ public class Cell extends Parent {
 			break;
 		}
 		
-		// SI la case a été peinte, on vérifie si le x est sup au plus grand x, pour la taille de la grille 
+		// Si la case a été peinte, on vérifie si le x est sup au plus grand x, pour la taille de la grille 
 		if(occuped) {
 			if(ToolBar.getMostX() < x) {
-				ToolBar.setMostX(x);
+				Ebus.get().post(new AddLengthGrilleEvent(x));
 			}
-			
 		}
-		
 	}
 
 	private void erase() {
@@ -136,5 +142,13 @@ public class Cell extends Parent {
 
 	public void setY(int y) {
 		this.y = y;
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
 	}
 }

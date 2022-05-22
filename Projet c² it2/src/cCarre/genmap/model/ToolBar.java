@@ -44,7 +44,5 @@ public class ToolBar {
 
 	public static void setMostX(int mostX) {
 		ToolBar.mostX = mostX;
-		
-		Ebus.get().post(new AddLengthGrilleEvent(mostX));
 	}
 }
