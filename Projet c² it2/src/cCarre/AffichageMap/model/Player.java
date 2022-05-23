@@ -2,6 +2,7 @@ package cCarre.AffichageMap.model;
 
 import java.awt.geom.Point2D;
 
+import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -130,5 +131,9 @@ public class Player extends Parent{
 
 	public void setWidth(int width) {
 		this.width = width;
+	}
+	
+	public Bounds getPlayerBounds() {
+		return this.getBoundsInParent();
 	}
 }

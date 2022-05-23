@@ -14,10 +14,13 @@ import cCarre.Menu.GameMenuController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
@@ -184,6 +187,14 @@ public class MainController {
 				canJump = false;
 			}
 		}
+			
+			
+	        for(Shape block : platforms){
+	            setDragListeners(block);
+	        }
+	        
+	        
+	        
 		}));
 
 		time1.setCycleCount(Animation.INDEFINITE);
@@ -196,15 +207,16 @@ public class MainController {
         	if (platform != player.playerRectangle) {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
+        			System.out.println("oui");
         			// Collision cotée
         			if(player.getTranslateY()+45>platform.getTranslateY()) {
-        				player.death(spawnX,spawnY, rootLayout);
         				verticalVelocity = 0;
+        				player.death(spawnX,spawnY, rootLayout);
         			}
         			// sol
         			else {
-        				verticalVelocity = 0;
         				player.setTranslateY(platform.getTranslateY()-player.getHeight());
+        				verticalVelocity = 0;
         				onGround = true;
         				canJump = true;
         			}
@@ -263,7 +275,7 @@ public class MainController {
 		// Affichage FPS
 		if(System.currentTimeMillis() - time >= 1000) {
 			//fps.setText("FPS : " + frame);
-			System.out.println("FPS : " + frame);
+			//System.out.println("FPS : " + frame);
 			frame = 0;
 			time = System.currentTimeMillis();				
 		} 
@@ -278,5 +290,39 @@ public class MainController {
 		}
 		 
 	}
+	
+	
+	// Drag and drop pour tests (a DELETE)
+    public void setDragListeners(final Shape block) {
+        final Delta dragDelta = new Delta();
+
+        block.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                // record a delta distance for the drag and drop operation.
+                dragDelta.x = block.getTranslateX() - mouseEvent.getSceneX();
+                dragDelta.y = block.getTranslateY() - mouseEvent.getSceneY();
+                block.setCursor(Cursor.NONE);
+            }
+        });
+        block.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                block.setCursor(Cursor.HAND);
+            }
+        });
+        block.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+
+                block.setTranslateX(mouseEvent.getSceneX() + dragDelta.x);
+                block.setTranslateY(mouseEvent.getSceneY() + dragDelta.y);
+            }
+        });
+    }
+     // Pour drag and drop (a DELETE)
+    class Delta {
+        double x, y;
+    }
 
 }
