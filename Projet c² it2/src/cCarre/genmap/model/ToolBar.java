@@ -5,6 +5,7 @@ import cCarre.genmap.events.AddLengthGrilleEvent;
 
 public class ToolBar {
 	private static String item;
+	private static boolean test = false;
 	private static boolean click;
 	private static int mostX;
 	public ToolBar() {}

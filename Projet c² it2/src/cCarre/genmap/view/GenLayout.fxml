@@ -23,6 +23,11 @@
                   <Insets left="20.0" />
                </padding>
             </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button alignment="CENTER" mnemonicParsing="false" text="Tester" />
+               </children>
+            </HBox>
             <HBox alignment="CENTER" prefHeight="80.0" prefWidth="329.0" spacing="20.0" HBox.hgrow="ALWAYS">
                <children>
                   <Button fx:id="load" mnemonicParsing="false" prefHeight="38.0" prefWidth="73.0" text="Charger" HBox.hgrow="ALWAYS" />
