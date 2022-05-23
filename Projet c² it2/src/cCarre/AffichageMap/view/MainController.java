@@ -130,71 +130,72 @@ public class MainController {
 			
 			if(running) {
 				
-			double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
-			double jumpForce = 600;
-
-			dt = affFPS();
-			temps = dt / 1000000000; //dt par sec
-
-			// distanceX vect entre centre du joueur et le point (vitesse)
-			vitesse = player.p1.distance(player.centreX,player.centreY);
-			
-			// Est-ce que le cube est au sol ?
-			if(playerOnGround() == true) {
-				verticalVelocity = 0;
+				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
+				double jumpForce = 600;
+	
+				dt = affFPS();
+				temps = dt / 1000000000; //dt par sec
+	
+				// distanceX vect entre centre du joueur et le point (vitesse)
+				vitesse = player.p1.distance(player.centreX,player.centreY);
 				
-				// Saut si oui
-				if(jump == true) {
-					verticalVelocity = jumpForce;
-					jump = false; 
+				// Est-ce que le cube est au sol ?
+				if(playerOnGround() == true) {
+					verticalVelocity = 0;
+					
+					// Saut si oui
+					if(jump == true) {
+						verticalVelocity = jumpForce;
+						jump = false; 
+					}
+				} else {
+					verticalVelocity -= gravity * temps;
+					
+//					System.out.println("salut");
 				}
-			} else {
-				verticalVelocity -= gravity * temps;
+	
+				distanceX = vitesse * temps;
+				distanceY = verticalVelocity * temps;
+//				System.out.println(distanceY);
+	
+				// Met a jour les position
+				player.depl(distanceX, distanceY, jumpForce, verticalVelocity);
+				
+				platfCollision(); // Check plateforme collision
+				triangleCollision();// Check triangle collision
+				coinCollision();// Check coin collision
+				
+				// Si le joueur touche la ligne d'arrivée
+	            boolean collisionDetected = false;
+	            for (Shape finishBlock : finishBlocks) {
+	            	if (finishBlock != player.playerRectangle) {
+	
+	            		Shape intersect = Shape.intersect(player.playerRectangle, finishBlock);
+	            		if (intersect.getBoundsInLocal().getWidth() != -1) {
+	            			collisionDetected = true;
+	            		}
+	            	}
+	
+	            	if (collisionDetected) {
+	            		running = false;
+	            	}
+	            }
+	            
+				// meurt quand tombe dans le vide
+				if(player.getTranslateY()>800) {
+					player.death(spawnX, spawnY, rootLayout);
+				}
+				// Empeche de charger un saut pendant un saut
+				if(jump == true) {
+					canJump = false;
+				}
 			}
-
-			distanceX = vitesse * temps;
-			distanceY = verticalVelocity * temps;
-
-			// Met a jour les position
-			player.depl(distanceX, distanceY, jumpForce, verticalVelocity);
-			
-			platfCollision(); // Check plateforme collision
-			triangleCollision();// Check triangle collision
-			coinCollision();// Check coin collision
-			
-			// Si le joueur touche la ligne d'arrivée
-            boolean collisionDetected = false;
-            for (Shape finishBlock : finishBlocks) {
-            	if (finishBlock != player.playerRectangle) {
-
-            		Shape intersect = Shape.intersect(player.playerRectangle, finishBlock);
-            		if (intersect.getBoundsInLocal().getWidth() != -1) {
-            			collisionDetected = true;
-            		}
-            	}
-
-            	if (collisionDetected) {
-            		running = false;
-            	}
-            }
-            
-			// meurt quand tombe dans le vide
-			if(player.getTranslateY()>800) {
-				player.death(spawnX, spawnY, rootLayout);
-			}
-			// Empeche de charger un saut pendant un saut
-			if(jump == true) {
-				canJump = false;
-			}
-		}
-			
-			
+				
+				
 	        for(Shape block : platforms){
 	            setDragListeners(block);
 	        }
-	        
-	        
-	        
+		        
 		}));
 
 		time1.setCycleCount(Animation.INDEFINITE);
@@ -206,23 +207,35 @@ public class MainController {
 		for (Shape platform : platforms) {
         	if (platform != player.playerRectangle) {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
+        		
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
-        			System.out.println("oui");
-        			// Collision cotée
-        			if(player.getTranslateY()+45>platform.getTranslateY()) {
-        				verticalVelocity = 0;
-        				player.death(spawnX,spawnY, rootLayout);
-        			}
-        			// sol
-        			else {
-        				player.setTranslateY(platform.getTranslateY()-player.getHeight());
-        				verticalVelocity = 0;
-        				onGround = true;
-        				canJump = true;
-        			}
+	        		if (intersect.getBoundsInLocal().getHeight() <= intersect.getBoundsInLocal().getWidth()) {
+	        			
+	        			if(intersect.getBoundsInLocal().getMinY() > platform.getTranslateY()) {
+	        				// plafond -> MORT
+	        				verticalVelocity = 0;
+		    				player.death(spawnX,spawnY, rootLayout);
+	        			} else {
+	        				System.out.println(intersect.getBoundsInLocal().getMinY());
+	        				System.out.println(platform.getTranslateY());
+	        				
+	        				// AU sol
+	        				player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
+//	        				player.setTranslateY(player.getTranslateY() + (distanceY - 0.0001));
+	        				verticalVelocity = 0;
+	        				onGround = true;
+	        				canJump = true;
+	        				
+	        			}
+	        		} else {
+	        			// Coté -> MORT
+	        			verticalVelocity = 0;
+	    				player.death(spawnX,spawnY, rootLayout);
+	        		}
         		}
         	}
         }
+		System.out.println(onGround);
 	}
 	
     private void triangleCollision() {

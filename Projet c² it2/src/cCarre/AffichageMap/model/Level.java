@@ -1,8 +1,6 @@
 package cCarre.AffichageMap.model;
 
 import cCarre.AffichageMap.data.LevelData;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
 
 public class Level {
 	private final int idLevel;
