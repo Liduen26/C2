@@ -1,7 +1,4 @@
 package cCarre.Menu;
-
-
-
 import java.io.IOException;
 
 import cCarre.AffichageMap.view.MainController;
@@ -14,8 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-
-
 
 public class GameMenuController {
 @FXML public Button GoToBaseMenu;
@@ -43,7 +38,10 @@ public class GameMenuController {
         window.setScene(scene);
         
         MainController controller = loader.getController();
+        controller.setMap("ouiyes");
         controller.setMainApp(this);
+        
+        // Chemin du fichier json (à faire)
         
 		window.setMaximized(true);
 		window.setHeight(1080);

@@ -13,6 +13,9 @@ import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import cCarre.genmap.model.Cell;
 import cCarre.genmap.model.ToolBar;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,7 +27,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class GenController {
 	@SuppressWarnings("unused")
@@ -119,12 +124,20 @@ public class GenController {
 	}
 	
 	
+	// QuickTest ----------------------------------------------------------------------------------
+	@FXML
+    void handleTest(ActionEvent event) {
+		Cell c = (Cell) grille.getChildren().get(3);
+		System.out.println(c);
+		System.out.println(c.getLayoutX());
+		
+		
+		
+    }
 	
 	
 	
-	
-	
-	
+	// Save ---------------------------------------------------------------------------------------
 	@FXML
     private void handleSaving(ActionEvent event) {
 		
@@ -147,11 +160,7 @@ public class GenController {
 
 		for(int j = 0; j < deltaX; j++) {
 			// Regarde le num de col et de ligne de la dernière cellule
-			Node cell = grille.getChildren().get(grille.getChildren().size() - 1);
-			Cell c = new Cell(cell);
-			if(cell instanceof Cell) {
-				c = (Cell) cell;
-			}
+			Cell c = (Cell) grille.getChildren().get(grille.getChildren().size() - 1);
 			
 			nCol = c.getX();
 			nRow = c.getY();

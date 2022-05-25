@@ -3,7 +3,9 @@ package cCarre.AffichageMap.view;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import cCarre.AffichageMap.Main;
+import org.json.JSONArray;
+
+import cCarre.AffichageMap.data.LevelData;
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
 import cCarre.AffichageMap.model.Ground;
@@ -15,8 +17,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -54,9 +54,13 @@ public class MainController {
 	boolean canJump = false;
 	int spawnX, spawnY;
 	boolean running = true;
-	//pour changer la vitsse
+	String level = "";
+	
+	// Pour changer la vitsse
 	int constV = 270; 
 	final int constGrav = 700;
+	
+	boolean edit = false;
 
 	public void setMainApp(GameMenuController gameMenuController) {
 		this.mainApp = gameMenuController;
@@ -70,20 +74,21 @@ public class MainController {
 
 	@FXML
 	private void initialize() {
-
-
 		//init temps
 		newTime = System.nanoTime();
 		time = System.currentTimeMillis();
+		
+		System.out.println(level);
+		
+		JSONArray json = LevelData.getLevelInJSON(LevelData.LEVEL1);
 
-
-		Level level = new Level();
+		Level level = new Level(json);
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
 		char[][] Level = level.getLevel();
 
 		for(int y = 0; y < levelHeight; y++) {
-			for(int x= 0; x < levelLength; x++) {
+			for(int x = 0; x < levelLength; x++) {
 
 				switch(Level[y][x]) {
 				case '0' :
@@ -122,74 +127,79 @@ public class MainController {
             }
         });
 		
-		//player.setFill(Color.PURPLE);
+		loop(); // Let's go into the GAME !
+	}
+
+	
+	private void loop() {
 		Timeline time1 = new Timeline(new KeyFrame(Duration.millis(1000 / 142), e -> {
 			
 			if(running) {
+					
+				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
+				double jumpForce = 600;
+	
+				dt = affFPS();
+				temps = dt / 1000000000; //dt par sec
+	
+				// distanceX vect entre centre du joueur et le point (vitesse)
+				vitesse = player.p1.distance(player.centreX, player.centreY);
 				
-			double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
-			double jumpForce = 600;
-
-			dt = affFPS();
-			temps = dt / 1000000000; //dt par sec
-
-			// distanceX vect entre centre du joueur et le point (vitesse)
-			vitesse = player.p1.distance(player.centreX,player.centreY);
-			
-			// Est-ce que le cube est au sol ?
-			if(playerOnGround() == true) {
-				verticalVelocity = 0;
-				
-				// Saut si oui
-				if(jump == true) {
-					verticalVelocity = jumpForce;
-					jump = false; 
+				// Est-ce que le cube est au sol ?
+				if(playerOnGround() == true) {
+					verticalVelocity = 0;
+					
+					// Saut si oui
+					if(jump == true) {
+						verticalVelocity = jumpForce;
+						jump = false; 
+					}
+				} else {
+					verticalVelocity -= gravity * temps;
 				}
-			} else {
-				verticalVelocity -= gravity * temps;
+	
+				distanceX = vitesse * temps;
+				distanceY = verticalVelocity * temps;
+	
+				// Met a jour les position
+				player.depl(distanceX, distanceY, jumpForce, verticalVelocity);
+				
+				platfCollision(); // Check plateforme collision
+				triangleCollision();// Check triangle collision
+				coinCollision();// Check coin collision
+				
+				// Si le joueur touche la ligne d'arrivée
+	            boolean collisionDetected = false;
+	            for (Shape finishBlock : finishBlocks) {
+	            	if (finishBlock != player.playerRectangle) {
+	
+	            		Shape intersect = Shape.intersect(player.playerRectangle, finishBlock);
+	            		if (intersect.getBoundsInLocal().getWidth() != -1) {
+	            			collisionDetected = true;
+	            		}
+	            	}
+	
+	            	if (collisionDetected) {
+	            		running = false;
+	            	}
+	            }
+	            
+				// meurt quand tombe dans le vide
+				if(player.getTranslateY()>800) {
+					player.death(spawnX, spawnY, rootLayout);
+				}
+				// Empeche de charger un saut pendant un saut
+				if(jump == true) {
+					canJump = false;
+				}
 			}
-
-			distanceX = vitesse * temps;
-			distanceY = verticalVelocity * temps;
-
-			// Met a jour les position
-			player.depl(distanceX, distanceY, jumpForce, verticalVelocity);
-			
-			platfCollision(); // Check plateforme collision
-			triangleCollision();// Check triangle collision
-			coinCollision();// Check coin collision
-			
-			// Si le joueur touche la ligne d'arrivée
-            boolean collisionDetected = false;
-            for (Shape finishBlock : finishBlocks) {
-            	if (finishBlock != player.playerRectangle) {
-
-            		Shape intersect = Shape.intersect(player.playerRectangle, finishBlock);
-            		if (intersect.getBoundsInLocal().getWidth() != -1) {
-            			collisionDetected = true;
-            		}
-            	}
-
-            	if (collisionDetected) {
-            		running = false;
-            	}
-            }
-            
-			// meurt quand tombe dans le vide
-			if(player.getTranslateY()>800) {
-				player.death(spawnX, spawnY, rootLayout);
-			}
-			// Empeche de charger un saut pendant un saut
-			if(jump == true) {
-				canJump = false;
-			}
-		}
 		}));
 
 		time1.setCycleCount(Animation.INDEFINITE);
 		time1.play();
 	}
-
+	
+	
 	private void platfCollision() {
 		onGround = false;
 		for (Shape platform : platforms) {
@@ -200,9 +210,9 @@ public class MainController {
         			if(player.getTranslateY()+45>platform.getTranslateY()) {
         				player.death(spawnX,spawnY, rootLayout);
         				verticalVelocity = 0;
-        			}
-        			// sol
-        			else {
+    				
+    				// sol
+        			} else {
         				verticalVelocity = 0;
         				player.setTranslateY(platform.getTranslateY()-player.getHeight());
         				onGround = true;
@@ -212,42 +222,42 @@ public class MainController {
         	}
         }
 	}
-	
-    private void triangleCollision() {
-        boolean collisionDetected = false;
-        for (Shape triangle : triangles) {
-          if (triangle != player.playerRectangle) {
-            Shape intersect = Shape.intersect(player.playerRectangle, triangle);
-            if (intersect.getBoundsInLocal().getWidth() != -1) {
-              collisionDetected = true;
-            }
-          }
-        }
-        if (collisionDetected) {
+
+	private void triangleCollision() {
+		boolean collisionDetected = false;
+		for (Shape triangle : triangles) {
+			if (triangle != player.playerRectangle) {
+				Shape intersect = Shape.intersect(player.playerRectangle, triangle);
+				if (intersect.getBoundsInLocal().getWidth() != -1) {
+					collisionDetected = true;
+				}
+			}
+		}
+		if (collisionDetected) {
 			player.death(spawnX,spawnY, rootLayout);
-        }
-      }
-    
-    private void coinCollision() {
-    	// Check si le joueur touche une piece et change le statut de la piece
-        for (Shape coin : coins) {
-          if (coin != player.playerRectangle) {
-            Shape intersect = Shape.intersect(player.playerRectangle, coin);
-            if (intersect.getBoundsInLocal().getWidth() != -1) {
-            	coin.getProperties().put("alive", false);
-            }
-          }
-        }
-        
-        // On supprime les coins ramassés avec iterator car on ne peut pas delete quand on boucle sur la liste
-        for (Iterator<Shape> it = coins.iterator(); it.hasNext(); ) {
-            Node coin = it.next();
-            if (!(Boolean)coin.getProperties().get("alive")) {
-                it.remove();
-                rootLayout.getChildren().remove(coin);
-            }
-        }
-      }
+		}
+	}
+
+	private void coinCollision() {
+		// Check si le joueur touche une piece et change le statut de la piece
+		for (Shape coin : coins) {
+			if (coin != player.playerRectangle) {
+				Shape intersect = Shape.intersect(player.playerRectangle, coin);
+				if (intersect.getBoundsInLocal().getWidth() != -1) {
+					coin.getProperties().put("alive", false);
+				}
+			}
+		}
+
+		// On supprime les coins ramassés avec iterator car on ne peut pas delete quand on boucle sur la liste
+		for (Iterator<Shape> it = coins.iterator(); it.hasNext(); ) {
+			Node coin = it.next();
+			if (!(Boolean)coin.getProperties().get("alive")) {
+				it.remove();
+				rootLayout.getChildren().remove(coin);
+			}
+		}
+	}
 
 	public boolean playerOnGround() {
 		return onGround;
@@ -277,6 +287,12 @@ public class MainController {
 			canJump = false;
 		}
 		 
+	}
+
+
+	public void setMap(String string) {
+		// TODO Auto-generated method stub
+		this.level = string;
 	}
 
 }

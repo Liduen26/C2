@@ -1,8 +1,11 @@
 package cCarre.AffichageMap.model;
 
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONString;
+
 import cCarre.AffichageMap.data.LevelData;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
 
 public class Level {
 	private final int idLevel;
@@ -12,12 +15,15 @@ public class Level {
 	private int levelHeight;
 	private char[][] Level;
 	
-	public Level() {
+	public Level(JSONArray json) {
+		
+		System.out.println(json.getJSONArray(0).length());
+		System.out.println(LevelData.LEVEL1[0].length());
 		this.idLevel = 0;
-		this.levelLength = LevelData.LEVEL1[0].length();
-		this.levelWidth = LevelData.LEVEL1[0].length() * 60;
+		this.levelLength = json.getJSONArray(0).length();
+		this.levelWidth = this.levelLength * 60;
 		this.totalCoin = 0;
-		this.levelHeight = LevelData.LEVEL1.length;
+		this.levelHeight = json.length();
 		this.Level = new char[this.levelHeight][this.levelLength];
 		
         for (int i = 0; i < levelHeight; i++) {

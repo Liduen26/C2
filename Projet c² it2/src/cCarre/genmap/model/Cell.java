@@ -126,7 +126,10 @@ public class Cell extends Parent {
 		}
 	}
 	
-	
+	@Override
+	public String toString() {
+		return super.toString() + " / x: " + this.x + " / y: " + this.y;
+	}
 
 	public int getX() {
 		return x;
