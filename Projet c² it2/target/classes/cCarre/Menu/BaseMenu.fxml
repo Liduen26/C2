@@ -5,15 +5,24 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.Menu.BaseMenuController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.Menu.BaseMenuController">
    <children>
-      <Label layoutX="275.0" layoutY="31.0" text="C²">
+      <Button layoutX="782.0" layoutY="505.0" mnemonicParsing="false" onAction="#GoToGameMenu" text="JOUER">
+         <font>
+            <Font size="96.0" />
+         </font></Button>
+      <Button layoutX="289.0" layoutY="845.0" mnemonicParsing="false" onAction="#GoToShopMenu" text="BOUTIQUE">
          <font>
             <Font size="48.0" />
+         </font></Button>
+      <Button layoutX="1473.0" layoutY="849.0" mnemonicParsing="false" onAction="#GoToOptionsMenu" text="OPTIONS">
+         <font>
+            <Font size="48.0" />
+         </font></Button>
+      <Label layoutX="914.0" layoutY="113.0" text="C²">
+         <font>
+            <Font name="Lucida Bright Demibold" size="150.0" />
          </font>
       </Label>
-      <Button layoutX="272.0" layoutY="234.0" mnemonicParsing="false" onAction="#GoToGameMenu" text="JOUER" />
-      <Button layoutX="261.0" layoutY="278.0" mnemonicParsing="false" onAction="#GoToShopMenu" text="BOUTIQUE" />
-      <Button layoutX="265.0" layoutY="327.0" mnemonicParsing="false" onAction="#GoToOptionsMenu" text="OPTIONS" />
    </children>
 </Pane>

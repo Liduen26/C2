@@ -27,6 +27,7 @@ public class GameMenuController {
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
+		window.setMaximized(true);
 		window.show();
 	}
 	
@@ -46,9 +47,6 @@ public class GameMenuController {
         controller.setMainApp(this);
         
 		window.setMaximized(true);
-		window.setHeight(1080);
-		window.setWidth(1920);
-		
 		window.show();
 		
 		scene.setOnKeyPressed(e ->{
@@ -63,8 +61,6 @@ public class GameMenuController {
 		
 		window.setScene(tableViewScene);
 		window.setMaximized(true);
-		window.setHeight(1080);
-		window.setWidth(1920);
 		window.show();
 	}
 }

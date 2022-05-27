@@ -21,6 +21,7 @@ public class ShopMenuController {
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
+		window.setMaximized(true);
 		window.show();
 	}
 	
