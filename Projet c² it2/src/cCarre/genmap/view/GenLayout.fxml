@@ -16,18 +16,18 @@
                <children>
                   <Button fx:id="groundBtn" mnemonicParsing="false" text="Ground" />
                   <Button fx:id="obstacleBtn" mnemonicParsing="false" text="Obstacle" />
-                  <Button mnemonicParsing="false" text="Button" />
+                  <Button mnemonicParsing="false" onAction="#GoToSave" text="Save" />
                   <Button mnemonicParsing="false" text="Button" />
                </children>
                <padding>
                   <Insets left="20.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="80.0" prefWidth="329.0" spacing="20.0" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER" prefHeight="80.0" prefWidth="329.0" spacing="20.0" HBox.hgrow="SOMETIMES">
                <children>
-                  <Button fx:id="load" mnemonicParsing="false" prefHeight="38.0" prefWidth="73.0" text="Charger" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="save" mnemonicParsing="false" onAction="#handleSaving" prefHeight="38.0" prefWidth="90.0" text="Sauvegarder" HBox.hgrow="ALWAYS" />
-                  <Label fx:id="mapName" text="sans nom" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="load" mnemonicParsing="false" prefHeight="38.0" prefWidth="59.0" text="Charger" />
+                  <Button fx:id="save" mnemonicParsing="false" onAction="#handleSaving" prefHeight="38.0" prefWidth="83.0" text="Sauvegarder" HBox.hgrow="SOMETIMES" />
+                  <Label fx:id="mapName" text="sans nom" />
                </children></HBox>
             <HBox alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="SOMETIMES">
                <children>

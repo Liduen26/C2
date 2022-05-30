@@ -17,7 +17,8 @@ public class Cell extends Parent {
 	private int width;
 	private int x, y;
 	private Rectangle back;
-	
+	private int cellId;
+
 	public Cell(Node cell) {
 		super();
 	}
@@ -27,6 +28,7 @@ public class Cell extends Parent {
 		this.width = width;
 		this.x = x;
 		this.y = y;
+		this.cellId = 0;
 		
 		back = new Rectangle();
 		back.setFill(Color.FLORALWHITE);
@@ -78,6 +80,7 @@ public class Cell extends Parent {
 			ground.setWidth(width);
 			ground.setHeight(width);
 			ground.setFill(Color.ROYALBLUE);
+			cellId = 1;
 			
 			this.getChildren().add(ground);
 			break;
@@ -90,11 +93,13 @@ public class Cell extends Parent {
 	                (double) (width), (double) (width), 
 	             });
 			triangle.setFill(Color.RED);
-			
+			cellId = 2;
+
 			this.getChildren().add(triangle);
 			break;
 			
 		default:
+			cellId = 0;
 			occuped = false;
 			break;
 		}
@@ -126,7 +131,13 @@ public class Cell extends Parent {
 		}
 	}
 	
-	
+	public int getCellId() {
+		return cellId;
+	}
+
+	public void setCellId(int cellId) {
+		this.cellId = cellId;
+	}
 
 	public int getX() {
 		return x;

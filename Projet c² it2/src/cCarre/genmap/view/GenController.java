@@ -1,9 +1,9 @@
 package cCarre.genmap.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.tools.Tool;
+import java.util.Arrays;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -24,6 +24,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class GenController {
@@ -48,6 +49,9 @@ public class GenController {
     private GridPane grille;
 	private double oldX;
 	private double newX;
+	private ArrayList<Cell> cellList = new ArrayList<Cell>();
+
+	FileChooser fileChooser = new FileChooser();
 	
 	public void setMainGen(MainGen mainGen) {
 		this.mainGen = mainGen;
@@ -55,6 +59,9 @@ public class GenController {
 	
 	@FXML
 	private void initialize() {
+		// Se place dans disque D quand on save
+        fileChooser.setInitialDirectory(new File("D:\\"));
+        
 		// Init de la grille (fait ï¿½ la va-vite, faudra amï¿½liorer toute cette merde ;D) -------
 		double rWidth = 1920 / widthCell;
 		double rHeight = 1000 / widthCell;
@@ -68,7 +75,7 @@ public class GenController {
 		for(int y = 0; y < rHeight; y++) {
 			for(int x = 0; x < rWidth -2; x++) {
 				Cell cell = new Cell(widthCell, x, y);
-				
+				cellList.add(cell);
 				grille.add(cell, x, y);
 			}
 		}
@@ -117,13 +124,6 @@ public class GenController {
 			});
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	@FXML
     private void handleSaving(ActionEvent event) {
@@ -232,4 +232,50 @@ public class GenController {
 		window.show();
 		
 	}
+	
+	
+	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
+	public void GoToSave(ActionEvent event) throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(getClass().getResource("Save.fxml"));
+		Parent tableViewParent = loader.load();
+		SaveController sc = loader.getController();
+		sc.setData(getCustomMap());
+		
+		Scene tableViewScene = new Scene(tableViewParent);
+		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
+		
+		window.setScene(tableViewScene);
+		window.setHeight(500);
+		window.setWidth(600);
+		window.show();
+	}
+	
+	private int[][] getCustomMap() {
+		// Obtention du nbr de colonnes et lignes
+		Node cells = grille.getChildren().get(grille.getChildren().size() - 1);
+		Cell c1 = new Cell(cells);
+		if(cells instanceof Cell) {
+			c1 = (Cell) cells;
+		}
+		int nCol = c1.getX();
+		int nRow = c1.getY();
+		
+		//Création du tableau 2D
+		int[][] cellTab = new int[nRow+1][nCol+1];
+		System.out.println(" MAX : "+nCol+", "+nRow);
+		
+		// remplit le tableau 2D
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+			}
+			System.out.println(c.getX()+", "+c.getY());
+			cellTab[c.getY()][c.getX()] = c.getCellId();
+		}
+		
+		return cellTab;
+	}
 }
+	
