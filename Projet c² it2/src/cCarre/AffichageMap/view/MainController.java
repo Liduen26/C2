@@ -26,9 +26,6 @@ import javafx.util.Duration;
 
 public class MainController {
 
-
-	private GameMenuController mainApp;
-
 	private ArrayList<Shape> platforms = new ArrayList<Shape>();
 	private ArrayList<Shape> triangles = new ArrayList<Shape>();
 	private ArrayList<Shape> finishBlocks = new ArrayList<Shape>();
@@ -62,10 +59,6 @@ public class MainController {
 	
 	boolean edit = false;
 
-	public void setMainApp(GameMenuController gameMenuController) {
-		this.mainApp = gameMenuController;
-	}
-
 	@FXML
 	private Player player;
 
@@ -80,9 +73,7 @@ public class MainController {
 		
 		System.out.println(level);
 		
-		JSONArray json = LevelData.getLevelInJSON(LevelData.LEVEL1);
-
-		Level level = new Level(json);
+		Level level = new Level();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
 		char[][] Level = level.getLevel();
@@ -127,15 +118,17 @@ public class MainController {
             }
         });
 		
-		loop(); // Let's go into the GAME !
+		loop(144); // Let's go into the GAME !
 	}
 
-	
-	private void loop() {
-		Timeline time1 = new Timeline(new KeyFrame(Duration.millis(1000 / 142), e -> {
+	/**
+	 * Chef d'orchestre du jeu, c'est un boucle qui update @fps fois par seconde
+	 * @param fps Le nombre d'update, et donc d'images par seconde
+	 */
+	private void loop(int fps) {
+		Timeline time1 = new Timeline(new KeyFrame(Duration.millis(1000 / (fps - 2)), e -> {
 			
 			if(running) {
-					
 				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
 				double jumpForce = 600;
 	
@@ -199,7 +192,10 @@ public class MainController {
 		time1.play();
 	}
 	
-	
+	/**
+	 * Gère la détection de la collision avec les plateformes, 
+	 * tue si le player est sur le côté, au sol s'il est sur le dessus
+	 */
 	private void platfCollision() {
 		onGround = false;
 		for (Shape platform : platforms) {
@@ -223,6 +219,9 @@ public class MainController {
         }
 	}
 
+	/**
+	 * Gestion de la collision avec les formes en triangles
+	 */
 	private void triangleCollision() {
 		boolean collisionDetected = false;
 		for (Shape triangle : triangles) {
@@ -237,7 +236,11 @@ public class MainController {
 			player.death(spawnX,spawnY, rootLayout);
 		}
 	}
-
+	
+	
+	/**
+	 * Gestion de la collision avec un Coin (une pièce)
+	 */
 	private void coinCollision() {
 		// Check si le joueur touche une piece et change le statut de la piece
 		for (Shape coin : coins) {
@@ -258,11 +261,18 @@ public class MainController {
 			}
 		}
 	}
-
+	
+	/**
+	 * @return SI le joueur est au sol ou pas
+	 */
 	public boolean playerOnGround() {
 		return onGround;
 	}
 
+	/**
+	 * Calcule l'interval entre les frames, et affiche le nombre de fps calculé
+	 * @return L'interval entre chaque frame, en nanosecondes
+	 */
 	private double affFPS () {
 		// Calculs FPS
 		frame++;

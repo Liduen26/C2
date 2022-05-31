@@ -34,6 +34,11 @@ public class LevelData {
 		"1111111100111100011111001111"
     };
     
+    /**
+     * Passe à la moulinette le vieux format de map et le transformen en JSONArray
+     * @param level La map en String[]
+     * @return Un JSONArry de la map
+     */
     public static JSONArray getLevelInJSON(String[] level) {
     	int levelHeight = level.length;
     	int levelWidth = level[0].length();

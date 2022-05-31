@@ -2,8 +2,11 @@ package cCarre.genmap.model;
 
 import java.util.ArrayList;
 
+import javax.tools.Tool;
+
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -94,6 +97,62 @@ public class Cell extends Parent {
 			this.getChildren().add(triangle);
 			break;
 			
+		case "departBtn":
+			if(!ToolBar.isStartPlaced()) {
+				// S'il n'y a pas encore de départ placé
+				
+				if(ToolBar.isEndPlaced() == false || ToolBar.getEndPlace() > this.x) {
+					// Si la fin est bien a droite du start, ou pas placée
+					Rectangle start = new Rectangle();
+					start.setWidth(width);
+					start.setHeight(width);
+					start.setFill(Color.DARKGREEN);
+					start.setId("start");
+					
+					this.getChildren().add(start);
+					ToolBar.setStartPlaced(x);
+					
+				} else {
+					occuped = false;
+					
+					Ebus.get().post(new PopupEvent("Attention !", "Le départ doit être placé à gauche de l'arrivée"));
+				}
+			} else {
+				// Si un départ a déjà été placé 
+				occuped = false;
+
+				Ebus.get().post(new PopupEvent("Attention !", "Un départ a déjà été placé"));
+			}
+			break;
+			
+		case "arriveeBtn":
+			if(!ToolBar.isEndPlaced()) {
+				// S'il n'y a pas encore d'arrivée placée
+				
+				if(ToolBar.isStartPlaced() == false || ToolBar.getStartPlace() < this.x) {
+					// Si le start est bien a gauche de la fin, ou pas placée
+					Rectangle end = new Rectangle();
+					end.setWidth(width);
+					end.setHeight(width);
+					end.setFill(Color.DARKRED);
+					end.setId("end");
+					
+					this.getChildren().add(end);
+					ToolBar.setEndPlaced(x);
+					
+				} else {
+					occuped = false;
+					
+					Ebus.get().post(new PopupEvent("Attention !", "L'arrivée doit être placée à droite du départ"));
+				}
+			} else {
+				// Si une arrivée a déjà été placée
+				occuped = false;
+
+				Ebus.get().post(new PopupEvent("Attention !", "Une arrivée a déjà été placée"));
+			}
+			break;
+			
 		default:
 			occuped = false;
 			break;
@@ -112,6 +171,10 @@ public class Cell extends Parent {
 		if(occuped) {
 			for(Node node : this.getChildren()) {
 				if(node != back) {
+					// Vérifie si c'est le start ou le début qui a été delete
+					ToolBar.setStartPlaced((node.getId() == "start" ) ? 0 : ToolBar.getStartPlace());
+					ToolBar.setEndPlaced((node.getId() == "end" ) ? 0 : ToolBar.getEndPlace());
+					
 					toRem.add(node);
 				}
 			}

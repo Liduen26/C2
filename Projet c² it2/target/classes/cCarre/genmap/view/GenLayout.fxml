@@ -14,8 +14,8 @@
                <children>
                   <Button fx:id="groundBtn" mnemonicParsing="false" text="Ground" />
                   <Button fx:id="obstacleBtn" mnemonicParsing="false" text="Obstacle" />
-                  <Button mnemonicParsing="false" text="Button" />
-                  <Button mnemonicParsing="false" text="Button" />
+                  <Button fx:id="departBtn" mnemonicParsing="false" text="Départ" />
+                  <Button fx:id="arriveeBtn" mnemonicParsing="false" text="Arrivée" />
                </children>
                <padding>
                   <Insets left="20.0" />

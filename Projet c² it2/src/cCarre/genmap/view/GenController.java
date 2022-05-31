@@ -3,33 +3,41 @@ package cCarre.genmap.view;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.tools.Tool;
-
 import com.google.common.eventbus.Subscribe;
 
+import cCarre.AffichageMap.data.LevelData;
+import cCarre.AffichageMap.model.Level;
+import cCarre.AffichageMap.view.MainController;
+import cCarre.Menu.MainMenu;
 import cCarre.genmap.MainGen;
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import cCarre.genmap.model.Cell;
 import cCarre.genmap.model.ToolBar;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.shape.Shape;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import test.adressApp.adress.MainAppv2;
+import test.adressApp.adress.view.PersonOverviewController;
 
 public class GenController {
 	@SuppressWarnings("unused")
@@ -53,6 +61,7 @@ public class GenController {
     private GridPane grille;
 	private double oldX;
 	private double newX;
+	Rectangle2D screenBounds;
 	
 	public void setMainGen(MainGen mainGen) {
 		this.mainGen = mainGen;
@@ -60,9 +69,11 @@ public class GenController {
 	
 	@FXML
 	private void initialize() {
-		// Init de la grille (fait ï¿½ la va-vite, faudra amï¿½liorer toute cette merde ;D) -------
-		double rWidth = 1920 / widthCell;
-		double rHeight = 1000 / widthCell;
+		// Init de la grille ----------------------------------------------------------------------
+		screenBounds = Screen.getPrimary().getBounds();
+		
+		double rWidth = screenBounds.getWidth() / widthCell;
+		double rHeight = screenBounds.getHeight() / widthCell;
 		
 		grille = new GridPane();
 		grille.setHgap(1);
@@ -79,33 +90,8 @@ public class GenController {
 		}
 		root.getChildren().add(grille);
 		
-		// Event qui attendent le drag de la fenètre ----------------------------------------------
-		grille.setOnMousePressed(e -> {
-			if(e.getButton() == MouseButton.MIDDLE) {
-				e.setDragDetect(true);
-				newX = e.getSceneX();
-			}
-		});
-		grille.setOnMouseDragged(e -> {
-			// Si on drag avec le clic molette .... ->
-			if(e.getButton() == MouseButton.MIDDLE) {
-				double mouseX = e.getSceneX();
-				double delta = 0;
-							
-				oldX = newX;
-				newX = mouseX;
-				delta = newX - oldX;
-				
-//				System.out.println("old : " + oldX + " / new : " + newX + " / delta : " + delta);
-//				System.out.println(-mostRight +" / " + grille.getLayoutX());
-//				System.out.println(grille.getLayoutX());
-				
-				// Déplace uniqument si c'est pas < à 0
-				if((grille.getLayoutX() + delta) < 0 && (grille.getLayoutX() + delta) > -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
-					grille.setLayoutX(grille.getLayoutX() + delta);
-				}
-			}
-		});
+		// Gère le depl de la grille ac le clic molette
+		handleMoveGrille();
 		
 		// Permet a cette classe de s'abonner à des events 
 		Ebus.get().register(this);
@@ -126,13 +112,54 @@ public class GenController {
 	
 	// QuickTest ----------------------------------------------------------------------------------
 	@FXML
-    void handleTest(ActionEvent event) {
+    void handleTest(ActionEvent event) throws IOException {
 		Cell c = (Cell) grille.getChildren().get(3);
 		System.out.println(c);
 		System.out.println(c.getLayoutX());
 		
+		// Désactive tout les btns de la toolbar et change le retour
+		//
+		//
 		
 		
+		// Définis la map à utiliser, attend un JSONArray
+		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
+		
+		// Load root layout from fxml file.
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
+		Pane BaseMenu = (Pane) loader.load();
+		
+		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
+
+		// Show the scene containing the root layout.
+        Scene scene = new Scene(BaseMenu);
+        window.setScene(scene);
+        
+        MainController controller = loader.getController();
+        
+		window.setMaximized(true);
+		window.setHeight(1080);
+		window.setWidth(1920);
+		
+		window.show();
+		
+		scene.setOnKeyPressed(e ->{
+			controller.jump();
+		});
+		
+		
+		// Load person overview.
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
+		AnchorPane personOverview = (AnchorPane) loader.load();
+
+		// Set person overview into the center of root layout.
+		root.setCenter(personOverview);
+
+		// Give the controller access to the main app.
+		PersonOverviewController controller = loader.getController();
+		controller.setMainApp(this);
     }
 	
 	
@@ -148,7 +175,44 @@ public class GenController {
 	
 	// Grile dynamique, PAS TOUCHER !!!! ----------------------------------------------------------------------------------------
 	
+	/**
+	 * Déplacement de la grille avec le clic molette
+	 */
+	private void handleMoveGrille() {
+		// Event qui attendent le drag de la fenètre ----------------------------------------------
+		grille.setOnMousePressed(e -> {
+			if(e.getButton() == MouseButton.MIDDLE) {
+				e.setDragDetect(true);
+				newX = e.getSceneX();
+			}
+		});
+		grille.setOnMouseDragged(e -> {
+			// Si on drag avec le clic molette .... ->
+			if(e.getButton() == MouseButton.MIDDLE) {
+				double mouseX = e.getSceneX();
+				double delta = 0;
+							
+				oldX = newX;
+				newX = mouseX;
+				delta = newX - oldX;
+				
+//						System.out.println("old : " + oldX + " / new : " + newX + " / delta : " + delta);
+//						System.out.println(-mostRight +" / " + grille.getLayoutX());
+//						System.out.println(grille.getLayoutX());
+				
+				// Déplace uniqument si c'est pas < à 0
+				if((grille.getLayoutX() + delta) < 0 && (grille.getLayoutX() + delta) > -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
+					grille.setLayoutX(grille.getLayoutX() + delta);
+				}
+			}
+		});
+	}
+	
 	// Ecoute le bus d'évent pour savoir si la taille de la grille doit changer -------------------
+	/**
+	 * Gère l'ajout de colonnes à la grille, se délcnche via l'event bus
+	 * @param e l'event auquel il est abonné
+	 */
 	@Subscribe
 	private void handleAddLenght(AddLengthGrilleEvent e) {
 		int deltaX = e.getX() - ToolBar.getMostX();
@@ -174,6 +238,10 @@ public class GenController {
 		}
 	}
 	
+	/**
+	 * Gère la suppression de colonnes à la grille, se délcnche via l'event bus
+	 * @param e l'event auquel il est abonné
+	 */
 	@Subscribe
 	private void handleRemoveLenght(RemoveLengthGrilleEvent e) {
 		int x = 0;
@@ -240,5 +308,37 @@ public class GenController {
 		window.setWidth(600);
 		window.show();
 		
+	}
+	
+	@Subscribe
+	public void myPopup(PopupEvent e) {
+		// Tailles max
+		int width = 400;
+		int height = 200;
+		
+		// Création de la vBox, et set de set propriétés et css
+		VBox popup = new VBox();
+		popup.setPrefWidth(width);
+		popup.setMaxHeight(height);
+		popup.setLayoutX((screenBounds.getWidth() / 2) - (popup.getPrefWidth()/ 2));
+		popup.setLayoutY((screenBounds.getHeight() / 4) * 3 - 50);
+		popup.setAlignment(Pos.CENTER);
+		popup.setStyle("-fx-opacity: 0.8; -fx-padding: 20px; -fx-background-color: white; -fx-border-color: red; -fx-border-radius: 20px;");
+		
+		// Labels de titre et de contenu
+		Label title = new Label();
+		title.setText(e.getTitle());
+		
+		Label text = new Label();
+		text.setText(e.getText());
+		
+		// implémentation des labels à la popup, et elle-même au root
+		popup.getChildren().addAll(title, text);
+		root.getChildren().add(popup);
+		
+		// Pause de 2s, puis fait disparaitre la popup
+		PauseTransition delay = new PauseTransition(Duration.seconds(2));
+		delay.setOnFinished( event -> root.getChildren().remove(popup));
+		delay.play();
 	}
 }

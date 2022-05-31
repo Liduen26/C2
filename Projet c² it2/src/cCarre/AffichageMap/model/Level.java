@@ -1,11 +1,6 @@
 package cCarre.AffichageMap.model;
 
-import java.util.List;
-
 import org.json.JSONArray;
-import org.json.JSONString;
-
-import cCarre.AffichageMap.data.LevelData;
 
 public class Level {
 	private final int idLevel;
@@ -13,23 +8,23 @@ public class Level {
 	private int totalCoin;
 	private int levelWidth;
 	private int levelHeight;
-	private char[][] Level;
+	private char[][] LevelMap;
 	
-	public Level(JSONArray json) {
-		
-		System.out.println(json.getJSONArray(0).length());
-		System.out.println(LevelData.LEVEL1[0].length());
+	private static JSONArray jsonMap;
+	
+	
+
+	public Level() {
 		this.idLevel = 0;
-		this.levelLength = json.getJSONArray(0).length();
+		this.levelLength = jsonMap.getJSONArray(0).length();
 		this.levelWidth = this.levelLength * 60;
 		this.totalCoin = 0;
-		this.levelHeight = json.length();
-		this.Level = new char[this.levelHeight][this.levelLength];
+		this.levelHeight = jsonMap.length();
+		this.LevelMap = new char[this.levelHeight][this.levelLength];
 		
         for (int i = 0; i < levelHeight; i++) {
-            String line = LevelData.LEVEL1[i];
             for (int j = 0; j < levelLength; j++) {
-            	Level[i][j] = line.charAt(j);
+            	LevelMap[i][j] = (char) jsonMap.getJSONArray(i).get(j);
             }
         }
 	}
@@ -39,11 +34,11 @@ public class Level {
 	}
 
 	public char[][] getLevel() {
-		return Level;
+		return LevelMap;
 	}
 
 	public void setLevel(char[][] level) {
-		Level = level;
+		LevelMap = level;
 	}
 
 	public int getLevelHeight() {
@@ -72,5 +67,17 @@ public class Level {
 
 	public int getIdLevel() {
 		return idLevel;
+	}
+	
+	public static JSONArray setJsonLevel() {
+		return jsonMap;
+	}
+	
+	/**
+	 * Méthode servant à définir le level à utiliser, à set avant d'instancier Level (et donc le contrller du jeu)
+	 * @param json Le JSONArray de la map a utiliser
+	 */
+	public static void setJsonLevel(JSONArray json) {
+		Level.jsonMap = json;
 	}
 }

@@ -32,9 +32,6 @@ public class BaseMenuController {
 	}
 	
 	
-	
-	
-	
 	public void GoToShopMenu(ActionEvent event) throws IOException {
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("ShopMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
