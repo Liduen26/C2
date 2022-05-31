@@ -117,6 +117,7 @@ public class Cell extends Parent {
 		if(occuped) {
 			for(Node node : this.getChildren()) {
 				if(node != back) {
+					cellId = 0;
 					toRem.add(node);
 				}
 			}

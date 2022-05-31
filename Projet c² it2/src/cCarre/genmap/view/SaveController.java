@@ -21,9 +21,8 @@ public class SaveController implements Initializable {
     FileChooser fileChooser = new FileChooser();
     int[][] tabLevel;
 
-    @FXML
-    private TextArea textArea;
-    
+    private String contenu = "";
+        
     //Added null check to check rather a file is picked or not
     @FXML
     void getText(MouseEvent event) {
@@ -33,7 +32,7 @@ public class SaveController implements Initializable {
             try {
                 Scanner scanner = new Scanner(file);
                 while(scanner.hasNextLine()){
-                    textArea.appendText(scanner.nextLine() + "\n");
+                	contenu+=(scanner.nextLine() + "\n");
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -45,7 +44,7 @@ public class SaveController implements Initializable {
     void save(MouseEvent event) {
         File file = fileChooser.showSaveDialog(new Stage());
         if(file != null){
-            saveSystem(file, textArea.getText());
+            saveSystem(file, contenu);
         }
     }
 

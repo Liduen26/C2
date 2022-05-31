@@ -236,9 +236,20 @@ public class GenController {
 	
 	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
 	public void GoToSave(ActionEvent event) throws IOException {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
+		Parent root = (Parent) loader.load();
+		Scene scene = new Scene(root);
+		Stage stage = new Stage();
+		stage.setScene(scene);
+		stage.setTitle("My Window");
+		stage.show();
+		
+		SaveController sc = loader.getController();
+		sc.setData(getCustomMap());
+		/*
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("Save.fxml"));
-		Parent tableViewParent = loader.load();
+		Parent tableViewParent = (Parent)loader.load();
 		SaveController sc = loader.getController();
 		sc.setData(getCustomMap());
 		
@@ -249,6 +260,7 @@ public class GenController {
 		window.setHeight(500);
 		window.setWidth(600);
 		window.show();
+		*/
 	}
 	
 	private int[][] getCustomMap() {
