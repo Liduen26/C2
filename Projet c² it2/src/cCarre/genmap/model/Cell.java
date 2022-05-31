@@ -2,8 +2,6 @@ package cCarre.genmap.model;
 
 import java.util.ArrayList;
 
-import javax.tools.Tool;
-
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.PopupEvent;
@@ -14,6 +12,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+
+
 
 public class Cell extends Parent {
 	private boolean occuped = false;

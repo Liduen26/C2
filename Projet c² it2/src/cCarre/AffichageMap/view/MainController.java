@@ -3,16 +3,12 @@ package cCarre.AffichageMap.view;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.json.JSONArray;
-
-import cCarre.AffichageMap.data.LevelData;
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
 import cCarre.AffichageMap.model.Ground;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Player;
-import cCarre.Menu.GameMenuController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -297,6 +293,10 @@ public class MainController {
 			canJump = false;
 		}
 		 
+	}
+	
+	public double getSpeedPlayer() {
+		return player.getSpeed();
 	}
 
 

@@ -36,8 +36,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import test.adressApp.adress.MainAppv2;
-import test.adressApp.adress.view.PersonOverviewController;
 
 public class GenController {
 	@SuppressWarnings("unused")
@@ -55,13 +53,20 @@ public class GenController {
 
     @FXML
     private Button obstacleBtn;
+    
+    @FXML
+    private Button test;
+    
+    @FXML
+    private HBox saveBar;
 	
 	// Vars --------------------------
-    final int widthCell = 60;
+    final int widthCell = (60 - 1);
     private GridPane grille;
 	private double oldX;
 	private double newX;
-	Rectangle2D screenBounds;
+	private Rectangle2D screenBounds;
+	private double playerSpeed = 0;
 	
 	public void setMainGen(MainGen mainGen) {
 		this.mainGen = mainGen;
@@ -113,53 +118,37 @@ public class GenController {
 	// QuickTest ----------------------------------------------------------------------------------
 	@FXML
     void handleTest(ActionEvent event) throws IOException {
-		Cell c = (Cell) grille.getChildren().get(3);
-		System.out.println(c);
-		System.out.println(c.getLayoutX());
+		// Charge la map
 		
-		// Désactive tout les btns de la toolbar et change le retour
-		//
-		//
 		
+		// Désactive tout les btns de la toolbar et change le retour<
+		toolBar.setDisable(true);
+		test.setDisable(true);
+		saveBar.setDisable(true);
+		
+		// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
+		root.requestFocus();
 		
 		// Définis la map à utiliser, attend un JSONArray
 		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
 		
-		// Load root layout from fxml file.
+		// Load person overview.
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
-		Pane BaseMenu = (Pane) loader.load();
-		
-		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
+		AnchorPane game = (AnchorPane) loader.load();
 
-		// Show the scene containing the root layout.
-        Scene scene = new Scene(BaseMenu);
-        window.setScene(scene);
-        
+		// Set person overview into the center of root layout.
+		root.getChildren().add(game);
+		
         MainController controller = loader.getController();
-        
-		window.setMaximized(true);
-		window.setHeight(1080);
-		window.setWidth(1920);
+        playerSpeed = controller.getSpeedPlayer();
 		
-		window.show();
-		
-		scene.setOnKeyPressed(e ->{
+		root.setOnKeyPressed(e ->{
 			controller.jump();
 		});
 		
 		
-		// Load person overview.
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
-		AnchorPane personOverview = (AnchorPane) loader.load();
-
-		// Set person overview into the center of root layout.
-		root.setCenter(personOverview);
-
-		// Give the controller access to the main app.
-		PersonOverviewController controller = loader.getController();
-		controller.setMainApp(this);
+		// /!\ Penser à remove l'event sur le btn return /!\
     }
 	
 	
