@@ -5,12 +5,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.genmap.view.GenController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.genmap.view.GenController">
    <children>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="80.0" layoutX="101.0" layoutY="3.0" stroke="BLACK" strokeType="INSIDE" styleClass="toolBar" width="1920.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="0.0" />
-      <HBox alignment="CENTER_LEFT" layoutX="21.0" layoutY="-10.0" prefHeight="80.0" prefWidth="1920.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox alignment="CENTER_LEFT" layoutX="21.0" layoutY="-10.0" prefHeight="80.0" prefWidth="1920.0" styleClass="toolBar" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox fx:id="toolBar" alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="1053.0" spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
@@ -18,16 +16,23 @@
                   <Button fx:id="obstacleBtn" mnemonicParsing="false" text="Obstacle" />
                   <Button mnemonicParsing="false" text="Button" />
                   <Button mnemonicParsing="false" onAction="#GoToSave" text="Save / Load" />
+                  <Button fx:id="departBtn" mnemonicParsing="false" text="Départ" />
+                  <Button fx:id="arriveeBtn" mnemonicParsing="false" text="Arrivée" />
                </children>
                <padding>
                   <Insets left="20.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="80.0" prefWidth="329.0" spacing="20.0" HBox.hgrow="SOMETIMES">
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="load" mnemonicParsing="false" prefHeight="38.0" prefWidth="59.0" text="Charger" />
-                  <Button fx:id="save" mnemonicParsing="false" onAction="#GoToSave" prefHeight="38.0" prefWidth="83.0" text="Sauvegarder" HBox.hgrow="SOMETIMES" />
-                  <Label fx:id="mapName" text="sans nom" />
+                  <Button fx:id="test" alignment="CENTER" mnemonicParsing="false" onAction="#handleTest" text="Tester" />
+               </children>
+            </HBox>
+            <HBox fx:id="saveBar" alignment="CENTER" prefHeight="80.0" prefWidth="329.0" spacing="20.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="load" mnemonicParsing="false" text="Charger" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="save" mnemonicParsing="false" onAction="#handleSaving" text="Sauvegarder" HBox.hgrow="ALWAYS" />
+                  <Label fx:id="mapName" text="sans nom" HBox.hgrow="ALWAYS" />
                </children></HBox>
             <HBox alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="SOMETIMES">
                <children>

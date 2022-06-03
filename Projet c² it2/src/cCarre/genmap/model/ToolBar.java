@@ -5,15 +5,18 @@ import cCarre.genmap.events.AddLengthGrilleEvent;
 
 public class ToolBar {
 	private static String item;
+	private static boolean test = false;
 	private static boolean click;
 	private static int mostX;
+	private static int startPlaced = 0;
+	private static int endPlaced = 0;
 	public ToolBar() {}
 	
 	// Paserelle d'infos --------------------------------------------------------------------------
 	
 	
 
-	// Objet servant à récupérer les état des btns ------------------------------------------------
+	// Objet servant ï¿½ rï¿½cupï¿½rer les ï¿½tat des btns ------------------------------------------------
 	
 	
 	
@@ -44,5 +47,29 @@ public class ToolBar {
 
 	public static void setMostX(int mostX) {
 		ToolBar.mostX = mostX;
+	}
+	
+	public static boolean isStartPlaced() {
+		return (startPlaced == 0) ? false : true;
+	}
+
+	public static void setStartPlaced(int startPlaced) {
+		ToolBar.startPlaced = startPlaced;
+	}
+	
+	public static int getStartPlace() {
+		return startPlaced;
+	}
+
+	public static boolean isEndPlaced() {
+		return (endPlaced == 0) ? false : true;
+	}
+
+	public static void setEndPlaced(int endPlaced) {
+		ToolBar.endPlaced = endPlaced;
+	}
+	
+	public static int getEndPlace() {
+		return endPlaced;
 	}
 }

@@ -131,4 +131,8 @@ public class Player extends Parent{
 	public void setWidth(int width) {
 		this.width = width;
 	}
+	
+	public double getSpeed() {
+		return p1.distance(centreX, centreY);
+	}
 }

@@ -12,6 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
+
+
 public class Cell extends Parent {
 	private boolean occuped = false;
 	private int width;
@@ -44,7 +46,7 @@ public class Cell extends Parent {
 			} else if(e.getButton() == MouseButton.SECONDARY) {
 				e.setDragDetect(true);
 				erase();
-				// Cause une erreur mais ça marche qu'averc ça }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+				// Cause une erreur mais ï¿½a marche qu'averc ï¿½a }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 				this.startFullDrag();
 			}
 		});
@@ -100,7 +102,7 @@ public class Cell extends Parent {
 			break;
 		}
 		
-		// Si la case a été peinte, on vérifie si le x est sup au plus grand x, pour la taille de la grille 
+		// Si la case a ï¿½tï¿½ peinte, on vï¿½rifie si le x est sup au plus grand x, pour la taille de la grille 
 		if(occuped) {
 			if(ToolBar.getMostX() < x) {
 				Ebus.get().post(new AddLengthGrilleEvent(x));
@@ -111,7 +113,7 @@ public class Cell extends Parent {
 	private void paint() {
 		occuped = true;
 		
-		// Regarde quel item est sélectionné pour la peinture
+		// Regarde quel item est sï¿½lectionnï¿½ pour la peinture
 		String item = ToolBar.getItem();
 		
 		switch (item) {
@@ -138,13 +140,69 @@ public class Cell extends Parent {
 			this.getChildren().add(triangle);
 			break;
 			
+		case "departBtn":
+			if(!ToolBar.isStartPlaced()) {
+				// S'il n'y a pas encore de dï¿½part placï¿½
+				
+				if(ToolBar.isEndPlaced() == false || ToolBar.getEndPlace() > this.x) {
+					// Si la fin est bien a droite du start, ou pas placï¿½e
+					Rectangle start = new Rectangle();
+					start.setWidth(width);
+					start.setHeight(width);
+					start.setFill(Color.DARKGREEN);
+					start.setId("start");
+					
+					this.getChildren().add(start);
+					ToolBar.setStartPlaced(x);
+					
+				} else {
+					occuped = false;
+					
+					Ebus.get().post(new PopupEvent("Attention !", "Le dï¿½part doit ï¿½tre placï¿½ ï¿½ gauche de l'arrivï¿½e"));
+				}
+			} else {
+				// Si un dï¿½part a dï¿½jï¿½ ï¿½tï¿½ placï¿½ 
+				occuped = false;
+
+				Ebus.get().post(new PopupEvent("Attention !", "Un dï¿½part a dï¿½jï¿½ ï¿½tï¿½ placï¿½"));
+			}
+			break;
+			
+		case "arriveeBtn":
+			if(!ToolBar.isEndPlaced()) {
+				// S'il n'y a pas encore d'arrivï¿½e placï¿½e
+				
+				if(ToolBar.isStartPlaced() == false || ToolBar.getStartPlace() < this.x) {
+					// Si le start est bien a gauche de la fin, ou pas placï¿½e
+					Rectangle end = new Rectangle();
+					end.setWidth(width);
+					end.setHeight(width);
+					end.setFill(Color.DARKRED);
+					end.setId("end");
+					
+					this.getChildren().add(end);
+					ToolBar.setEndPlaced(x);
+					
+				} else {
+					occuped = false;
+					
+					Ebus.get().post(new PopupEvent("Attention !", "L'arrivï¿½e doit ï¿½tre placï¿½e ï¿½ droite du dï¿½part"));
+				}
+			} else {
+				// Si une arrivï¿½e a dï¿½jï¿½ ï¿½tï¿½ placï¿½e
+				occuped = false;
+
+				Ebus.get().post(new PopupEvent("Attention !", "Une arrivï¿½e a dï¿½jï¿½ ï¿½tï¿½ placï¿½e"));
+			}
+			break;
+			
 		default:
 			cellId = 0;
 			occuped = false;
 			break;
 		}
 		
-		// Si la case a été peinte, on vérifie si le x est sup au plus grand x, pour la taille de la grille 
+		// Si la case a ï¿½tï¿½ peinte, on vï¿½rifie si le x est sup au plus grand x, pour la taille de la grille 
 		if(occuped) {
 			if(ToolBar.getMostX() < x) {
 				Ebus.get().post(new AddLengthGrilleEvent(x));
@@ -158,6 +216,10 @@ public class Cell extends Parent {
 			for(Node node : this.getChildren()) {
 				if(node != back) {
 					cellId = 0;
+					// Vï¿½rifie si c'est le start ou le dï¿½but qui a ï¿½tï¿½ delete
+					ToolBar.setStartPlaced((node.getId() == "start" ) ? 0 : ToolBar.getStartPlace());
+					ToolBar.setEndPlaced((node.getId() == "end" ) ? 0 : ToolBar.getEndPlace());
+					
 					toRem.add(node);
 				}
 			}
@@ -178,6 +240,10 @@ public class Cell extends Parent {
 
 	public void setCellId(int cellId) {
 		this.cellId = cellId;
+	}
+	@Override
+	public String toString() {
+		return super.toString() + " / x: " + this.x + " / y: " + this.y;
 	}
 
 	public int getX() {
