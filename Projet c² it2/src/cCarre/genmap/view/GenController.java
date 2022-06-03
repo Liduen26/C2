@@ -3,6 +3,8 @@ package cCarre.genmap.view;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+
 import com.google.common.eventbus.Subscribe;
 
 import cCarre.AffichageMap.data.LevelData;
@@ -12,6 +14,7 @@ import cCarre.Menu.MainMenu;
 import cCarre.genmap.MainGen;
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import cCarre.genmap.model.Cell;
@@ -96,7 +99,7 @@ public class GenController {
 		root.getChildren().add(grille);
 		
 		// Gère le depl de la grille ac le clic molette
-		handleMoveGrille();
+		handleMoveGrid();
 		
 		// Permet a cette classe de s'abonner à des events 
 		Ebus.get().register(this);
@@ -119,6 +122,18 @@ public class GenController {
 	@FXML
     void handleTest(ActionEvent event) throws IOException {
 		// Charge la map
+		JSONArray mapGen = new JSONArray();
+		JSONArray line = new JSONArray();
+		
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+			}
+			
+			// 
+			
+		}
 		
 		
 		// Désactive tout les btns de la toolbar et change le retour<
@@ -137,11 +152,12 @@ public class GenController {
 		loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
 		AnchorPane game = (AnchorPane) loader.load();
 
-		// Set person overview into the center of root layout.
+		// met le jeu par dessus la grille
 		root.getChildren().add(game);
 		
         MainController controller = loader.getController();
         playerSpeed = controller.getSpeedPlayer();
+        controller.setEdit(true);
 		
 		root.setOnKeyPressed(e ->{
 			controller.jump();
@@ -150,6 +166,11 @@ public class GenController {
 		
 		// /!\ Penser à remove l'event sur le btn return /!\
     }
+	
+	@Subscribe
+	private void gridGameMoving(MoveGridEvent e) {
+		grille.setLayoutX(e.getX());
+	}
 	
 	
 	
@@ -167,7 +188,7 @@ public class GenController {
 	/**
 	 * Déplacement de la grille avec le clic molette
 	 */
-	private void handleMoveGrille() {
+	private void handleMoveGrid() {
 		// Event qui attendent le drag de la fenètre ----------------------------------------------
 		grille.setOnMousePressed(e -> {
 			if(e.getButton() == MouseButton.MIDDLE) {

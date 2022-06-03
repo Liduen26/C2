@@ -9,6 +9,8 @@ import cCarre.AffichageMap.model.Ground;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Player;
+import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.MoveGridEvent;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -111,6 +113,9 @@ public class MainController {
             int offset = newValue.intValue();
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
+                
+                // Si le jeu vient de l'éditeur, transmet les coo à la grille
+				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
             }
         });
 		
@@ -181,6 +186,9 @@ public class MainController {
 				if(jump == true) {
 					canJump = false;
 				}
+				
+				
+				
 			}
 		}));
 
@@ -299,6 +307,14 @@ public class MainController {
 		return player.getSpeed();
 	}
 
+
+	public boolean isEdit() {
+		return edit;
+	}
+
+	public void setEdit(boolean edit) {
+		this.edit = edit;
+	}
 
 	public void setMap(String string) {
 		// TODO Auto-generated method stub

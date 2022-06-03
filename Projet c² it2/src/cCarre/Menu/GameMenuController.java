@@ -17,7 +17,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class GameMenuController {
-@FXML public Button GoToBaseMenu;
+	@FXML 
+	public Button GoToBaseMenu;
 
 	public void GoToBaseMenu(ActionEvent event) throws IOException {
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("BaseMenu.fxml"));
@@ -45,7 +46,7 @@ public class GameMenuController {
         window.setScene(scene);
         
         MainController controller = loader.getController();
-//        
+       
         // Chemin du fichier json (à faire)
         
 		window.setMaximized(true);
