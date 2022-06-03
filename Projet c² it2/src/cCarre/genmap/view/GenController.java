@@ -1,7 +1,11 @@
 package cCarre.genmap.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import com.google.common.eventbus.Subscribe;
 
 import org.json.JSONArray;
 
@@ -37,6 +41,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -70,6 +75,8 @@ public class GenController {
 	private double newX;
 	private Rectangle2D screenBounds;
 	private double playerSpeed = 0;
+
+	FileChooser fileChooser = new FileChooser();
 	
 	public void setMainGen(MainGen mainGen) {
 		this.mainGen = mainGen;
@@ -79,6 +86,9 @@ public class GenController {
 	private void initialize() {
 		// Init de la grille ----------------------------------------------------------------------
 		screenBounds = Screen.getPrimary().getBounds();
+
+		// Se place dans disque D quand on save
+        fileChooser.setInitialDirectory(new File("D:\\"));
 		
 		double rWidth = screenBounds.getWidth() / widthCell;
 		double rHeight = screenBounds.getHeight() / widthCell;
@@ -98,10 +108,10 @@ public class GenController {
 		}
 		root.getChildren().add(grille);
 		
-		// Gère le depl de la grille ac le clic molette
+		// Gï¿½re le depl de la grille ac le clic molette
 		handleMoveGrid();
 		
-		// Permet a cette classe de s'abonner à des events 
+		// Permet a cette classe de s'abonner ï¿½ des events 
 		Ebus.get().register(this);
 		
 		
@@ -136,7 +146,7 @@ public class GenController {
 		}
 		
 		
-		// Désactive tout les btns de la toolbar et change le retour<
+		// Dï¿½sactive tout les btns de la toolbar et change le retour<
 		toolBar.setDisable(true);
 		test.setDisable(true);
 		saveBar.setDisable(true);
@@ -144,7 +154,7 @@ public class GenController {
 		// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
 		root.requestFocus();
 		
-		// Définis la map à utiliser, attend un JSONArray
+		// Dï¿½finis la map ï¿½ utiliser, attend un JSONArray
 		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
 		
 		// Load person overview.
@@ -164,7 +174,7 @@ public class GenController {
 		});
 		
 		
-		// /!\ Penser à remove l'event sur le btn return /!\
+		// /!\ Penser ï¿½ remove l'event sur le btn return /!\
     }
 	
 	@Subscribe
@@ -186,10 +196,10 @@ public class GenController {
 	// Grile dynamique, PAS TOUCHER !!!! ----------------------------------------------------------------------------------------
 	
 	/**
-	 * Déplacement de la grille avec le clic molette
+	 * Dï¿½placement de la grille avec le clic molette
 	 */
 	private void handleMoveGrid() {
-		// Event qui attendent le drag de la fenètre ----------------------------------------------
+		// Event qui attendent le drag de la fenï¿½tre ----------------------------------------------
 		grille.setOnMousePressed(e -> {
 			if(e.getButton() == MouseButton.MIDDLE) {
 				e.setDragDetect(true);
@@ -206,11 +216,11 @@ public class GenController {
 				newX = mouseX;
 				delta = newX - oldX;
 				
-//						System.out.println("old : " + oldX + " / new : " + newX + " / delta : " + delta);
-//						System.out.println(-mostRight +" / " + grille.getLayoutX());
-//						System.out.println(grille.getLayoutX());
+//				System.out.println("old : " + oldX + " / new : " + newX + " / delta : " + delta);
+//				System.out.println(-mostRight +" / " + grille.getLayoutX());
+//				System.out.println(grille.getLayoutX());
 				
-				// Déplace uniqument si c'est pas < à 0
+				// Dï¿½place uniqument si c'est pas < ï¿½ 0
 				if((grille.getLayoutX() + delta) < 0 && (grille.getLayoutX() + delta) > -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
 					grille.setLayoutX(grille.getLayoutX() + delta);
 				}
@@ -218,22 +228,22 @@ public class GenController {
 		});
 	}
 	
-	// Ecoute le bus d'évent pour savoir si la taille de la grille doit changer -------------------
+	// Ecoute le bus d'ï¿½vent pour savoir si la taille de la grille doit changer -------------------
 	/**
-	 * Gère l'ajout de colonnes à la grille, se délcnche via l'event bus
-	 * @param e l'event auquel il est abonné
+	 * Gï¿½re l'ajout de colonnes ï¿½ la grille, se dï¿½lcnche via l'event bus
+	 * @param e l'event auquel il est abonnï¿½
 	 */
 	@Subscribe
 	private void handleAddLenght(AddLengthGrilleEvent e) {
 		int deltaX = e.getX() - ToolBar.getMostX();
 		ToolBar.setMostX(e.getX());
 		
-		// Crée des colonne de grille, autant de fois que le delta nouveau-ancien
+		// Crï¿½e des colonne de grille, autant de fois que le delta nouveau-ancien
 		int nCol = 0;
 		int nRow = 0;
 
 		for(int j = 0; j < deltaX; j++) {
-			// Regarde le num de col et de ligne de la dernière cellule
+			// Regarde le num de col et de ligne de la derniï¿½re cellule
 			Cell c = (Cell) grille.getChildren().get(grille.getChildren().size() - 1);
 			
 			nCol = c.getX();
@@ -249,13 +259,13 @@ public class GenController {
 	}
 	
 	/**
-	 * Gère la suppression de colonnes à la grille, se délcnche via l'event bus
-	 * @param e l'event auquel il est abonné
+	 * Gï¿½re la suppression de colonnes ï¿½ la grille, se dï¿½lcnche via l'event bus
+	 * @param e l'event auquel il est abonnï¿½
 	 */
 	@Subscribe
 	private void handleRemoveLenght(RemoveLengthGrilleEvent e) {
 		int x = 0;
-		// Regarde toutes les cases pour définir quelle colonne est la dernièreq
+		// Regarde toutes les cases pour dï¿½finir quelle colonne est la derniï¿½req
 		for(Node cell : grille.getChildren()) {
 			Cell c = new Cell(cell);
 			if(cell instanceof Cell) {
@@ -270,7 +280,7 @@ public class GenController {
 		int deltaX = x - ToolBar.getMostX();
 		ToolBar.setMostX(x);
 		
-		// Décale la cam si y a plus assez de cases peintes dans le champ
+		// Dï¿½cale la cam si y a plus assez de cases peintes dans le champ
 		if(grille.getLayoutX() < -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
 			double x2 = -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2);
 			x2 = (x2 >= 0) ? 0 : x2;
@@ -326,7 +336,7 @@ public class GenController {
 		int width = 400;
 		int height = 200;
 		
-		// Création de la vBox, et set de set propriétés et css
+		// Crï¿½ation de la vBox, et set de set propriï¿½tï¿½s et css
 		VBox popup = new VBox();
 		popup.setPrefWidth(width);
 		popup.setMaxHeight(height);
@@ -342,7 +352,7 @@ public class GenController {
 		Label text = new Label();
 		text.setText(e.getText());
 		
-		// implémentation des labels à la popup, et elle-même au root
+		// implï¿½mentation des labels ï¿½ la popup, et elle-mï¿½me au root
 		popup.getChildren().addAll(title, text);
 		root.getChildren().add(popup);
 		
@@ -351,4 +361,62 @@ public class GenController {
 		delay.setOnFinished( event -> root.getChildren().remove(popup));
 		delay.play();
 	}
+
+	
+	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
+	public void GoToSave(ActionEvent event) throws IOException {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
+		Parent root = (Parent) loader.load();
+		Scene scene = new Scene(root);
+		Stage stage = new Stage();
+		stage.setScene(scene);
+		stage.setTitle("My Window");
+		stage.show();
+		
+		SaveController sc = loader.getController();
+		sc.setData(getCustomMap());
+		/*
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(getClass().getResource("Save.fxml"));
+		Parent tableViewParent = (Parent)loader.load();
+		SaveController sc = loader.getController();
+		sc.setData(getCustomMap());
+		
+		Scene tableViewScene = new Scene(tableViewParent);
+		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
+		
+		window.setScene(tableViewScene);
+		window.setHeight(500);
+		window.setWidth(600);
+		window.show();
+		*/
+	}
+	
+	private int[][] getCustomMap() {
+		// Obtention du nbr de colonnes et lignes
+		Node cells = grille.getChildren().get(grille.getChildren().size() - 1);
+		Cell c1 = new Cell(cells);
+		if(cells instanceof Cell) {
+			c1 = (Cell) cells;
+		}
+		int nCol = c1.getX();
+		int nRow = c1.getY();
+		
+		//Crï¿½ation du tableau 2D
+		int[][] cellTab = new int[nRow+1][nCol+1];
+		System.out.println(" MAX : "+nCol+", "+nRow);
+		
+		// remplit le tableau 2D
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+			}
+			System.out.println(c.getX()+", "+c.getY());
+			cellTab[c.getY()][c.getX()] = c.getCellId();
+		}
+		
+		return cellTab;
+	}
 }
+	

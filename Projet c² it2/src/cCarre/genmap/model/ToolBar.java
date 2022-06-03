@@ -1,5 +1,8 @@
 package cCarre.genmap.model;
 
+import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.AddLengthGrilleEvent;
+
 public class ToolBar {
 	private static String item;
 	private static boolean test = false;
@@ -13,7 +16,7 @@ public class ToolBar {
 	
 	
 
-	// Objet servant à récupérer les état des btns ------------------------------------------------
+	// Objet servant ï¿½ rï¿½cupï¿½rer les ï¿½tat des btns ------------------------------------------------
 	
 	
 	

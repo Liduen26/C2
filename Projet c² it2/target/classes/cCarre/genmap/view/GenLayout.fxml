@@ -16,6 +16,8 @@
                   <Button fx:id="obstacleBtn" mnemonicParsing="false" text="Obstacle" />
                   <Button fx:id="departBtn" mnemonicParsing="false" text="Départ" />
                   <Button fx:id="arriveeBtn" mnemonicParsing="false" text="Arrivée" />
+                  <Button mnemonicParsing="false" text="Button" />
+                  <Button mnemonicParsing="false" onAction="#GoToSave" text="Save / Load" />
                </children>
                <padding>
                   <Insets left="20.0" />
