@@ -1,9 +1,15 @@
 package cCarre.genmap.view;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -21,6 +27,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -236,6 +243,8 @@ public class GenController {
 	
 	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
 	public void GoToSave(ActionEvent event) throws IOException {
+		load();
+		/*
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
 		Parent root = (Parent) loader.load();
 		Scene scene = new Scene(root);
@@ -246,20 +255,6 @@ public class GenController {
 		
 		SaveController sc = loader.getController();
 		sc.setData(getCustomMap());
-		/*
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("Save.fxml"));
-		Parent tableViewParent = (Parent)loader.load();
-		SaveController sc = loader.getController();
-		sc.setData(getCustomMap());
-		
-		Scene tableViewScene = new Scene(tableViewParent);
-		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
-		
-		window.setScene(tableViewScene);
-		window.setHeight(500);
-		window.setWidth(600);
-		window.show();
 		*/
 	}
 	
@@ -275,7 +270,7 @@ public class GenController {
 		
 		//Création du tableau 2D
 		int[][] cellTab = new int[nRow+1][nCol+1];
-		System.out.println(" MAX : "+nCol+", "+nRow);
+		//System.out.println(" MAX : "+nCol+", "+nRow);
 		
 		// remplit le tableau 2D
 		for(Node cell : grille.getChildren()) {
@@ -283,11 +278,62 @@ public class GenController {
 			if(cell instanceof Cell) {
 				c = (Cell) cell;
 			}
-			System.out.println(c.getX()+", "+c.getY());
+			//System.out.println(c.getX()+", "+c.getY());
 			cellTab[c.getY()][c.getX()] = c.getCellId();
 		}
 		
 		return cellTab;
 	}
+	
+    void load() {
+    	
+        File file = fileChooser.showOpenDialog(new Stage());
+    	
+        if(file != null){
+            try {
+                Scanner scanner = new Scanner(file);
+                while(scanner.hasNextLine()){
+                	//contenu+=(scanner.nextLine() + "\n");
+                	//scanner.getJSONArray(i).get(j);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    	
+    	
+    	
+    	/*
+        File file = fileChooser.showOpenDialog(new Stage());
+        String contenu;
+        int i,j;
+        
+        JSONArray tab2D = new JSONArray(file);
+        
+        Object elementTab = tab2D.getJSONArray(1).get(1);
+        
+        System.out.println("ELEMENT TAB : "+elementTab);
+	*/
+    	
+    	
+    	
+    	
+        /*
+
+        String a = file.getJSONArray(i).get(j);
+
+        if(file != null){
+            try {
+                Scanner scanner = new Scanner(file);
+                while(scanner.hasNextLine()){
+                	contenu+=(scanner.nextLine() + "\n");
+                	scanner.getJSONArray(i).get(j);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        */
+    }
 }
 	
