@@ -12,6 +12,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 
 
@@ -20,7 +21,9 @@ public class Cell extends Parent {
 	private int width;
 	private int x, y;
 	private Rectangle back;
+	private Rectangle selection;
 	private int cellId;
+	private boolean selected = false;
 
 	public Cell(Node cell) {
 		super();
@@ -39,6 +42,14 @@ public class Cell extends Parent {
 		back.setHeight(width);
 		this.getChildren().add(back);
 		
+		
+		selection = new Rectangle();
+		selection.setStroke(Color.YELLOW);
+		selection.setStrokeWidth(4);
+		selection.setStrokeType(StrokeType.INSIDE);
+		selection.setFill(Color.TRANSPARENT);
+		selection.setWidth(width);
+		selection.setHeight(width);
 		
 		this.setOnMousePressed(e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
@@ -158,7 +169,6 @@ public class Cell extends Parent {
 			break;
 			
 		default:
-			cellId = 0;
 			occuped = false;
 			break;
 		}
@@ -184,6 +194,7 @@ public class Cell extends Parent {
 					toRem.add(node);
 				}
 			}
+			
 			for(Node rem : toRem) {
 				this.getChildren().remove(rem);
 			}
@@ -198,6 +209,8 @@ public class Cell extends Parent {
 	@Override
 	public String toString() {
 		return super.toString() + " / x: " + this.x + " / y: " + this.y;
+		
+	}
 	public int getCellId() {
 		return cellId;
 	}
@@ -229,4 +242,18 @@ public class Cell extends Parent {
 	public void setWidth(int width) {
 		this.width = width;
 	}
+	
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		if(selected && !this.selected) {
+			this.getChildren().add(selection);
+		} else if(!selected && this.selected) {
+			this.getChildren().remove(selection);
+		}
+		this.selected = selected;
+	}
+	
 }

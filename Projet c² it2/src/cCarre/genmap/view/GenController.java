@@ -3,10 +3,8 @@ package cCarre.genmap.view;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import com.google.common.eventbus.Subscribe;
-
+import org.hamcrest.core.IsInstanceOf;
 import org.json.JSONArray;
 
 import com.google.common.eventbus.Subscribe;
@@ -38,10 +36,11 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Screen;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -75,6 +74,10 @@ public class GenController {
 	private double newX;
 	private Rectangle2D screenBounds;
 	private double playerSpeed = 0;
+	double initialPtX = 0;
+	double initialPtY = 0;
+	
+	Rectangle select;
 
 	FileChooser fileChooser = new FileChooser();
 	
@@ -109,7 +112,7 @@ public class GenController {
 		root.getChildren().add(grille);
 		
 		// Gï¿½re le depl de la grille ac le clic molette
-		handleMoveGrid();
+		handleMouseEvents();
 		
 		// Permet a cette classe de s'abonner ï¿½ des events 
 		Ebus.get().register(this);
@@ -122,10 +125,19 @@ public class GenController {
 				String id = btnAct.getId();
 				
 				ToolBar.setItem(id);
-				ToolBar.getItem();
 			});
 		}
+		
+		select = new Rectangle();
+		select.setFill(Color.DARKCYAN);
+		select.setOpacity(0.2);
+		
 	}
+	
+	
+	
+	
+	
 	
 	
 	// QuickTest ----------------------------------------------------------------------------------
@@ -184,34 +196,55 @@ public class GenController {
 	
 	
 	
-	// Save ---------------------------------------------------------------------------------------
-	@FXML
-    private void handleSaving(ActionEvent event) {
-		
-    }
-	
-	
-	
 	
 	// Grile dynamique, PAS TOUCHER !!!! ----------------------------------------------------------------------------------------
 	
 	/**
-	 * Dï¿½placement de la grille avec le clic molette
+	 * Déplacement de la grille avec le clic molette
 	 */
-	private void handleMoveGrid() {
+	private void handleMouseEvents() {
 		// Event qui attendent le drag de la fenï¿½tre ----------------------------------------------
 		grille.setOnMousePressed(e -> {
+			// Début / init
 			if(e.getButton() == MouseButton.MIDDLE) {
+				// Déplacement de la grille
 				e.setDragDetect(true);
 				newX = e.getSceneX();
+				
+			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem() == "select") {
+				Cell c = new Cell((Node) e.getTarget());
+				if(e.getTarget() instanceof Cell) {
+					c = (Cell) e.getTarget();
+				}
+				System.out.println(c.isSelected());
+				
+				if(c.isSelected()) {
+					// Depl de la seléction
+					
+				} else {
+					// Zone de sélection
+					switch (ToolBar.getItem()) {
+					case "select":
+						this.unselect();
+						select.setWidth(0);
+						select.setHeight(0);
+						initialPtX = e.getX() + grille.getLayoutX();
+						initialPtY = e.getY();
+						
+						root.getChildren().add(select);
+						break;
+					}
+				}
 			}
 		});
+		
 		grille.setOnMouseDragged(e -> {
-			// Si on drag avec le clic molette .... ->
+			// Déplacement de la souris
 			if(e.getButton() == MouseButton.MIDDLE) {
+				// Si on drag avec le clic molette .... ->
 				double mouseX = e.getSceneX();
 				double delta = 0;
-							
+				
 				oldX = newX;
 				newX = mouseX;
 				delta = newX - oldX;
@@ -220,14 +253,105 @@ public class GenController {
 //				System.out.println(-mostRight +" / " + grille.getLayoutX());
 //				System.out.println(grille.getLayoutX());
 				
-				// Dï¿½place uniqument si c'est pas < ï¿½ 0
+				// Déplace uniqument si c'est pas < à 0
 				if((grille.getLayoutX() + delta) < 0 && (grille.getLayoutX() + delta) > -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
 					grille.setLayoutX(grille.getLayoutX() + delta);
+				}
+				
+			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem() == "select") {
+				Cell c = new Cell((Node) e.getTarget());
+				if(e.getTarget() instanceof Cell) {
+					c = (Cell) e.getTarget();
+				}
+				
+				if(c.isSelected()) {
+					// Depl de la seléction
+					System.out.println(c.isSelected());
+					
+				} else {
+					// Zone de sélection
+					switch (ToolBar.getItem()) {
+					case "select":
+						double deltaX = (e.getX() + grille.getLayoutX()) - initialPtX;
+					    double deltaY = e.getY() - initialPtY;
+
+					    if(deltaX < 0) {
+					        select.setLayoutX(e.getX() + grille.getLayoutX());
+					        select.setWidth(-deltaX);
+					    } else {
+					        select.setLayoutX(initialPtX);
+					        select.setWidth((e.getX() + grille.getLayoutX()) - initialPtX);
+					    }
+
+					    if(deltaY < 0) {
+					        select.setLayoutY( e.getY());
+					        select.setHeight(-deltaY);
+					    } else {
+					        select.setLayoutY(initialPtY);
+					        select.setHeight(e.getY() - initialPtY);
+					    }
+						
+						break;
+					}
+				}
+			}
+		});
+		
+		grille.setOnMouseReleased(e -> {
+			// Relachement du clic
+			if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem() == "select") {
+				// Zone de sélection
+				switch (ToolBar.getItem()) {
+				case "select":
+					// Regarde toutes les cases 
+					for(Node cell : grille.getChildren()) {
+						Cell c = new Cell(cell);
+						if(cell instanceof Cell) {
+							c = (Cell) cell;
+						}
+						
+						// Cherche les cellules dans la zone de selection
+						if((c.getX() * widthCell) > select.getLayoutX() && (c.getX() * widthCell) < (select.getLayoutX() + select.getWidth()) 
+						&& (c.getY() * widthCell) > select.getLayoutY() && (c.getY() * widthCell) < (select.getLayoutY() + select.getHeight())) {
+							// Si y a pas que le background, alors 
+							if(c.getChildrenUnmodifiable().size() > 1) {
+								c.setSelected(true);
+							}							
+						}
+					}
+					
+					
+					root.getChildren().remove(select);
+					break;
+				}
+			}
+		});
+		
+		grille.setOnMouseClicked(e -> {
+			if(e.getButton() == MouseButton.PRIMARY) {
+				Cell c = new Cell((Node) e.getTarget());
+				if(e.getTarget() instanceof Cell) {
+					c = (Cell) e.getTarget();
+				}
+				System.out.println("slt");
+				if(c.getChildrenUnmodifiable().size() <= 1) {
+					
 				}
 			}
 		});
 	}
 	
+	private void unselect() {
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+			}
+			
+			c.setSelected(false);
+		}
+	}
+
 	// Ecoute le bus d'ï¿½vent pour savoir si la taille de la grille doit changer -------------------
 	/**
 	 * Gï¿½re l'ajout de colonnes ï¿½ la grille, se dï¿½lcnche via l'event bus
