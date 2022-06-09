@@ -3,6 +3,8 @@ package cCarre.AffichageMap.view;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.json.JSONArray;
+
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
 import cCarre.AffichageMap.model.Ground;
@@ -74,12 +76,12 @@ public class MainController {
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
-		char[][] Level = level.getLevel();
+		JSONArray Level = level.getLevel();
 
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
-
-				switch(Level[y][x]) {
+				char text = (char) Level.getJSONArray(y).get(x);
+				switch(text) {
 				case '0' :
 					// ici c'est vide
 					break;
@@ -92,7 +94,7 @@ public class MainController {
 					triangles.add(triangle);
 					break;
 				case '3' :
-					Coin coin = new Coin(x*elementSize+15, y*elementSize+15, 30, 30, Color.YELLOW, rootLayout);
+					Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.YELLOW, rootLayout);
 					coins.add(coin);
 					break;
 				case '8' :
@@ -102,6 +104,11 @@ public class MainController {
 				case '9' :
 					FinishBlock finishBlock = new FinishBlock(x*elementSize, y*elementSize, elementSize, elementSize, Color.GREEN, rootLayout);
 					finishBlocks.add(finishBlock);
+					break;
+				case 's' :
+					// Test rapide de l'éditeur
+					spawnX = x*elementSize;
+					spawnY = y*elementSize-1;
 					break;
 				}
 			}
@@ -113,6 +120,7 @@ public class MainController {
             int offset = newValue.intValue();
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
+                System.out.println(rootLayout.getLayoutX());
                 
                 // Si le jeu vient de l'éditeur, transmet les coo à la grille
 				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
@@ -186,9 +194,6 @@ public class MainController {
 				if(jump == true) {
 					canJump = false;
 				}
-				
-				
-				
 			}
 		}));
 

@@ -3,15 +3,11 @@ package cCarre.genmap.view;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import com.google.common.eventbus.Subscribe;
 
 import org.json.JSONArray;
 
 import com.google.common.eventbus.Subscribe;
 
-import cCarre.AffichageMap.data.LevelData;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
 import cCarre.Menu.MainMenu;
@@ -38,10 +34,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Screen;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -131,65 +126,53 @@ public class GenController {
 	// QuickTest ----------------------------------------------------------------------------------
 	@FXML
     void handleTest(ActionEvent event) throws IOException {
-		// Charge la map
-		JSONArray mapGen = new JSONArray();
-		JSONArray line = new JSONArray();
+		boolean go = false;
+		ToolBar.setItem("test");
 		
-		for(Node cell : grille.getChildren()) {
-			Cell c = new Cell(cell);
-			if(cell instanceof Cell) {
-				c = (Cell) cell;
-			}
+		
+		if(go) {
+			// Charge la map
+			JSONArray mapGen = new JSONArray(getCustomMap());
+			System.out.println(mapGen);
 			
-			// 
+			// Dï¿½sactive tout les btns de la toolbar et change le retour<
+			toolBar.setDisable(true);
+			test.setDisable(true);
+			saveBar.setDisable(true);
+			
+			// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
+			root.requestFocus();
+			
+			// Dï¿½finis la map ï¿½ utiliser, attend un JSONArray
+			Level.setJsonLevel(mapGen);
+			
+			// Load person overview.
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
+			AnchorPane game = (AnchorPane) loader.load();
+			
+			// met le jeu par dessus la grille
+			root.getChildren().add(game);
+			
+			MainController controller = loader.getController();
+			playerSpeed = controller.getSpeedPlayer();
+			controller.setEdit(true);
+			
+			root.setOnKeyPressed(e ->{
+				controller.jump();
+			});
+			// /!\ Penser à remove l'event sur le btn return /!\
 			
 		}
 		
 		
-		// Dï¿½sactive tout les btns de la toolbar et change le retour<
-		toolBar.setDisable(true);
-		test.setDisable(true);
-		saveBar.setDisable(true);
-		
-		// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
-		root.requestFocus();
-		
-		// Dï¿½finis la map ï¿½ utiliser, attend un JSONArray
-		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
-		
-		// Load person overview.
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
-		AnchorPane game = (AnchorPane) loader.load();
-
-		// met le jeu par dessus la grille
-		root.getChildren().add(game);
-		
-        MainController controller = loader.getController();
-        playerSpeed = controller.getSpeedPlayer();
-        controller.setEdit(true);
-		
-		root.setOnKeyPressed(e ->{
-			controller.jump();
-		});
-		
-		
-		// /!\ Penser ï¿½ remove l'event sur le btn return /!\
     }
 	
 	@Subscribe
 	private void gridGameMoving(MoveGridEvent e) {
 		grille.setLayoutX(e.getX());
+		System.out.println(grille.getLayoutX()+"\n");
 	}
-	
-	
-	
-	// Save ---------------------------------------------------------------------------------------
-	@FXML
-    private void handleSaving(ActionEvent event) {
-		
-    }
-	
 	
 	
 	
@@ -230,8 +213,8 @@ public class GenController {
 	
 	// Ecoute le bus d'ï¿½vent pour savoir si la taille de la grille doit changer -------------------
 	/**
-	 * Gï¿½re l'ajout de colonnes ï¿½ la grille, se dï¿½lcnche via l'event bus
-	 * @param e l'event auquel il est abonnï¿½
+	 * Gère l'ajout de colonnes ï¿½ la grille, se déclenche via l'event bus
+	 * @param e l'event auquel il est abonné
 	 */
 	@Subscribe
 	private void handleAddLenght(AddLengthGrilleEvent e) {
@@ -392,7 +375,7 @@ public class GenController {
 		*/
 	}
 	
-	private int[][] getCustomMap() {
+	private char[][] getCustomMap() {
 		// Obtention du nbr de colonnes et lignes
 		Node cells = grille.getChildren().get(grille.getChildren().size() - 1);
 		Cell c1 = new Cell(cells);
@@ -403,8 +386,8 @@ public class GenController {
 		int nRow = c1.getY();
 		
 		//Crï¿½ation du tableau 2D
-		int[][] cellTab = new int[nRow+1][nCol+1];
-		System.out.println(" MAX : "+nCol+", "+nRow);
+		char[][] cellTab = new char[nRow+1][nCol+1];
+//		System.out.println(" MAX : "+nCol+", "+nRow);
 		
 		// remplit le tableau 2D
 		for(Node cell : grille.getChildren()) {
@@ -412,7 +395,6 @@ public class GenController {
 			if(cell instanceof Cell) {
 				c = (Cell) cell;
 			}
-			System.out.println(c.getX()+", "+c.getY());
 			cellTab[c.getY()][c.getX()] = c.getCellId();
 		}
 		

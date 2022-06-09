@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 public class SaveController implements Initializable {
 
     FileChooser fileChooser = new FileChooser();
-    int[][] tabLevel;
+    char[][] tabLevel;
 
     private String contenu = "";
         
@@ -71,7 +71,7 @@ public class SaveController implements Initializable {
         }
     }
     
-	public void setData(int[][] customMap) {
+	public void setData(char[][] customMap) {
 		tabLevel = customMap;
 	}
 }

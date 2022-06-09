@@ -20,7 +20,7 @@ public class Cell extends Parent {
 	private int width;
 	private int x, y;
 	private Rectangle back;
-	private int cellId;
+	private char cellId;
 
 	public Cell(Node cell) {
 		super();
@@ -31,7 +31,7 @@ public class Cell extends Parent {
 		this.width = width;
 		this.x = x;
 		this.y = y;
-		this.cellId = 0;
+		this.cellId = '0';
 		
 		back = new Rectangle();
 		back.setFill(Color.FLORALWHITE);
@@ -61,7 +61,6 @@ public class Cell extends Parent {
 				erase();
 			}
 		});
-		
 	}
 	
 	private void onPaint() {
@@ -83,7 +82,7 @@ public class Cell extends Parent {
 			ground.setWidth(width);
 			ground.setHeight(width);
 			ground.setFill(Color.ROYALBLUE);
-			cellId = 1;
+			cellId = '1';
 			
 			this.getChildren().add(ground);
 			break;
@@ -96,7 +95,7 @@ public class Cell extends Parent {
 	                (double) (width), (double) (width), 
 	             });
 			triangle.setFill(Color.RED);
-			cellId = 2;
+			cellId = '2';
 
 			this.getChildren().add(triangle);
 			break;
@@ -112,6 +111,7 @@ public class Cell extends Parent {
 					start.setHeight(width);
 					start.setFill(Color.DARKGREEN);
 					start.setId("start");
+					cellId = '8';
 					
 					this.getChildren().add(start);
 					ToolBar.setStartPlaced(x);
@@ -119,13 +119,13 @@ public class Cell extends Parent {
 				} else {
 					occuped = false;
 					
-					Ebus.get().post(new PopupEvent("Attention !", "Le dï¿½part doit ï¿½tre placï¿½ ï¿½ gauche de l'arrivï¿½e"));
+					Ebus.get().post(new PopupEvent("Attention !", "Le départ doit être placé à gauche de l'arrivée"));
 				}
 			} else {
 				// Si un dï¿½part a dï¿½jï¿½ ï¿½tï¿½ placï¿½ 
 				occuped = false;
 
-				Ebus.get().post(new PopupEvent("Attention !", "Un dï¿½part a dï¿½jï¿½ ï¿½tï¿½ placï¿½"));
+				Ebus.get().post(new PopupEvent("Attention !", "Un départ à déjà été placée"));
 			}
 			break;
 			
@@ -140,6 +140,7 @@ public class Cell extends Parent {
 					end.setHeight(width);
 					end.setFill(Color.DARKRED);
 					end.setId("end");
+					cellId = '9';
 					
 					this.getChildren().add(end);
 					ToolBar.setEndPlaced(x);
@@ -147,18 +148,21 @@ public class Cell extends Parent {
 				} else {
 					occuped = false;
 					
-					Ebus.get().post(new PopupEvent("Attention !", "L'arrivï¿½e doit ï¿½tre placï¿½e ï¿½ droite du dï¿½part"));
+					Ebus.get().post(new PopupEvent("Attention !", "L'arrivée doit être placée à droite du départ"));
 				}
 			} else {
 				// Si une arrivï¿½e a dï¿½jï¿½ ï¿½tï¿½ placï¿½e
 				occuped = false;
 
-				Ebus.get().post(new PopupEvent("Attention !", "Une arrivï¿½e a dï¿½jï¿½ ï¿½tï¿½ placï¿½e"));
+				Ebus.get().post(new PopupEvent("Attention !", "Une arrivée à déjà été placée"));
 			}
 			break;
 			
+		case "test": 
+			cellId = 's';
+			break;
+			
 		default:
-			cellId = 0;
 			occuped = false;
 			break;
 		}
@@ -180,7 +184,7 @@ public class Cell extends Parent {
 					ToolBar.setStartPlaced((node.getId() == "start" ) ? 0 : ToolBar.getStartPlace());
 					ToolBar.setEndPlaced((node.getId() == "end" ) ? 0 : ToolBar.getEndPlace());
 					
-					cellId = 0;
+					cellId = '0';
 					toRem.add(node);
 				}
 			}
@@ -198,11 +202,13 @@ public class Cell extends Parent {
 	@Override
 	public String toString() {
 		return super.toString() + " / x: " + this.x + " / y: " + this.y;
-	public int getCellId() {
+	}	
+	
+	public char getCellId() {
 		return cellId;
 	}
 
-	public void setCellId(int cellId) {
+	public void setCellId(char cellId) {
 		this.cellId = cellId;
 	}
 

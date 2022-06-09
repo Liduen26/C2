@@ -31,7 +31,7 @@
             <HBox fx:id="saveBar" alignment="CENTER" prefHeight="80.0" prefWidth="329.0" spacing="20.0" HBox.hgrow="ALWAYS">
                <children>
                   <Button fx:id="load" mnemonicParsing="false" text="Charger" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="save" mnemonicParsing="false" onAction="#handleSaving" text="Sauvegarder" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="save" mnemonicParsing="false" text="Sauvegarder" HBox.hgrow="ALWAYS" />
                   <Label fx:id="mapName" text="sans nom" HBox.hgrow="ALWAYS" />
                </children></HBox>
             <HBox alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="SOMETIMES">

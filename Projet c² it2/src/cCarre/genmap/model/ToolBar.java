@@ -1,8 +1,5 @@
 package cCarre.genmap.model;
 
-import cCarre.genmap.events.Ebus;
-import cCarre.genmap.events.AddLengthGrilleEvent;
-
 public class ToolBar {
 	private static String item;
 	private static boolean test = false;
@@ -10,6 +7,9 @@ public class ToolBar {
 	private static int mostX;
 	private static int startPlaced = 0;
 	private static int endPlaced = 0;
+	private static boolean preTest = false;
+	
+
 	public ToolBar() {}
 	
 	// Paserelle d'infos --------------------------------------------------------------------------
@@ -71,5 +71,13 @@ public class ToolBar {
 	
 	public static int getEndPlace() {
 		return endPlaced;
+	}
+	
+	public static boolean isPreTest() {
+		return preTest;
+	}
+
+	public static void setPreTest(boolean preTest) {
+		ToolBar.preTest = preTest;
 	}
 }

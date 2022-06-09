@@ -22,19 +22,14 @@ public class Level {
 		this.levelHeight = jsonMap.length();
 		this.LevelMap = new char[this.levelHeight][this.levelLength];
 		
-        for (int i = 0; i < levelHeight; i++) {
-            for (int j = 0; j < levelLength; j++) {
-            	LevelMap[i][j] = (char) jsonMap.getJSONArray(i).get(j);
-            }
-        }
 	}
 	
 	public int getLevelWidth(){
 		return levelWidth;
 	}
 
-	public char[][] getLevel() {
-		return LevelMap;
+	public JSONArray getLevel() {
+		return jsonMap;
 	}
 
 	public void setLevel(char[][] level) {
