@@ -141,7 +141,7 @@ public class GenController {
 	// QuickTest ----------------------------------------------------------------------------------
 	@FXML
     void handleTest(ActionEvent event) throws IOException {
-		boolean go = false;
+		boolean go = true;
 		ToolBar.setItem("test");
 		
 		
@@ -208,32 +208,32 @@ public class GenController {
 			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
 				System.out.println(root.getChildren());
 				
-				Cell c = new Cell((Node) e.getTarget());
-				if(e.getTarget() instanceof Cell) {
-					c = (Cell) e.getTarget();
-				}
+//				Cell c = new Cell((Node) e.getTarget());
+//				if(e.getTarget() instanceof Cell) {
+//					c = (Cell) e.getTarget();
+//				}
 //				System.out.println(c);
 //				System.out.println(c.isSelected());
 				
-				if(c.isSelected()) {
-					// Depl de la selï¿½ction
-					
-				} else {
+//				if(c.isSelected()) {
+//					// Depl de la selï¿½ction
+//					
+//				} else {
 					// Zone de sï¿½lection
-					switch (ToolBar.getItem()) {
-					case "select":
-						this.unselect();
-						select.setLayoutX(e.getX());
-						select.setLayoutY(e.getY());
-						select.setWidth(0);
-						select.setHeight(0);
-						initialPtX = e.getX() + grille.getLayoutX();
-						initialPtY = e.getY();
+					
+				this.unselect();
+				select.setLayoutX(e.getX());
+				select.setLayoutY(e.getY());
+				select.setWidth(0);
+				select.setHeight(0);
+				initialPtX = e.getX() + grille.getLayoutX();
+				initialPtY = e.getY();
+				
+				root.getChildren().add(select);
 						
-						root.getChildren().add(select);
-						break;
-					}
-				}
+				
+				System.out.println(root.getChildren());
+//				}
 			}
 		});
 		
@@ -297,10 +297,9 @@ public class GenController {
 		});
 		
 		grille.setOnMouseReleased(e -> {
-			System.out.println("bonjour");
+			System.out.println("boujour");
 			// Relachement du clic
 			if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
-				System.out.println("slt");
 				System.out.println(root.getChildren());
 				// Regarde toutes les cases 
 				for(Node cell : grille.getChildren()) {
@@ -313,7 +312,7 @@ public class GenController {
 					if(((c.getX()+1) * widthCell) > select.getLayoutX() && (c.getX() * widthCell) < (select.getLayoutX() + select.getWidth()) 
 					&& ((c.getY()+1) * widthCell) > select.getLayoutY() && (c.getY() * widthCell) < (select.getLayoutY() + select.getHeight())) {
 						// Si y a pas que le background, alors 
-						if(c.getChildrenUnmodifiable().size() > 1) {
+						if(c.getChildrenUnmodifiable().size() > 2) {
 							c.setSelected(true);
 						}							
 					}
@@ -329,17 +328,26 @@ public class GenController {
 		
 	}
 	
+	/**
+	 * Déselectionne toutes les cases de la grille
+	 */
 	private void unselect() {
 		for(Node cell : grille.getChildren()) {
-			Cell c = new Cell(cell);
+			Cell c;
 			if(cell instanceof Cell) {
 				c = (Cell) cell;
+			} else {
+				c = new Cell(cell);
 			}
 			
-			c.setSelected(false);
+			if(c.isSelected()) {
+				c.setSelected(false);
+ 			}
 		}
 	}
 
+	
+	
 	// Ecoute le bus d'ï¿½vent pour savoir si la taille de la grille doit changer -------------------
 	/**
 	 * Gï¿½re l'ajout de colonnes ï¿½ la grille, se dï¿½clenche via l'event bus
@@ -385,7 +393,7 @@ public class GenController {
 			}
 			
 			// Si y a pas que le background, alors on change le mostX
-			if(c.getChildrenUnmodifiable().size() > 1) {
+			if(c.getChildrenUnmodifiable().size() > 2) {
 				x = (c.getX() > x) ? c.getX() : x;
 			}
 		}

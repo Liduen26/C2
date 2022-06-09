@@ -14,8 +14,6 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
-
-
 public class Cell extends Parent {
 	private boolean occuped = false;
 	private int width;
@@ -50,6 +48,9 @@ public class Cell extends Parent {
 		selection.setFill(Color.TRANSPARENT);
 		selection.setWidth(width);
 		selection.setHeight(width);
+		selection.setOpacity(0);
+		
+		this.getChildren().add(selection);
 		
 		this.setOnMousePressed(e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
@@ -254,9 +255,10 @@ public class Cell extends Parent {
 
 	public void setSelected(boolean selected) {
 		if(selected && !this.selected) {
-			this.getChildren().add(selection);
+			selection.setOpacity(1);
+			
 		} else if(!selected && this.selected) {
-			this.getChildren().remove(selection);
+			selection.setOpacity(0);
 		}
 		this.selected = selected;
 	}
