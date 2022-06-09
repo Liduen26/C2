@@ -12,6 +12,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 
 
@@ -21,6 +22,8 @@ public class Cell extends Parent {
 	private int x, y;
 	private Rectangle back;
 	private char cellId;
+	private Rectangle selection;
+	private boolean selected = false;
 
 	public Cell(Node cell) {
 		super();
@@ -39,6 +42,14 @@ public class Cell extends Parent {
 		back.setHeight(width);
 		this.getChildren().add(back);
 		
+		
+		selection = new Rectangle();
+		selection.setStroke(Color.YELLOW);
+		selection.setStrokeWidth(4);
+		selection.setStrokeType(StrokeType.INSIDE);
+		selection.setFill(Color.TRANSPARENT);
+		selection.setWidth(width);
+		selection.setHeight(width);
 		
 		this.setOnMousePressed(e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
@@ -119,13 +130,13 @@ public class Cell extends Parent {
 				} else {
 					occuped = false;
 					
-					Ebus.get().post(new PopupEvent("Attention !", "Le départ doit être placé à gauche de l'arrivée"));
+					Ebus.get().post(new PopupEvent("Attention !", "Le dï¿½part doit ï¿½tre placï¿½ ï¿½ gauche de l'arrivï¿½e"));
 				}
 			} else {
 				// Si un dï¿½part a dï¿½jï¿½ ï¿½tï¿½ placï¿½ 
 				occuped = false;
 
-				Ebus.get().post(new PopupEvent("Attention !", "Un départ à déjà été placée"));
+				Ebus.get().post(new PopupEvent("Attention !", "Un dï¿½part ï¿½ dï¿½jï¿½ ï¿½tï¿½ placï¿½e"));
 			}
 			break;
 			
@@ -148,13 +159,13 @@ public class Cell extends Parent {
 				} else {
 					occuped = false;
 					
-					Ebus.get().post(new PopupEvent("Attention !", "L'arrivée doit être placée à droite du départ"));
+					Ebus.get().post(new PopupEvent("Attention !", "L'arrivï¿½e doit ï¿½tre placï¿½e ï¿½ droite du dï¿½part"));
 				}
 			} else {
 				// Si une arrivï¿½e a dï¿½jï¿½ ï¿½tï¿½ placï¿½e
 				occuped = false;
 
-				Ebus.get().post(new PopupEvent("Attention !", "Une arrivée à déjà été placée"));
+				Ebus.get().post(new PopupEvent("Attention !", "Une arrivï¿½e ï¿½ dï¿½jï¿½ ï¿½tï¿½ placï¿½e"));
 			}
 			break;
 			
@@ -188,6 +199,7 @@ public class Cell extends Parent {
 					toRem.add(node);
 				}
 			}
+			
 			for(Node rem : toRem) {
 				this.getChildren().remove(rem);
 			}
@@ -235,4 +247,18 @@ public class Cell extends Parent {
 	public void setWidth(int width) {
 		this.width = width;
 	}
+	
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		if(selected && !this.selected) {
+			this.getChildren().add(selection);
+		} else if(!selected && this.selected) {
+			this.getChildren().remove(selection);
+		}
+		this.selected = selected;
+	}
+	
 }

@@ -12,15 +12,7 @@ public class ToolBar {
 
 	public ToolBar() {}
 	
-	// Paserelle d'infos --------------------------------------------------------------------------
-	
-	
 
-	// Objet servant � r�cup�rer les �tat des btns ------------------------------------------------
-	
-	
-	
-	
 	// Getter - Setters ---------------------------------------------------------------------------
 	public static void setItem(String id) {
 		item = id;
