@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.hamcrest.core.IsInstanceOf;
 import org.json.JSONArray;
 
 import com.google.common.eventbus.Subscribe;
@@ -129,9 +128,9 @@ public class GenController {
 		}
 		
 		select = new Rectangle();
-		select.setFill(Color.DARKCYAN);
+		select.setFill(Color.RED);
 		select.setOpacity(0.2);
-		
+		select.setFocusTraversable(true);
 	}
 	
 	
@@ -211,12 +210,15 @@ public class GenController {
 				e.setDragDetect(true);
 				newX = e.getSceneX();
 				
-			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem() == "select") {
+			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
+				System.out.println(root.getChildren());
+				
 				Cell c = new Cell((Node) e.getTarget());
 				if(e.getTarget() instanceof Cell) {
 					c = (Cell) e.getTarget();
 				}
-				System.out.println(c.isSelected());
+//				System.out.println(c);
+//				System.out.println(c.isSelected());
 				
 				if(c.isSelected()) {
 					// Depl de la seléction
@@ -226,6 +228,8 @@ public class GenController {
 					switch (ToolBar.getItem()) {
 					case "select":
 						this.unselect();
+						select.setLayoutX(e.getX());
+						select.setLayoutY(e.getY());
 						select.setWidth(0);
 						select.setHeight(0);
 						initialPtX = e.getX() + grille.getLayoutX();
@@ -258,7 +262,7 @@ public class GenController {
 					grille.setLayoutX(grille.getLayoutX() + delta);
 				}
 				
-			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem() == "select") {
+			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
 				Cell c = new Cell((Node) e.getTarget());
 				if(e.getTarget() instanceof Cell) {
 					c = (Cell) e.getTarget();
@@ -266,7 +270,7 @@ public class GenController {
 				
 				if(c.isSelected()) {
 					// Depl de la seléction
-					System.out.println(c.isSelected());
+//					System.out.println(c.isSelected());
 					
 				} else {
 					// Zone de sélection
@@ -298,47 +302,36 @@ public class GenController {
 		});
 		
 		grille.setOnMouseReleased(e -> {
+			System.out.println("bonjour");
 			// Relachement du clic
-			if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem() == "select") {
-				// Zone de sélection
-				switch (ToolBar.getItem()) {
-				case "select":
-					// Regarde toutes les cases 
-					for(Node cell : grille.getChildren()) {
-						Cell c = new Cell(cell);
-						if(cell instanceof Cell) {
-							c = (Cell) cell;
-						}
-						
-						// Cherche les cellules dans la zone de selection
-						if((c.getX() * widthCell) > select.getLayoutX() && (c.getX() * widthCell) < (select.getLayoutX() + select.getWidth()) 
-						&& (c.getY() * widthCell) > select.getLayoutY() && (c.getY() * widthCell) < (select.getLayoutY() + select.getHeight())) {
-							// Si y a pas que le background, alors 
-							if(c.getChildrenUnmodifiable().size() > 1) {
-								c.setSelected(true);
-							}							
-						}
+			if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
+				System.out.println("slt");
+				System.out.println(root.getChildren());
+				// Regarde toutes les cases 
+				for(Node cell : grille.getChildren()) {
+					Cell c = new Cell(cell);
+					if(cell instanceof Cell) {
+						c = (Cell) cell;
 					}
 					
-					
-					root.getChildren().remove(select);
-					break;
+					// Cherche les cellules dans la zone de selection
+					if(((c.getX()+1) * widthCell) > select.getLayoutX() && (c.getX() * widthCell) < (select.getLayoutX() + select.getWidth()) 
+					&& ((c.getY()+1) * widthCell) > select.getLayoutY() && (c.getY() * widthCell) < (select.getLayoutY() + select.getHeight())) {
+						// Si y a pas que le background, alors 
+						if(c.getChildrenUnmodifiable().size() > 1) {
+							c.setSelected(true);
+						}							
+					}
 				}
+				
+//				select.setWidth(0);
+//				select.setHeight(200);
+				root.getChildren().remove(select);
+				System.out.println(root.getChildren());
+
 			}
 		});
 		
-		grille.setOnMouseClicked(e -> {
-			if(e.getButton() == MouseButton.PRIMARY) {
-				Cell c = new Cell((Node) e.getTarget());
-				if(e.getTarget() instanceof Cell) {
-					c = (Cell) e.getTarget();
-				}
-				System.out.println("slt");
-				if(c.getChildrenUnmodifiable().size() <= 1) {
-					
-				}
-			}
-		});
 	}
 	
 	private void unselect() {
