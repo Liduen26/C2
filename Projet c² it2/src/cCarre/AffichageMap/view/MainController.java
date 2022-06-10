@@ -18,6 +18,17 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import cCarre.Menu.GameMenuController;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
@@ -106,7 +117,7 @@ public class MainController {
 					finishBlocks.add(finishBlock);
 					break;
 				case 's' :
-					// Test rapide de l'éditeur
+					// Test rapide de l'ï¿½diteur
 					spawnX = x*elementSize;
 					spawnY = y*elementSize-1;
 					break;
@@ -115,14 +126,14 @@ public class MainController {
 		}
 		player = new Player(spawnX, spawnY, elementSize, elementSize, Color.BLUE, rootLayout, constGrav, constV);
 		
-		// La caméra suit le joueur
+		// La camï¿½ra suit le joueur
         player.translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
                 System.out.println(rootLayout.getLayoutX());
                 
-                // Si le jeu vient de l'éditeur, transmet les coo à la grille
+                // Si le jeu vient de l'ï¿½diteur, transmet les coo ï¿½ la grille
 				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
             }
         });
@@ -170,7 +181,7 @@ public class MainController {
 				triangleCollision();// Check triangle collision
 				coinCollision();// Check coin collision
 				
-				// Si le joueur touche la ligne d'arrivée
+				// Si le joueur touche la ligne d'arrivï¿½e
 	            boolean collisionDetected = false;
 	            for (Shape finishBlock : finishBlocks) {
 	            	if (finishBlock != player.playerRectangle) {
@@ -202,28 +213,39 @@ public class MainController {
 	}
 	
 	/**
-	 * Gère la détection de la collision avec les plateformes, 
-	 * tue si le player est sur le côté, au sol s'il est sur le dessus
+	 * Gï¿½re la dï¿½tection de la collision avec les plateformes, 
+	 * tue si le player est sur le cï¿½tï¿½, au sol s'il est sur le dessus
 	 */
 	private void platfCollision() {
 		onGround = false;
 		for (Shape platform : platforms) {
         	if (platform != player.playerRectangle) {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
-        		if (intersect.getBoundsInLocal().getHeight() != -1) {
-        			// Collision cotée
-        			if(player.getTranslateY()+45>platform.getTranslateY()) {
-        				player.death(spawnX,spawnY, rootLayout);
-        				verticalVelocity = 0;
-    				
-    				// sol
-        			} else {
-        				verticalVelocity = 0;
-        				player.setTranslateY(platform.getTranslateY()-player.getHeight());
-        				onGround = true;
-        				canJump = true;
-        			}
-        		}
+				if (intersect.getBoundsInLocal().getHeight() != -1) {
+					if (intersect.getBoundsInLocal().getHeight() <= intersect.getBoundsInLocal().getWidth()) {
+						
+						if(intersect.getBoundsInLocal().getMinY() > platform.getTranslateY()) {
+							// plafond -> MORT
+							verticalVelocity = 0;
+							player.death(spawnX,spawnY, rootLayout);
+						} else {
+							System.out.println(intersect.getBoundsInLocal().getMinY());
+							System.out.println(platform.getTranslateY());
+							
+							// AU sol
+							player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
+//	        				player.setTranslateY(player.getTranslateY() + (distanceY - 0.0001));
+							verticalVelocity = 0;
+							onGround = true;
+							canJump = true;
+							
+						}
+					} else {
+						// Cotï¿½ -> MORT
+						verticalVelocity = 0;
+						player.death(spawnX,spawnY, rootLayout);
+					}
+				}
         	}
         }
 	}
@@ -248,7 +270,7 @@ public class MainController {
 	
 	
 	/**
-	 * Gestion de la collision avec un Coin (une pièce)
+	 * Gestion de la collision avec un Coin (une piï¿½ce)
 	 */
 	private void coinCollision() {
 		// Check si le joueur touche une piece et change le statut de la piece
@@ -261,7 +283,7 @@ public class MainController {
 			}
 		}
 
-		// On supprime les coins ramassés avec iterator car on ne peut pas delete quand on boucle sur la liste
+		// On supprime les coins ramassï¿½s avec iterator car on ne peut pas delete quand on boucle sur la liste
 		for (Iterator<Shape> it = coins.iterator(); it.hasNext(); ) {
 			Node coin = it.next();
 			if (!(Boolean)coin.getProperties().get("alive")) {
@@ -279,7 +301,7 @@ public class MainController {
 	}
 
 	/**
-	 * Calcule l'interval entre les frames, et affiche le nombre de fps calculé
+	 * Calcule l'interval entre les frames, et affiche le nombre de fps calculï¿½
 	 * @return L'interval entre chaque frame, en nanosecondes
 	 */
 	private double affFPS () {
@@ -292,7 +314,7 @@ public class MainController {
 		// Affichage FPS
 		if(System.currentTimeMillis() - time >= 1000) {
 			//fps.setText("FPS : " + frame);
-			System.out.println("FPS : " + frame);
+			//System.out.println("FPS : " + frame);
 			frame = 0;
 			time = System.currentTimeMillis();				
 		} 

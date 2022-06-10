@@ -1,6 +1,7 @@
 package cCarre.AffichageMap.model;
 
 import org.json.JSONArray;
+import cCarre.AffichageMap.data.LevelData;
 
 public class Level {
 	private final int idLevel;
@@ -69,7 +70,7 @@ public class Level {
 	}
 	
 	/**
-	 * Méthode servant à définir le level à utiliser, à set avant d'instancier Level (et donc le contrller du jeu)
+	 * Mï¿½thode servant ï¿½ dï¿½finir le level ï¿½ utiliser, ï¿½ set avant d'instancier Level (et donc le contrller du jeu)
 	 * @param json Le JSONArray de la map a utiliser
 	 */
 	public static void setJsonLevel(JSONArray json) {

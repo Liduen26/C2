@@ -29,7 +29,7 @@ public class GameMenuController {
 	}
 	
 	public void LaunchGame(ActionEvent event) throws IOException {
-		// Définis la map à utiliser, attend un JSONArray
+		// Dï¿½finis la map ï¿½ utiliser, attend un JSONArray
 		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
 		
 		// Load root layout from fxml file.
@@ -44,8 +44,6 @@ public class GameMenuController {
         window.setScene(scene);
         
         MainController controller = loader.getController();
-       
-        // Chemin du fichier json (à faire)
         
 		window.setMaximized(true);
 		window.setHeight(1080);

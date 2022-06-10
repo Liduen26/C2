@@ -20,7 +20,7 @@ public class MainGen extends Application {
 		this.primaryStage.setTitle("Editeur de Map");
 		this.primaryStage.setMaximized(true);
 		
-		// Initialisation et ouverture de la fenètre
+		// Initialisation et ouverture de la fenï¿½tre
 		initMainLayout();
 	}
 	
@@ -31,7 +31,7 @@ public class MainGen extends Application {
 			loader.setLocation(MainGen.class.getResource("view/GenLayout.fxml"));
 			mainLayout = (AnchorPane) loader.load();
 			
-			// Affichage de la scène contenant le layout précédemment chargé
+			// Affichage de la scï¿½ne contenant le layout prï¿½cï¿½demment chargï¿½
 			Scene scene = new Scene(mainLayout);
 			primaryStage.setScene(scene);
 			

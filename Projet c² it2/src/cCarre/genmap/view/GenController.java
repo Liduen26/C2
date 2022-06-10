@@ -25,6 +25,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import java.io.IOException;
+
+import cCarre.genmap.MainGen;
+import cCarre.genmap.model.Cell;
+import cCarre.genmap.model.ToolBar;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -41,6 +49,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.stage.Stage;
 
 public class GenController {
 	@SuppressWarnings("unused")
@@ -199,7 +208,7 @@ public class GenController {
 	private void handleMouseEvents() {
 		// Event qui attendent le drag de la fenï¿½tre ----------------------------------------------
 		grille.setOnMousePressed(e -> {
-			// Début / init
+			// Dï¿½but / init
 			if(e.getButton() == MouseButton.MIDDLE) {
 				// Dï¿½placement de la grille
 				e.setDragDetect(true);
@@ -318,7 +327,7 @@ public class GenController {
 	}
 	
 	/**
-	 * Déselectionne toutes les cases de la grille
+	 * Dï¿½selectionne toutes les cases de la grille
 	 */
 	private void unselect() {
 		for(Node cell : grille.getChildren()) {

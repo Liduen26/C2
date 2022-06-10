@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
+import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -109,7 +110,7 @@ public class Player extends Parent{
 	
 	public void death(double spawnX, double spawnY, AnchorPane rootLayout){
 		tp(spawnX, spawnY);
-    	rootLayout.setLayoutX(0); // TP la caméra au début du jeu
+    	rootLayout.setLayoutX(0); // TP la camï¿½ra au dï¿½but du jeu
     	Ebus.get().post(new MoveGridEvent(0));
 	}
 

@@ -65,7 +65,7 @@ public class Cell extends Region {
 			} else if(e.getButton() == MouseButton.SECONDARY) {
 				e.setDragDetect(true);
 				erase();
-				// Cause une erreur mais ça marche qu'averc ça }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+				// Cause une erreur mais ï¿½a marche qu'averc ï¿½a }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 				this.startFullDrag();
 			}
 		});
@@ -173,7 +173,7 @@ public class Cell extends Region {
 					Ebus.get().post(new PopupEvent("Attention !", "L'arrivï¿½e doit ï¿½tre placï¿½e ï¿½ droite du dï¿½part"));
 				}
 			} else {
-				// Si une arrivée a déjà été placée
+				// Si une arrivï¿½e a dï¿½jï¿½ ï¿½tï¿½ placï¿½e
 				occuped = false;
 
 				Ebus.get().post(new PopupEvent("Attention !", "Une arrivï¿½e ï¿½ dï¿½jï¿½ ï¿½tï¿½ placï¿½e"));
