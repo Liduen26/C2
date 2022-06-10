@@ -199,41 +199,36 @@ public class GenController {
 	private void handleMouseEvents() {
 		// Event qui attendent le drag de la fenï¿½tre ----------------------------------------------
 		grille.setOnMousePressed(e -> {
-			// Dï¿½but / init
+			// Début / init
 			if(e.getButton() == MouseButton.MIDDLE) {
 				// Dï¿½placement de la grille
 				e.setDragDetect(true);
 				newX = e.getSceneX();
 				
 			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
-				System.out.println(root.getChildren());
-				
-//				Cell c = new Cell((Node) e.getTarget());
-//				if(e.getTarget() instanceof Cell) {
-//					c = (Cell) e.getTarget();
-//				}
-//				System.out.println(c);
-//				System.out.println(c.isSelected());
-				
-//				if(c.isSelected()) {
-//					// Depl de la selï¿½ction
-//					
-//				} else {
+				Cell c = null;
+				System.out.println(e.getTarget());
+				if(e.getTarget() instanceof Cell) {
+					c = (Cell) e.getTarget();
+					System.out.println(c.isSelected());
+					
+					if(c.isSelected()) {
+						// Depl de la selection
+						
+					} 
+				} else {
 					// Zone de sï¿½lection
 					
-				this.unselect();
-				select.setLayoutX(e.getX());
-				select.setLayoutY(e.getY());
-				select.setWidth(0);
-				select.setHeight(0);
-				initialPtX = e.getX() + grille.getLayoutX();
-				initialPtY = e.getY();
-				
-				root.getChildren().add(select);
-						
-				
-				System.out.println(root.getChildren());
-//				}
+					this.unselect();
+					select.setLayoutX(e.getX());
+					select.setLayoutY(e.getY());
+					select.setWidth(0);
+					select.setHeight(0);
+					initialPtX = e.getX() + grille.getLayoutX();
+					initialPtY = e.getY();
+					
+					root.getChildren().add(select);
+				}
 			}
 		});
 		
@@ -297,10 +292,8 @@ public class GenController {
 		});
 		
 		grille.setOnMouseReleased(e -> {
-			System.out.println("boujour");
 			// Relachement du clic
 			if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
-				System.out.println(root.getChildren());
 				// Regarde toutes les cases 
 				for(Node cell : grille.getChildren()) {
 					Cell c = new Cell(cell);
@@ -318,11 +311,7 @@ public class GenController {
 					}
 				}
 				
-//				select.setWidth(0);
-//				select.setHeight(200);
 				root.getChildren().remove(select);
-				System.out.println(root.getChildren());
-
 			}
 		});
 		

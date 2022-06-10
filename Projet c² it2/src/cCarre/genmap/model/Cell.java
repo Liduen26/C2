@@ -7,14 +7,14 @@ import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
-public class Cell extends Parent {
+public class Cell extends Region {
 	private boolean occuped = false;
 	private int width;
 	private int x, y;
@@ -38,8 +38,11 @@ public class Cell extends Parent {
 		back.setFill(Color.FLORALWHITE);
 		back.setWidth(width);
 		back.setHeight(width);
+		back.setMouseTransparent(true);
 		this.getChildren().add(back);
 		
+		this.setPrefWidth(width);
+		this.setPrefHeight(width);
 		
 		selection = new Rectangle();
 		selection.setStroke(Color.YELLOW);
@@ -49,6 +52,8 @@ public class Cell extends Parent {
 		selection.setWidth(width);
 		selection.setHeight(width);
 		selection.setOpacity(0);
+		selection.setMouseTransparent(true);
+		
 		
 		this.getChildren().add(selection);
 		
@@ -56,10 +61,11 @@ public class Cell extends Parent {
 			if(e.getButton() == MouseButton.PRIMARY) {
 				e.setDragDetect(true);
 				onPaint();
+				
 			} else if(e.getButton() == MouseButton.SECONDARY) {
 				e.setDragDetect(true);
 				erase();
-				// Cause une erreur mais ï¿½a marche qu'averc ï¿½a }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+				// Cause une erreur mais ça marche qu'averc ça }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 				this.startFullDrag();
 			}
 		});
@@ -94,6 +100,7 @@ public class Cell extends Parent {
 			ground.setWidth(width);
 			ground.setHeight(width);
 			ground.setFill(Color.ROYALBLUE);
+			ground.setMouseTransparent(true);
 			cellId = '1';
 			
 			this.getChildren().add(ground);
@@ -107,6 +114,7 @@ public class Cell extends Parent {
 	                (double) (width), (double) (width), 
 	             });
 			triangle.setFill(Color.RED);
+			triangle.setMouseTransparent(true);
 			cellId = '2';
 
 			this.getChildren().add(triangle);
@@ -123,6 +131,7 @@ public class Cell extends Parent {
 					start.setHeight(width);
 					start.setFill(Color.DARKGREEN);
 					start.setId("start");
+					start.setMouseTransparent(true);
 					cellId = '8';
 					
 					this.getChildren().add(start);
@@ -152,6 +161,7 @@ public class Cell extends Parent {
 					end.setHeight(width);
 					end.setFill(Color.DARKRED);
 					end.setId("end");
+					end.setMouseTransparent(true);
 					cellId = '9';
 					
 					this.getChildren().add(end);
@@ -163,7 +173,7 @@ public class Cell extends Parent {
 					Ebus.get().post(new PopupEvent("Attention !", "L'arrivï¿½e doit ï¿½tre placï¿½e ï¿½ droite du dï¿½part"));
 				}
 			} else {
-				// Si une arrivï¿½e a dï¿½jï¿½ ï¿½tï¿½ placï¿½e
+				// Si une arrivée a déjà été placée
 				occuped = false;
 
 				Ebus.get().post(new PopupEvent("Attention !", "Une arrivï¿½e ï¿½ dï¿½jï¿½ ï¿½tï¿½ placï¿½e"));
@@ -241,7 +251,7 @@ public class Cell extends Parent {
 		this.y = y;
 	}
 	
-	public int getWidth() {
+	public int getMyWidth() {
 		return width;
 	}
 
@@ -256,6 +266,7 @@ public class Cell extends Parent {
 	public void setSelected(boolean selected) {
 		if(selected && !this.selected) {
 			selection.setOpacity(1);
+			selection.toFront();
 			
 		} else if(!selected && this.selected) {
 			selection.setOpacity(0);
