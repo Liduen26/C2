@@ -1,8 +1,7 @@
 package cCarre.AffichageMap.model;
 
+import org.json.JSONArray;
 import cCarre.AffichageMap.data.LevelData;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
 
 public class Level {
 	private final int idLevel;
@@ -10,34 +9,32 @@ public class Level {
 	private int totalCoin;
 	private int levelWidth;
 	private int levelHeight;
-	private char[][] Level;
+	private char[][] LevelMap;
 	
+	private static JSONArray jsonMap;
+	
+	
+
 	public Level() {
 		this.idLevel = 0;
-		this.levelLength = LevelData.LEVEL1[0].length();
-		this.levelWidth = LevelData.LEVEL1[0].length() * 60;
+		this.levelLength = jsonMap.getJSONArray(0).length();
+		this.levelWidth = this.levelLength * 60;
 		this.totalCoin = 0;
-		this.levelHeight = LevelData.LEVEL1.length;
-		this.Level = new char[this.levelHeight][this.levelLength];
+		this.levelHeight = jsonMap.length();
+		this.LevelMap = new char[this.levelHeight][this.levelLength];
 		
-        for (int i = 0; i < levelHeight; i++) {
-            String line = LevelData.LEVEL1[i];
-            for (int j = 0; j < levelLength; j++) {
-            	Level[i][j] = line.charAt(j);
-            }
-        }
 	}
 	
 	public int getLevelWidth(){
 		return levelWidth;
 	}
 
-	public char[][] getLevel() {
-		return Level;
+	public JSONArray getLevel() {
+		return jsonMap;
 	}
 
 	public void setLevel(char[][] level) {
-		Level = level;
+		LevelMap = level;
 	}
 
 	public int getLevelHeight() {
@@ -66,5 +63,17 @@ public class Level {
 
 	public int getIdLevel() {
 		return idLevel;
+	}
+	
+	public static JSONArray setJsonLevel() {
+		return jsonMap;
+	}
+	
+	/**
+	 * M�thode servant � d�finir le level � utiliser, � set avant d'instancier Level (et donc le contrller du jeu)
+	 * @param json Le JSONArray de la map a utiliser
+	 */
+	public static void setJsonLevel(JSONArray json) {
+		Level.jsonMap = json;
 	}
 }

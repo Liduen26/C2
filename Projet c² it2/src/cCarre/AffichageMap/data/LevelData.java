@@ -1,5 +1,7 @@
 package cCarre.AffichageMap.data;
 
+import org.json.JSONArray;
+
 public class LevelData {
 
     public static final String[] LEVEL1 = new String[] {
@@ -16,4 +18,40 @@ public class LevelData {
         "8000000100200000000023000110000000100200000000023000119",
         "1111111100111100011111001111111111100111100011111001119"
     };
+
+    public static final String[] LEVEL2 = new String[] {
+		"0000000000000000000000000000",
+		"0000000000000000000000000000",
+		"0000000000000000000000000000",
+		"0000000000000000000000000000",
+		"0000000000000000000000000000",
+		"0000000010000110000000000000",
+		"0001110000000000000000000000",
+		"0000000000000000000000000000",
+		"0000000000001110000000000000",
+		"0000000300000000000020000000",
+		"0000000100200000003111000110",
+		"1111111100111100011111001111"
+    };
+    
+    /**
+     * Passe � la moulinette le vieux format de map et le transformen en JSONArray
+     * @param level La map en String[]
+     * @return Un JSONArry de la map
+     */
+    public static JSONArray getLevelInJSON(String[] level) {
+    	int levelHeight = level.length;
+    	int levelWidth = level[0].length();
+    	char[][] levelTab = new char[levelHeight][levelWidth];
+    	
+    	for (int y = 0; y < levelHeight; y++) {
+            String line = level[y];
+            for (int x = 0; x < levelWidth; x++) {
+            	levelTab[y][x] = line.charAt(x);
+            }
+        }
+    	
+    	JSONArray json = new JSONArray(levelTab);
+    	return json;
+    }
 }

@@ -4,20 +4,25 @@ import java.util.ArrayList;
 
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
-public class Cell extends Parent {
+public class Cell extends Region {
 	private boolean occuped = false;
 	private int width;
 	private int x, y;
 	private Rectangle back;
-	
+	private char cellId;
+	private Rectangle selection;
+	private boolean selected = false;
+
 	public Cell(Node cell) {
 		super();
 	}
@@ -27,22 +32,40 @@ public class Cell extends Parent {
 		this.width = width;
 		this.x = x;
 		this.y = y;
+		this.cellId = '0';
 		
 		back = new Rectangle();
 		back.setFill(Color.FLORALWHITE);
 		back.setWidth(width);
 		back.setHeight(width);
+		back.setMouseTransparent(true);
 		this.getChildren().add(back);
 		
+		this.setPrefWidth(width);
+		this.setPrefHeight(width);
+		
+		selection = new Rectangle();
+		selection.setStroke(Color.YELLOW);
+		selection.setStrokeWidth(4);
+		selection.setStrokeType(StrokeType.INSIDE);
+		selection.setFill(Color.TRANSPARENT);
+		selection.setWidth(width);
+		selection.setHeight(width);
+		selection.setOpacity(0);
+		selection.setMouseTransparent(true);
+		
+		
+		this.getChildren().add(selection);
 		
 		this.setOnMousePressed(e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
 				e.setDragDetect(true);
 				onPaint();
+				
 			} else if(e.getButton() == MouseButton.SECONDARY) {
 				e.setDragDetect(true);
 				erase();
-				// Cause une erreur mais ça marche qu'averc ça }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+				// Cause une erreur mais ï¿½a marche qu'averc ï¿½a }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 				this.startFullDrag();
 			}
 		});
@@ -56,7 +79,6 @@ public class Cell extends Parent {
 				erase();
 			}
 		});
-		
 	}
 	
 	private void onPaint() {
@@ -69,7 +91,7 @@ public class Cell extends Parent {
 	private void paint() {
 		occuped = true;
 		
-		// Regarde quel item est sélectionné pour la peinture
+		// Regarde quel item est sï¿½lectionnï¿½ pour la peinture
 		String item = ToolBar.getItem();
 		
 		switch (item) {
@@ -78,6 +100,8 @@ public class Cell extends Parent {
 			ground.setWidth(width);
 			ground.setHeight(width);
 			ground.setFill(Color.ROYALBLUE);
+			ground.setMouseTransparent(true);
+			cellId = '1';
 			
 			this.getChildren().add(ground);
 			break;
@@ -90,8 +114,74 @@ public class Cell extends Parent {
 	                (double) (width), (double) (width), 
 	             });
 			triangle.setFill(Color.RED);
-			
+			triangle.setMouseTransparent(true);
+			cellId = '2';
+
 			this.getChildren().add(triangle);
+			break;
+			
+		case "departBtn":
+			if(!ToolBar.isStartPlaced()) {
+				// S'il n'y a pas encore de dï¿½part placï¿½
+				
+				if(ToolBar.isEndPlaced() == false || ToolBar.getEndPlace() > this.x) {
+					// Si la fin est bien a droite du start, ou pas placï¿½e
+					Rectangle start = new Rectangle();
+					start.setWidth(width);
+					start.setHeight(width);
+					start.setFill(Color.DARKGREEN);
+					start.setId("start");
+					start.setMouseTransparent(true);
+					cellId = '8';
+					
+					this.getChildren().add(start);
+					ToolBar.setStartPlaced(x);
+					
+				} else {
+					occuped = false;
+					
+					Ebus.get().post(new PopupEvent("Attention !", "Le dï¿½part doit ï¿½tre placï¿½ ï¿½ gauche de l'arrivï¿½e"));
+				}
+			} else {
+				// Si un dï¿½part a dï¿½jï¿½ ï¿½tï¿½ placï¿½ 
+				occuped = false;
+
+				Ebus.get().post(new PopupEvent("Attention !", "Un dï¿½part ï¿½ dï¿½jï¿½ ï¿½tï¿½ placï¿½e"));
+			}
+			break;
+			
+		case "arriveeBtn":
+			if(!ToolBar.isEndPlaced()) {
+				// S'il n'y a pas encore d'arrivï¿½e placï¿½e
+				
+				if(ToolBar.isStartPlaced() == false || ToolBar.getStartPlace() < this.x) {
+					// Si le start est bien a gauche de la fin, ou pas placï¿½e
+					Rectangle end = new Rectangle();
+					end.setWidth(width);
+					end.setHeight(width);
+					end.setFill(Color.DARKRED);
+					end.setId("end");
+					end.setMouseTransparent(true);
+					cellId = '9';
+					
+					this.getChildren().add(end);
+					ToolBar.setEndPlaced(x);
+					
+				} else {
+					occuped = false;
+					
+					Ebus.get().post(new PopupEvent("Attention !", "L'arrivï¿½e doit ï¿½tre placï¿½e ï¿½ droite du dï¿½part"));
+				}
+			} else {
+				// Si une arrivï¿½e a dï¿½jï¿½ ï¿½tï¿½ placï¿½e
+				occuped = false;
+
+				Ebus.get().post(new PopupEvent("Attention !", "Une arrivï¿½e ï¿½ dï¿½jï¿½ ï¿½tï¿½ placï¿½e"));
+			}
+			break;
+			
+		case "test": 
+			cellId = 's';
 			break;
 			
 		default:
@@ -99,7 +189,7 @@ public class Cell extends Parent {
 			break;
 		}
 		
-		// Si la case a été peinte, on vérifie si le x est sup au plus grand x, pour la taille de la grille 
+		// Si la case a ï¿½tï¿½ peinte, on vï¿½rifie si le x est sup au plus grand x, pour la taille de la grille 
 		if(occuped) {
 			if(ToolBar.getMostX() < x) {
 				Ebus.get().post(new AddLengthGrilleEvent(x));
@@ -112,9 +202,15 @@ public class Cell extends Parent {
 		if(occuped) {
 			for(Node node : this.getChildren()) {
 				if(node != back) {
+					// Vï¿½rifie si c'est le start ou le dï¿½but qui a ï¿½tï¿½ delete
+					ToolBar.setStartPlaced((node.getId() == "start" ) ? 0 : ToolBar.getStartPlace());
+					ToolBar.setEndPlaced((node.getId() == "end" ) ? 0 : ToolBar.getEndPlace());
+					
+					cellId = '0';
 					toRem.add(node);
 				}
 			}
+			
 			for(Node rem : toRem) {
 				this.getChildren().remove(rem);
 			}
@@ -126,7 +222,18 @@ public class Cell extends Parent {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		return super.toString() + " / x: " + this.x + " / y: " + this.y;
+	}	
 	
+	public char getCellId() {
+		return cellId;
+	}
+
+	public void setCellId(char cellId) {
+		this.cellId = cellId;
+	}
 
 	public int getX() {
 		return x;
@@ -144,11 +251,27 @@ public class Cell extends Parent {
 		this.y = y;
 	}
 	
-	public int getWidth() {
+	public int getMyWidth() {
 		return width;
 	}
 
 	public void setWidth(int width) {
 		this.width = width;
 	}
+	
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		if(selected && !this.selected) {
+			selection.setOpacity(1);
+			selection.toFront();
+			
+		} else if(!selected && this.selected) {
+			selection.setOpacity(0);
+		}
+		this.selected = selected;
+	}
+	
 }

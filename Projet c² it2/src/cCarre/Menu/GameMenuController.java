@@ -1,9 +1,8 @@
 package cCarre.Menu;
-
-
-
 import java.io.IOException;
 
+import cCarre.AffichageMap.data.LevelData;
+import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,10 +14,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-
-
 public class GameMenuController {
-@FXML public Button GoToBaseMenu;
+	@FXML 
+	public Button GoToBaseMenu;
 
 	public void GoToBaseMenu(ActionEvent event) throws IOException {
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("BaseMenu.fxml"));
@@ -31,6 +29,9 @@ public class GameMenuController {
 	}
 	
 	public void LaunchGame(ActionEvent event) throws IOException {
+		// D�finis la map � utiliser, attend un JSONArray
+		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
+		
 		// Load root layout from fxml file.
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
@@ -43,7 +44,6 @@ public class GameMenuController {
         window.setScene(scene);
         
         MainController controller = loader.getController();
-        controller.setMainApp(this);
         
 		window.setMaximized(true);
 		window.setHeight(1080);
