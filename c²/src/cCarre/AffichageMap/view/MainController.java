@@ -1,7 +1,16 @@
 package cCarre.AffichageMap.view;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
@@ -12,6 +21,7 @@ import cCarre.AffichageMap.model.Player;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.binding.DoubleExpression;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -64,14 +74,14 @@ public class MainController {
 
 	@FXML
 	private AnchorPane rootLayout;
-
+	
 	@FXML
 	private void initialize() {
+		
 		//init temps
 		newTime = System.nanoTime();
 		time = System.currentTimeMillis();
-		
-		System.out.println(level);
+
 		
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
@@ -123,6 +133,7 @@ public class MainController {
         });
 		
 		loop(144); // Let's go into the GAME !
+		loadCoin();
 	}
 
 	/**
@@ -264,6 +275,7 @@ public class MainController {
 				it.remove();
 				rootLayout.getChildren().remove(coin);
 				pieces ++;
+				saveCoin(pieces);
 			}
 		}
 	}
@@ -321,6 +333,62 @@ public class MainController {
 	public void setMap(String string) {
 		// TODO Auto-generated method stub
 		this.level = string;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void saveCoin(int pieces) {
+		FileWriter file = null;
+		JSONObject obj = new JSONObject();
+		obj.put("nbrsCoin", new Integer(pieces));
+		System.out.println(obj);
+		
+		try {
+			file =new FileWriter("./pieces.json");
+			file.write(obj.toJSONString());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+ 
+            try {
+                file.flush();
+                file.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }	
+	}
+	
+	public void loadCoin() {
+		
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+         
+        try (FileReader reader = new FileReader("pieces.json"))
+        {
+        	
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+            
+            // Cast JSON file
+            JSONObject JsonCoin = (JSONObject) obj;
+            System.out.println(JsonCoin);
+            System.out.println(JsonCoin.get("nbrsCoin").getClass());
+            
+          // pieces = Math.toIntExact(JsonCoin.get("nbrsCoin"));
+            
+      //      ((Long)jsonObject.get("nbrsCoin")).intValue();
+            pieces = ((Long) JsonCoin.get("nbrsCoin")).intValue();
+            
+            System.out.println(pieces+"test");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 	}
 
 }
