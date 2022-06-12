@@ -12,8 +12,6 @@ public class Level {
 	
 	private static JSONArray jsonMap;
 	
-	
-
 	public Level() {
 		this.idLevel = 0;
 		this.levelLength = jsonMap.getJSONArray(0).length();

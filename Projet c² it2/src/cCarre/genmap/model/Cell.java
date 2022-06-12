@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import javafx.scene.Node;
 import javafx.scene.Parent;

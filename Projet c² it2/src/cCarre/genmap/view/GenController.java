@@ -4,16 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.google.common.eventbus.Subscribe;
-
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -41,13 +38,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.FileChooser;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -159,7 +154,7 @@ public class GenController {
 		// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
 		root.requestFocus();
 		
-		// Dï¿½finis la map ï¿½ utiliser, attend un JSONArray
+		// Définis la map à utiliser, attend un JSONArray
 		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
 		
 		// Load person overview.
@@ -332,24 +327,68 @@ public class GenController {
 		window.setHeight(500);
 		window.setWidth(600);
 		window.show();
-		
 	}
 	
 	
 	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
-	public void GoToSave(ActionEvent event) throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
-		Parent root = (Parent) loader.load();
-		Scene scene = new Scene(root);
-		Stage stage = new Stage();
-		stage.setScene(scene);
-		stage.setTitle("My Window");
-		stage.show();
-		
-		SaveController sc = loader.getController();
-		sc.setData(getCustomMap());
+	public void GoToSave(ActionEvent event) throws IOException, ParseException {
+		load2();
+//		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
+//		Parent root = (Parent) loader.load();
+//		Scene scene = new Scene(root);
+//		Stage stage = new Stage();
+//		stage.setScene(scene);
+//		stage.setTitle("My Window");
+//		stage.show();
+//		
+//		SaveController sc = loader.getController();
+//		sc.setData(getCustomMap());
 		
 	}
+
+    void load2() throws FileNotFoundException, IOException, ParseException {
+    	JSONParser parser = new JSONParser();
+
+        File file = fileChooser.showOpenDialog(new Stage());
+    	FileReader reader = new FileReader(file);
+
+    	JSONArray jsonMap = (JSONArray) parser.parse(reader);
+    	
+        JSONArray element1 = (JSONArray) jsonMap.get(0);
+        //System.out.println(element1.get(0));
+
+        System.out.println();
+        
+        
+    	//System.out.println(jsonMap);
+
+    	/*
+    	String map = "";
+
+        Scanner scanner = new Scanner(file);
+        while(scanner.hasNextLine()){
+        	map+=(scanner.nextLine() + "\n");
+        }
+        
+        System.out.println(map);
+        System.out.println(map.toCharArray());
+        char[][] zzz;
+        char[] iii = map.toCharArray();
+    	
+    	//Object obj =(new FileReader("D:\\Jack.json"));
+    	 */
+/*
+        System.out.println(file.getAbsolutePath());
+        
+    	jsonMap = (JSONArray) obj;
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+            	//LevelMap[i][j] = (char) jsonMap.getJSONArray(i).get(j);
+            	System.out.println((char) jsonMap.getJSONArray(i).get(j));
+            }
+        }
+        */
+    }
 	
 	private int[][] getCustomMap() {
 		// Obtention du nbr de colonnes et lignes
@@ -428,7 +467,6 @@ public class GenController {
         }
         */
     }
-}
 	
 	@Subscribe
 	public void myPopup(PopupEvent e) {
