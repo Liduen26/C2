@@ -14,6 +14,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
@@ -43,7 +44,7 @@ public class MainController {
 	double distanceY;
 	double verticalVelocity = 0;
 	boolean onGround = false;
-	
+	int pieces = 0;
 	boolean canJump = false;
 	int spawnX, spawnY;
 	boolean running = true;
@@ -57,6 +58,9 @@ public class MainController {
 
 	@FXML
 	private Player player;
+	
+	@FXML
+	private Label Coin;
 
 	@FXML
 	private AnchorPane rootLayout;
@@ -111,6 +115,7 @@ public class MainController {
             int offset = newValue.intValue();
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
+                Coin.setLayoutX(+(offset - 300));
                 
                 // Si le jeu vient de l'�diteur, transmet les coo � la grille
 //				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
@@ -178,16 +183,14 @@ public class MainController {
 	            
 				// meurt quand tombe dans le vide
 				if(player.getTranslateY()>800) {
-					player.death(spawnX, spawnY, rootLayout);
+					player.death(spawnX, spawnY, rootLayout, Coin);
 				}
 				// Empeche de charger un saut pendant un saut
 				if(jump == true) {
 					canJump = false;
-				}
-				
-				
-				
+				}						
 			}
+			Coin.setText("Pieces : "+pieces);
 		}));
 
 		time1.setCycleCount(Animation.INDEFINITE);
@@ -206,7 +209,7 @@ public class MainController {
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
         			// Collision cot�e
         			if(player.getTranslateY()+45>platform.getTranslateY()) {
-        				player.death(spawnX,spawnY, rootLayout);
+        				player.death(spawnX,spawnY, rootLayout, Coin);
         				verticalVelocity = 0;
     				
     				// sol
@@ -235,7 +238,7 @@ public class MainController {
 			}
 		}
 		if (collisionDetected) {
-			player.death(spawnX,spawnY, rootLayout);
+			player.death(spawnX,spawnY, rootLayout, Coin);
 		}
 	}
 	
@@ -260,6 +263,7 @@ public class MainController {
 			if (!(Boolean)coin.getProperties().get("alive")) {
 				it.remove();
 				rootLayout.getChildren().remove(coin);
+				pieces ++;
 			}
 		}
 	}
