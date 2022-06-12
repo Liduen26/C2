@@ -19,15 +19,19 @@ public class BaseMenuController {
 
 @FXML public Button GoToGameMenu;
 
+
+
+
 	public void GoToGameMenu(ActionEvent event) throws IOException {
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("GameMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
-		
 		window.setScene(tableViewScene);
 		window.show();
 	}
+	
+	
 	public void GoToShopMenu(ActionEvent event) throws IOException {
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("ShopMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);

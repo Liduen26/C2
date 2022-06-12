@@ -29,7 +29,7 @@ public class Main extends Application {
     /**
      * Initializes the root layout.
      */
- /*   public void initMainLayout() {
+/*    public void initMainLayout() {
         try {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();

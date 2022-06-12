@@ -20,5 +20,6 @@
          <children>
             <Button layoutY="2.0" mnemonicParsing="false" onAction="#LaunchGame" prefHeight="222.0" prefWidth="370.0" text="Button" />
          </children></Pane>
+      <Button layoutX="463.0" layoutY="353.0" mnemonicParsing="false" onAction="#GoToEditLevel" text="Editeur de niveau" />
    </children>
 </Pane>
