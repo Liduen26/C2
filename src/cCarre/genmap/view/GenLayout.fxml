@@ -14,6 +14,9 @@
                <children>
                   <Button fx:id="groundBtn" mnemonicParsing="false" text="Ground" />
                   <Button fx:id="obstacleBtn" mnemonicParsing="false" text="Obstacle" />
+                  <Button mnemonicParsing="false" text="Button" />
+                  <Button mnemonicParsing="false" onAction="#loadMap" text="Load" />
+                  <Button mnemonicParsing="false" onAction="#GoToSave" text="Save" />
                   <Button fx:id="departBtn" mnemonicParsing="false" text="Départ" />
                   <Button fx:id="arriveeBtn" mnemonicParsing="false" text="Arrivée" />
                   <Button fx:id="select" mnemonicParsing="false" text="Sélection" />

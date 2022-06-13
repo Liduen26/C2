@@ -1,5 +1,8 @@
 package cCarre.genmap.model;
 
+import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.AddLengthGrilleEvent;
+
 public class ToolBar {
 	private static String item;
 	private static boolean test = false;

@@ -87,7 +87,62 @@ public class Cell extends Region {
 		}
 	}
 	
+	public void loadMapPaint() {
+		occuped = true;
+		
+		switch (cellId) {
+		case 0:
+			Rectangle vide = new Rectangle();
+			vide.setWidth(width);
+			vide.setHeight(width);
+			vide.setFill(Color.WHITE);
+			
+			this.getChildren().add(vide);
+			break;
+			
+		case 1: 
+			Rectangle ground = new Rectangle();
+			ground.setWidth(width);
+			ground.setHeight(width);
+			ground.setFill(Color.ROYALBLUE);
+			
+			this.getChildren().add(ground);
+			break;
+			
+		case 2:
+			// Ajoute un carr� blanc avant de mettre le triangle
+			Rectangle vide2 = new Rectangle();
+			vide2.setWidth(width);
+			vide2.setHeight(width);
+			vide2.setFill(Color.WHITE);
+			this.getChildren().add(vide2);
+			
+			// Ajoute le triangle
+			Polygon triangle = new Polygon();
+			triangle.getPoints().addAll(new Double[]{
+	                (double) (width / 2), (double) 0, 
+	                (double) 0, (double) (width), 
+	                (double) (width), (double) (width), 
+	             });
+			triangle.setFill(Color.RED);
 
+			this.getChildren().add(triangle);
+			break;
+			
+		default:
+			cellId = 0;
+			occuped = false;
+			break;
+		}
+		
+		// Si la case a �t� peinte, on v�rifie si le x est sup au plus grand x, pour la taille de la grille 
+		if(occuped) {
+			if(ToolBar.getMostX() < x) {
+				Ebus.get().post(new AddLengthGrilleEvent(x));
+			}
+		}
+	}
+	
 	private void paint() {
 		occuped = true;
 		
@@ -185,6 +240,7 @@ public class Cell extends Region {
 			break;
 			
 		default:
+			cellId = 0;
 			occuped = false;
 			break;
 		}

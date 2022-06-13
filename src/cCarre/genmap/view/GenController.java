@@ -1,13 +1,20 @@
 package cCarre.genmap.view;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 
+import cCarre.AffichageMap.data.LevelData;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
 import cCarre.Menu.MainMenu;
@@ -25,14 +32,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import java.io.IOException;
-
-import cCarre.genmap.MainGen;
-import cCarre.genmap.model.Cell;
-import cCarre.genmap.model.ToolBar;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -43,13 +42,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.stage.Stage;
 
 public class GenController {
 	@SuppressWarnings("unused")
@@ -185,11 +181,8 @@ public class GenController {
 			root.setOnKeyPressed(e ->{
 				controller.jump();
 			});
-			// /!\ Penser � remove l'event sur le btn return /!\
-			
+			// /!\ Penser � remove l'event sur le btn return /!\	
 		}
-		
-		
     }
 	
 	@Subscribe
@@ -445,8 +438,54 @@ public class GenController {
 		window.setHeight(500);
 		window.setWidth(600);
 		window.show();
-		
 	}
+	
+	
+	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
+	public void GoToSave(ActionEvent event) throws IOException, ParseException {
+		// Load (mais n'affiche pas) la page fxml d�di�e � la save pour ensuite envoyer la map � la classe SaveController
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
+		Parent root = (Parent) loader.load();
+		
+		// Envoie la map ( charg�e par getCustomMap() ) � la classe SaveController � travers la fonction setData() dans SaveController qui r�cup�re la map et lance la save()
+		SaveController sc = loader.getController();
+		sc.setData(getCustomMap());
+	}
+
+    public void loadMap() throws FileNotFoundException, IOException, ParseException {
+    	JSONParser parser = new JSONParser();
+
+    	// Demande � l'utilisateur de choisir un fichier
+        File file = fileChooser.showOpenDialog(new Stage());
+    	FileReader reader = new FileReader(file);
+
+    	JSONArray jsonMap = (JSONArray) parser.parse(reader); // parse
+        JSONArray element1 = (JSONArray) jsonMap.get(0); // element1 recupere la map
+        JSONArray element2 = (JSONArray) element1.get(0); // element2 recupere une ligne de la map
+        
+        // Cr�er un tableau 2D pour exploiter la map choisie
+    	int[][] tabMap = new int[element1.size()][element2.size()];
+    	
+    	// Remplit le tableau 2D
+        for (int i = 0; i < element1.size(); ++i) {
+            element2 = (JSONArray) element1.get(i); // passe � la prochaine ligne
+            for(int j = 0; j < element2.size(); ++j) {
+                System.out.print(element2.get(j));
+                tabMap[i][j] = ((Long)element2.get(j)).intValue();
+            }
+            System.out.println(""); // saute une ligne
+        }
+        
+		// Remplit la grille avec la map charg�e
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+			}
+			c.setCellId(tabMap[c.getY()][c.getX()]);
+			c.loadMapPaint();
+		}
+    }
 	
 	@Subscribe
 	public void myPopup(PopupEvent e) {
@@ -478,36 +517,6 @@ public class GenController {
 		PauseTransition delay = new PauseTransition(Duration.seconds(2));
 		delay.setOnFinished( event -> root.getChildren().remove(popup));
 		delay.play();
-	}
-
-	
-	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
-	public void GoToSave(ActionEvent event) throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
-		Parent root = (Parent) loader.load();
-		Scene scene = new Scene(root);
-		Stage stage = new Stage();
-		stage.setScene(scene);
-		stage.setTitle("My Window");
-		stage.show();
-		
-		SaveController sc = loader.getController();
-		sc.setData(getCustomMap());
-		/*
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("Save.fxml"));
-		Parent tableViewParent = (Parent)loader.load();
-		SaveController sc = loader.getController();
-		sc.setData(getCustomMap());
-		
-		Scene tableViewScene = new Scene(tableViewParent);
-		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
-		
-		window.setScene(tableViewScene);
-		window.setHeight(500);
-		window.setWidth(600);
-		window.show();
-		*/
 	}
 	
 	private char[][] getCustomMap() {

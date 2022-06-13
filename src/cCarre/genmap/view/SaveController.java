@@ -2,15 +2,23 @@ package cCarre.genmap.view;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
 import org.json.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -53,7 +61,6 @@ public class SaveController implements Initializable {
     	fileChooser.getExtensionFilters().add(extensionFilter);
         fileChooser.setInitialDirectory(new File("D:\\"));
     }
-
     public void saveSystem(File file, String content){
         try {
         	PrintWriter printWriter = new PrintWriter(file);
@@ -61,8 +68,8 @@ public class SaveController implements Initializable {
         	JSONArray tab2D = new JSONArray();
         	tab2D.put(tabLevel);
         	content += tab2D.toString();
-            
-            printWriter.write(content);
+            tab2D.write(printWriter);
+
             printWriter.close();
             
         } catch (FileNotFoundException e) {
@@ -70,7 +77,10 @@ public class SaveController implements Initializable {
         }
     }
     
-	public void setData(char[][] customMap) {
+	public void setData(int[][] customMap) {
+		// R�cup�re la map
 		tabLevel = customMap;
+		// Lance la save
+		save(null);
 	}
 }
