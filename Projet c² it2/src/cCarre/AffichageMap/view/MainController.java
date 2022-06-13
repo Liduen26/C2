@@ -113,8 +113,8 @@ public class MainController {
 				}
 			}
 		}
-
-		player = new Player(spawnX, spawnY, elementSize, elementSize, Color.BLUE, rootLayout, constGrav, constV);
+		Color color = ShopMenuController.Getcolor();
+		player = new Player(spawnX, spawnY, elementSize, elementSize, color, rootLayout, constGrav, constV);
 		
 		// La caméra suit le joueur
         player.translateXProperty().addListener((obs, old, newValue) -> {
