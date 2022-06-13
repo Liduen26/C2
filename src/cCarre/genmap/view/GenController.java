@@ -5,16 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 
-import cCarre.AffichageMap.data.LevelData;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
 import cCarre.Menu.MainMenu;
@@ -42,6 +39,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -94,7 +93,7 @@ public class GenController {
 		screenBounds = Screen.getPrimary().getBounds();
 
 		// Se place dans disque D quand on save
-        fileChooser.setInitialDirectory(new File("D:\\"));
+//        fileChooser.setInitialDirectory(new File("C:\\"));
 		
 		double rWidth = screenBounds.getWidth() / widthCell;
 		double rHeight = screenBounds.getHeight() / widthCell;
@@ -137,12 +136,6 @@ public class GenController {
 		select.setFocusTraversable(true);
 	}
 	
-	
-	
-	
-	
-	
-	
 	// QuickTest ----------------------------------------------------------------------------------
 	@FXML
     void handleTest(ActionEvent event) throws IOException {
@@ -152,7 +145,8 @@ public class GenController {
 		
 		if(go) {
 			// Charge la map
-			JSONArray mapGen = new JSONArray(getCustomMap());
+			JSONArray mapGen = new JSONArray();
+			
 			System.out.println(mapGen);
 			
 			// D�sactive tout les btns de la toolbar et change le retour<
@@ -440,53 +434,6 @@ public class GenController {
 		window.show();
 	}
 	
-	
-	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
-	public void GoToSave(ActionEvent event) throws IOException, ParseException {
-		// Load (mais n'affiche pas) la page fxml d�di�e � la save pour ensuite envoyer la map � la classe SaveController
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
-		Parent root = (Parent) loader.load();
-		
-		// Envoie la map ( charg�e par getCustomMap() ) � la classe SaveController � travers la fonction setData() dans SaveController qui r�cup�re la map et lance la save()
-		SaveController sc = loader.getController();
-		sc.setData(getCustomMap());
-	}
-
-    public void loadMap() throws FileNotFoundException, IOException, ParseException {
-    	JSONParser parser = new JSONParser();
-
-    	// Demande � l'utilisateur de choisir un fichier
-        File file = fileChooser.showOpenDialog(new Stage());
-    	FileReader reader = new FileReader(file);
-
-    	JSONArray jsonMap = (JSONArray) parser.parse(reader); // parse
-        JSONArray element1 = (JSONArray) jsonMap.get(0); // element1 recupere la map
-        JSONArray element2 = (JSONArray) element1.get(0); // element2 recupere une ligne de la map
-        
-        // Cr�er un tableau 2D pour exploiter la map choisie
-    	int[][] tabMap = new int[element1.size()][element2.size()];
-    	
-    	// Remplit le tableau 2D
-        for (int i = 0; i < element1.size(); ++i) {
-            element2 = (JSONArray) element1.get(i); // passe � la prochaine ligne
-            for(int j = 0; j < element2.size(); ++j) {
-                System.out.print(element2.get(j));
-                tabMap[i][j] = ((Long)element2.get(j)).intValue();
-            }
-            System.out.println(""); // saute une ligne
-        }
-        
-		// Remplit la grille avec la map charg�e
-		for(Node cell : grille.getChildren()) {
-			Cell c = new Cell(cell);
-			if(cell instanceof Cell) {
-				c = (Cell) cell;
-			}
-			c.setCellId(tabMap[c.getY()][c.getX()]);
-			c.loadMapPaint();
-		}
-    }
-	
 	@Subscribe
 	public void myPopup(PopupEvent e) {
 		// Tailles max
@@ -519,6 +466,53 @@ public class GenController {
 		delay.play();
 	}
 	
+	
+	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
+	public void GoToSave(ActionEvent event) throws IOException, ParseException {
+		// Load (mais n'affiche pas) la page fxml d�di�e � la save pour ensuite envoyer la map � la classe SaveController
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
+		Parent root = (Parent) loader.load();
+		
+		// Envoie la map ( charg�e par getCustomMap() ) � la classe SaveController � travers la fonction setData() dans SaveController qui r�cup�re la map et lance la save()
+		SaveController sc = loader.getController();
+		sc.setData(getCustomMap());
+	}
+
+    public void loadMap() throws FileNotFoundException, IOException, ParseException {
+    	JSONParser parser = new JSONParser();
+
+    	// Demande � l'utilisateur de choisir un fichier
+        File file = fileChooser.showOpenDialog(new Stage());
+    	FileReader reader = new FileReader(file);
+
+    	JSONArray jsonMap = (JSONArray) parser.parse(reader); // parse
+        JSONArray element1 = jsonMap; // element1 recupere la map
+        JSONArray element2 = (JSONArray) jsonMap.get(0); // element2 recupere une ligne de la map
+        
+        // Cr�er un tableau 2D pour exploiter la map choisie
+    	char[][] tabMap = new char[element1.size()][element2.size()];
+    	
+    	// Remplit le tableau 2D
+        for (int i = 0; i < element1.size(); ++i) {
+            element2 = (JSONArray) element1.get(i); // passe � la prochaine ligne
+            for(int j = 0; j < element2.size(); ++j) {
+                System.out.print(element2.get(j));
+                tabMap[i][j] = (char) ((Long) element2.get(0)).intValue();
+            }
+            System.out.println(""); // saute une ligne
+        }
+        
+		// Remplit la grille avec la map charg�e
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+			}
+			c.setCellId(tabMap[c.getY()][c.getX()]);
+			c.loadMapPaint();
+		}
+    }
+	
 	private char[][] getCustomMap() {
 		// Obtention du nbr de colonnes et lignes
 		Node cells = grille.getChildren().get(grille.getChildren().size() - 1);
@@ -545,4 +539,3 @@ public class GenController {
 		return cellTab;
 	}
 }
-	

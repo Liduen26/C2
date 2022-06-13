@@ -1,6 +1,6 @@
 package cCarre.AffichageMap.data;
 
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 
 public class LevelData {
 
@@ -43,15 +43,17 @@ public class LevelData {
     	int levelHeight = level.length;
     	int levelWidth = level[0].length();
     	char[][] levelTab = new char[levelHeight][levelWidth];
+    	JSONArray json = new JSONArray();
     	
     	for (int y = 0; y < levelHeight; y++) {
             String line = level[y];
+            JSONArray lineJSON = new JSONArray();
+            json.add(lineJSON);
             for (int x = 0; x < levelWidth; x++) {
-            	levelTab[y][x] = line.charAt(x);
+            	lineJSON.add(line.charAt(x));
             }
         }
     	
-    	JSONArray json = new JSONArray(levelTab);
     	return json;
     }
 }

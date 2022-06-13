@@ -1,7 +1,6 @@
 package cCarre.AffichageMap.model;
 
-import org.json.JSONArray;
-import cCarre.AffichageMap.data.LevelData;
+import org.json.simple.JSONArray;
 
 public class Level {
 	private final int idLevel;
@@ -9,17 +8,16 @@ public class Level {
 	private int totalCoin;
 	private int levelWidth;
 	private int levelHeight;
-	private char[][] LevelMap;
 	
 	private static JSONArray jsonMap;
 	
 	public Level() {
+		System.out.println(jsonMap.get(1));
 		this.idLevel = 0;
-		this.levelLength = jsonMap.getJSONArray(0).length();
+		this.levelLength = ((JSONArray) jsonMap.get(0)).size();
 		this.levelWidth = this.levelLength * 60;
 		this.totalCoin = 0;
-		this.levelHeight = jsonMap.length();
-		this.LevelMap = new char[this.levelHeight][this.levelLength];
+		this.levelHeight = jsonMap.size();
 		
 	}
 	
@@ -29,10 +27,6 @@ public class Level {
 
 	public JSONArray getLevel() {
 		return jsonMap;
-	}
-
-	public void setLevel(char[][] level) {
-		LevelMap = level;
 	}
 
 	public int getLevelHeight() {

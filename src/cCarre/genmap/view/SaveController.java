@@ -2,23 +2,16 @@ package cCarre.genmap.view;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
-import org.json.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.simple.JSONArray;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -30,6 +23,13 @@ public class SaveController implements Initializable {
 
     private String contenu = "";
         
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+    	FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("Json file (*.json", "*.json");
+    	fileChooser.getExtensionFilters().add(extensionFilter);
+        fileChooser.setInitialDirectory(new File("C:\\"));
+    }
+    
     //Added null check to check rather a file is picked or not
     @FXML
     void getText(MouseEvent event) {
@@ -48,27 +48,30 @@ public class SaveController implements Initializable {
     }
 
     @FXML
-    void save(MouseEvent event) {
+    void save(MouseEvent event) throws IOException {
         File file = fileChooser.showSaveDialog(new Stage());
         if(file != null){
             saveSystem(file, contenu);
         }
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-    	FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("Json file (*.json", "*.json");
-    	fileChooser.getExtensionFilters().add(extensionFilter);
-        fileChooser.setInitialDirectory(new File("D:\\"));
-    }
-    public void saveSystem(File file, String content){
+    
+    public void saveSystem(File file, String content) throws IOException{
         try {
         	PrintWriter printWriter = new PrintWriter(file);
         	
         	JSONArray tab2D = new JSONArray();
-        	tab2D.put(tabLevel);
+        	
+        	for (int y = 0; y < tabLevel.length; y++) {
+                char[] line = tabLevel[y];
+                JSONArray lineJSON = new JSONArray();
+                tab2D.add(lineJSON);
+                for (int x = 0; x < line.length; x++) {
+                	lineJSON.add(line[x]);
+                }
+            }
         	content += tab2D.toString();
-            tab2D.write(printWriter);
+            tab2D.writeJSONString(printWriter);
 
             printWriter.close();
             
@@ -77,7 +80,7 @@ public class SaveController implements Initializable {
         }
     }
     
-	public void setData(int[][] customMap) {
+	public void setData(char[][] customMap) throws IOException {
 		// R�cup�re la map
 		tabLevel = customMap;
 		// Lance la save

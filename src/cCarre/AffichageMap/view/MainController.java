@@ -3,7 +3,7 @@ package cCarre.AffichageMap.view;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
@@ -18,17 +18,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import cCarre.Menu.GameMenuController;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
@@ -91,7 +80,7 @@ public class MainController {
 
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
-				char text = (char) Level.getJSONArray(y).get(x);
+				char text = (char) ((JSONArray) Level.get(y)).get(x);
 				switch(text) {
 				case '0' :
 					// ici c'est vide
