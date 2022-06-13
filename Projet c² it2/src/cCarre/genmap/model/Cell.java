@@ -70,12 +70,19 @@ public class Cell extends Parent {
 		}
 	}
 	
-	private void loadMapPaint() {
+	public void loadMapPaint() {
 		occuped = true;
 		
 		switch (cellId) {
-		case 0: 
+		case 0:
+			Rectangle vide = new Rectangle();
+			vide.setWidth(width);
+			vide.setHeight(width);
+			vide.setFill(Color.WHITE);
+			
+			this.getChildren().add(vide);
 			break;
+			
 		case 1: 
 			Rectangle ground = new Rectangle();
 			ground.setWidth(width);
@@ -86,6 +93,14 @@ public class Cell extends Parent {
 			break;
 			
 		case 2:
+			// Ajoute un carré blanc avant de mettre le triangle
+			Rectangle vide2 = new Rectangle();
+			vide2.setWidth(width);
+			vide2.setHeight(width);
+			vide2.setFill(Color.WHITE);
+			this.getChildren().add(vide2);
+			
+			// Ajoute le triangle
 			Polygon triangle = new Polygon();
 			triangle.getPoints().addAll(new Double[]{
 	                (double) (width / 2), (double) 0, 

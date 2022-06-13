@@ -141,6 +141,9 @@ public class SaveController implements Initializable {
     }
     
 	public void setData(int[][] customMap) {
+		// Récupère la map
 		tabLevel = customMap;
+		// Lance la save
+		save(null);
 	}
 }

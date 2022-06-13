@@ -4,11 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -332,62 +332,48 @@ public class GenController {
 	
 	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
 	public void GoToSave(ActionEvent event) throws IOException, ParseException {
-		load2();
-//		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
-//		Parent root = (Parent) loader.load();
-//		Scene scene = new Scene(root);
-//		Stage stage = new Stage();
-//		stage.setScene(scene);
-//		stage.setTitle("My Window");
-//		stage.show();
-//		
-//		SaveController sc = loader.getController();
-//		sc.setData(getCustomMap());
+		// Load (mais n'affiche pas) la page fxml dédiée à la save pour ensuite envoyer la map à la classe SaveController
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
+		Parent root = (Parent) loader.load();
 		
+		// Envoie la map ( chargée par getCustomMap() ) à la classe SaveController à travers la fonction setData() dans SaveController qui récupère la map et lance la save()
+		SaveController sc = loader.getController();
+		sc.setData(getCustomMap());
 	}
 
-    void load2() throws FileNotFoundException, IOException, ParseException {
+    public void loadMap() throws FileNotFoundException, IOException, ParseException {
     	JSONParser parser = new JSONParser();
 
+    	// Demande à l'utilisateur de choisir un fichier
         File file = fileChooser.showOpenDialog(new Stage());
     	FileReader reader = new FileReader(file);
 
-    	JSONArray jsonMap = (JSONArray) parser.parse(reader);
+    	JSONArray jsonMap = (JSONArray) parser.parse(reader); // parse
+        JSONArray element1 = (JSONArray) jsonMap.get(0); // element1 recupere la map
+        JSONArray element2 = (JSONArray) element1.get(0); // element2 recupere une ligne de la map
+        
+        // Créer un tableau 2D pour exploiter la map choisie
+    	int[][] tabMap = new int[element1.size()][element2.size()];
     	
-        JSONArray element1 = (JSONArray) jsonMap.get(0);
-        //System.out.println(element1.get(0));
-
-        System.out.println();
-        
-        
-    	//System.out.println(jsonMap);
-
-    	/*
-    	String map = "";
-
-        Scanner scanner = new Scanner(file);
-        while(scanner.hasNextLine()){
-        	map+=(scanner.nextLine() + "\n");
-        }
-        
-        System.out.println(map);
-        System.out.println(map.toCharArray());
-        char[][] zzz;
-        char[] iii = map.toCharArray();
-    	
-    	//Object obj =(new FileReader("D:\\Jack.json"));
-    	 */
-/*
-        System.out.println(file.getAbsolutePath());
-        
-    	jsonMap = (JSONArray) obj;
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-            	//LevelMap[i][j] = (char) jsonMap.getJSONArray(i).get(j);
-            	System.out.println((char) jsonMap.getJSONArray(i).get(j));
+    	// Remplit le tableau 2D
+        for (int i = 0; i < element1.size(); ++i) {
+            element2 = (JSONArray) element1.get(i); // passe à la prochaine ligne
+            for(int j = 0; j < element2.size(); ++j) {
+                System.out.print(element2.get(j));
+                tabMap[i][j] = ((Long)element2.get(j)).intValue();
             }
+            System.out.println(""); // saute une ligne
         }
-        */
+        
+		// Remplit la grille avec la map chargée
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+			}
+			c.setCellId(tabMap[c.getY()][c.getX()]);
+			c.loadMapPaint();
+		}
     }
 	
 	private int[][] getCustomMap() {
@@ -400,7 +386,7 @@ public class GenController {
 		int nCol = c1.getX();
 		int nRow = c1.getY();
 		
-		//Crï¿½ation du tableau 2D
+		//Création du tableau 2D
 		int[][] cellTab = new int[nRow+1][nCol+1];
 		//System.out.println(" MAX : "+nCol+", "+nRow);
 		
@@ -410,63 +396,11 @@ public class GenController {
 			if(cell instanceof Cell) {
 				c = (Cell) cell;
 			}
-			//System.out.println(c.getX()+", "+c.getY());
 			cellTab[c.getY()][c.getX()] = c.getCellId();
 		}
 		
 		return cellTab;
 	}
-	
-    void load() {
-    	
-        File file = fileChooser.showOpenDialog(new Stage());
-    	
-        if(file != null){
-            try {
-                Scanner scanner = new Scanner(file);
-                while(scanner.hasNextLine()){
-                	//contenu+=(scanner.nextLine() + "\n");
-                	//scanner.getJSONArray(i).get(j);
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    	
-    	
-    	
-    	/*
-        File file = fileChooser.showOpenDialog(new Stage());
-        String contenu;
-        int i,j;
-        
-        JSONArray tab2D = new JSONArray(file);
-        
-        Object elementTab = tab2D.getJSONArray(1).get(1);
-        
-        System.out.println("ELEMENT TAB : "+elementTab);
-	*/
-    	
-    	
-    	
-    	
-        /*
-
-        String a = file.getJSONArray(i).get(j);
-
-        if(file != null){
-            try {
-                Scanner scanner = new Scanner(file);
-                while(scanner.hasNextLine()){
-                	contenu+=(scanner.nextLine() + "\n");
-                	scanner.getJSONArray(i).get(j);
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        */
-    }
 	
 	@Subscribe
 	public void myPopup(PopupEvent e) {
