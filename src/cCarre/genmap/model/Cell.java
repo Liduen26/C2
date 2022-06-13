@@ -7,18 +7,21 @@ import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
-public class Cell extends Parent {
+public class Cell extends Region {
 	private boolean occuped = false;
 	private int width;
 	private int x, y;
 	private Rectangle back;
-	private int cellId;
+	private char cellId;
+	private Rectangle selection;
+	private boolean selected = false;
 
 	public Cell(Node cell) {
 		super();
@@ -29,14 +32,30 @@ public class Cell extends Parent {
 		this.width = width;
 		this.x = x;
 		this.y = y;
-		this.cellId = 0;
+		this.cellId = '0';
 		
 		back = new Rectangle();
 		back.setFill(Color.FLORALWHITE);
 		back.setWidth(width);
 		back.setHeight(width);
+		back.setMouseTransparent(true);
 		this.getChildren().add(back);
 		
+		this.setPrefWidth(width);
+		this.setPrefHeight(width);
+		
+		selection = new Rectangle();
+		selection.setStroke(Color.YELLOW);
+		selection.setStrokeWidth(4);
+		selection.setStrokeType(StrokeType.INSIDE);
+		selection.setFill(Color.TRANSPARENT);
+		selection.setWidth(width);
+		selection.setHeight(width);
+		selection.setOpacity(0);
+		selection.setMouseTransparent(true);
+		
+		
+		this.getChildren().add(selection);
 		
 		this.setOnMousePressed(e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
@@ -61,7 +80,7 @@ public class Cell extends Parent {
 		});
 	}
 	
-	public void onPaint() {
+	private void onPaint() {
 		if(!occuped) {
 			paint();
 		}
@@ -135,7 +154,8 @@ public class Cell extends Parent {
 			ground.setWidth(width);
 			ground.setHeight(width);
 			ground.setFill(Color.ROYALBLUE);
-			cellId = 1;
+			ground.setMouseTransparent(true);
+			cellId = '1';
 			
 			this.getChildren().add(ground);
 			break;
@@ -148,7 +168,8 @@ public class Cell extends Parent {
 	                (double) (width), (double) (width), 
 	             });
 			triangle.setFill(Color.RED);
-			cellId = 2;
+			triangle.setMouseTransparent(true);
+			cellId = '2';
 
 			this.getChildren().add(triangle);
 			break;
@@ -164,6 +185,8 @@ public class Cell extends Parent {
 					start.setHeight(width);
 					start.setFill(Color.DARKGREEN);
 					start.setId("start");
+					start.setMouseTransparent(true);
+					cellId = '8';
 					
 					this.getChildren().add(start);
 					ToolBar.setStartPlaced(x);
@@ -192,6 +215,8 @@ public class Cell extends Parent {
 					end.setHeight(width);
 					end.setFill(Color.DARKRED);
 					end.setId("end");
+					end.setMouseTransparent(true);
+					cellId = '9';
 					
 					this.getChildren().add(end);
 					ToolBar.setEndPlaced(x);
@@ -207,6 +232,10 @@ public class Cell extends Parent {
 
 				Ebus.get().post(new PopupEvent("Attention !", "Une arriv�e a d�j� �t� plac�e"));
 			}
+			break;
+			
+		case "test": 
+			cellId = 's';
 			break;
 			
 		default:
@@ -228,12 +257,12 @@ public class Cell extends Parent {
 		if(occuped) {
 			for(Node node : this.getChildren()) {
 				if(node != back) {
-					cellId = 0;
 					// V�rifie si c'est le start ou le d�but qui a �t� delete
 					ToolBar.setStartPlaced((node.getId() == "start" ) ? 0 : ToolBar.getStartPlace());
 					ToolBar.setEndPlaced((node.getId() == "end" ) ? 0 : ToolBar.getEndPlace());
 					
 					toRem.add(node);
+					cellId = '0';
 				}
 			}
 			for(Node rem : toRem) {
@@ -247,16 +276,17 @@ public class Cell extends Parent {
 		}
 	}
 	
-	public int getCellId() {
-		return cellId;
-	}
-
-	public void setCellId(int cellId) {
-		this.cellId = cellId;
-	}
 	@Override
 	public String toString() {
 		return super.toString() + " / x: " + this.x + " / y: " + this.y;
+	}	
+	
+	public char getCellId() {
+		return cellId;
+	}
+
+	public void setCellId(char cellId) {
+		this.cellId = cellId;
 	}
 
 	public int getX() {
@@ -275,11 +305,26 @@ public class Cell extends Parent {
 		this.y = y;
 	}
 	
-	public int getWidth() {
+	public int getMyWidth() {
 		return width;
 	}
 
 	public void setWidth(int width) {
 		this.width = width;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		if(selected && !this.selected) {
+			selection.setOpacity(1);
+			selection.toFront();
+			
+		} else if(!selected && this.selected) {
+			selection.setOpacity(0);
+		}
+		this.selected = selected;
 	}
 }

@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -13,7 +12,6 @@ import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 
-import cCarre.AffichageMap.data.LevelData;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
 import cCarre.Menu.MainMenu;
@@ -84,6 +82,8 @@ public class GenController {
 	
 	@FXML
 	private void initialize() {
+		screenBounds = Screen.getPrimary().getBounds();
+		
 		double rWidth = screenBounds.getWidth() / widthCell;
 		double rHeight = screenBounds.getHeight() / widthCell;
 		
@@ -123,14 +123,21 @@ public class GenController {
 	// QuickTest ----------------------------------------------------------------------------------
 	@FXML
     void handleTest(ActionEvent event) throws IOException {
-		// Charge la map
-		JSONArray mapGen = new JSONArray();
-		JSONArray line = new JSONArray();
 		
-		
-		if(go) {
+		if(true) {
 			// Charge la map
 			JSONArray mapGen = new JSONArray();
+			char[][] tab = getCustomMap();
+	    	
+	    	for (int y = 0; y < tab.length; y++) {
+	            char[] line = tab[y];
+	            JSONArray lineJSON = new JSONArray();
+	            mapGen.add(lineJSON);
+	            for (int x = 0; x < tab[y].length; x++) {
+	            	lineJSON.add(line[x]);
+	            }
+	        }
+	    	
 			
 			System.out.println(mapGen);
 			
@@ -168,17 +175,6 @@ public class GenController {
 	private void gridGameMoving(MoveGridEvent e) {
 		grille.setLayoutX(e.getX());
 	}
-	
-	
-	
-	// Save ---------------------------------------------------------------------------------------
-	@FXML
-    private void handleSaving(ActionEvent event) {
-		
-    }
-	
-	
-	
 	
 	// Grile dynamique, PAS TOUCHER !!!! ----------------------------------------------------------------------------------------
 	
@@ -316,100 +312,6 @@ public class GenController {
 		window.show();
 	}
 	
-	
-	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
-	public void GoToSave(ActionEvent event) throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
-		Parent root = (Parent) loader.load();
-		Scene scene = new Scene(root);
-		Stage stage = new Stage();
-		stage.setScene(scene);
-		stage.setTitle("My Window");
-		stage.show();
-		
-		SaveController sc = loader.getController();
-		sc.setData(getCustomMap());
-		
-	}
-	
-	private int[][] getCustomMap() {
-		// Obtention du nbr de colonnes et lignes
-		Node cells = grille.getChildren().get(grille.getChildren().size() - 1);
-		Cell c1 = new Cell(cells);
-		if(cells instanceof Cell) {
-			c1 = (Cell) cells;
-		}
-		int nCol = c1.getX();
-		int nRow = c1.getY();
-		
-		//Cr�ation du tableau 2D
-		int[][] cellTab = new int[nRow+1][nCol+1];
-		//System.out.println(" MAX : "+nCol+", "+nRow);
-		
-		// remplit le tableau 2D
-		for(Node cell : grille.getChildren()) {
-			Cell c = new Cell(cell);
-			if(cell instanceof Cell) {
-				c = (Cell) cell;
-			}
-			//System.out.println(c.getX()+", "+c.getY());
-			cellTab[c.getY()][c.getX()] = c.getCellId();
-		}
-		
-		return cellTab;
-	}
-	
-    void load() {
-    	
-        File file = fileChooser.showOpenDialog(new Stage());
-    	
-        if(file != null){
-            try {
-                Scanner scanner = new Scanner(file);
-                while(scanner.hasNextLine()){
-                	//contenu+=(scanner.nextLine() + "\n");
-                	//scanner.getJSONArray(i).get(j);
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    	
-    	
-    	
-    	/*
-        File file = fileChooser.showOpenDialog(new Stage());
-        String contenu;
-        int i,j;
-        
-        JSONArray tab2D = new JSONArray(file);
-        
-        Object elementTab = tab2D.getJSONArray(1).get(1);
-        
-        System.out.println("ELEMENT TAB : "+elementTab);
-	*/
-    	
-    	
-    	
-    	
-        /*
-
-        String a = file.getJSONArray(i).get(j);
-
-        if(file != null){
-            try {
-                Scanner scanner = new Scanner(file);
-                while(scanner.hasNextLine()){
-                	contenu+=(scanner.nextLine() + "\n");
-                	scanner.getJSONArray(i).get(j);
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        */
-    }
-
 	
 	@Subscribe
 	public void myPopup(PopupEvent e) {

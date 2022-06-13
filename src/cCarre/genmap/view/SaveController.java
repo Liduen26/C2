@@ -12,7 +12,6 @@ import org.json.simple.JSONArray;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -20,7 +19,7 @@ import javafx.stage.Stage;
 public class SaveController implements Initializable {
 
     FileChooser fileChooser = new FileChooser();
-    int[][] tabLevel;
+    char[][] tabLevel;
 
     private String contenu = "";
         

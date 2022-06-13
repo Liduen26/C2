@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,6 +19,8 @@ import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Player;
 import cCarre.Menu.GameMenuController;
+import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.MoveGridEvent;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -87,7 +90,7 @@ public class MainController {
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
-		char[][] Level = level.getLevel();
+		JSONArray Level = level.getLevel();
 
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
@@ -105,7 +108,7 @@ public class MainController {
 					triangles.add(triangle);
 					break;
 				case '3' :
-					Coin coin = new Coin(x*elementSize+15, y*elementSize+15, 30, 30, Color.YELLOW, rootLayout);
+					Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.YELLOW, rootLayout);
 					coins.add(coin);
 					break;
 				case '8' :
@@ -115,6 +118,11 @@ public class MainController {
 				case '9' :
 					FinishBlock finishBlock = new FinishBlock(x*elementSize, y*elementSize, elementSize, elementSize, Color.GREEN, rootLayout);
 					finishBlocks.add(finishBlock);
+					break;
+				case 's' :
+					// Test rapide de l'éditeur
+					spawnX = x*elementSize;
+					spawnY = y*elementSize-1;
 					break;
 				}
 			}
@@ -130,11 +138,11 @@ public class MainController {
                 Coin.setLayoutX(+(offset - 300));
                 
                 // Si le jeu vient de l'ï¿½diteur, transmet les coo ï¿½ la grille
-//				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
+				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
             }
         });
 		
-		loop(144); // Let's go into the GAME !
+		loop(500); // Let's go into the GAME !
 		loadCoin();
 	}
 
@@ -220,17 +228,27 @@ public class MainController {
         	if (platform != player.playerRectangle) {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
-        			// Collision cotï¿½e
-        			if(player.getTranslateY()+45>platform.getTranslateY()) {
-        				player.death(spawnX,spawnY, rootLayout, Coin);
-        				verticalVelocity = 0;
-    				
-    				// sol
-        			} else {
-        				verticalVelocity = 0;
-        				player.setTranslateY(platform.getTranslateY()-player.getHeight());
-        				onGround = true;
-        				canJump = true;
+        			if (intersect.getBoundsInLocal().getHeight() <= intersect.getBoundsInLocal().getWidth()) {
+						
+						if(intersect.getBoundsInLocal().getMinY() > platform.getTranslateY()) {
+							// plafond -> MORT
+	        				verticalVelocity = 0;
+	        				player.death(spawnX,spawnY, rootLayout, Coin);
+						} else {
+//							System.out.println(intersect.getBoundsInLocal().getMinY());
+//							System.out.println(platform.getTranslateY());
+								
+							// AU sol
+							player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
+//	        				player.setTranslateY(player.getTranslateY() + (distanceY - 0.0001));
+							verticalVelocity = 0;
+							onGround = true;
+							canJump = true;
+						}
+					} else {
+						// Coté -> MORT
+						verticalVelocity = 0;
+						player.death(spawnX,spawnY, rootLayout, Coin);
         			}
         		}
         	}

@@ -18,20 +18,14 @@ public class Level {
 		this.levelWidth = this.levelLength * 60;
 		this.totalCoin = 0;
 		this.levelHeight = jsonMap.size();
-		
-        for (int i = 0; i < levelHeight; i++) {
-            for (int j = 0; j < levelLength; j++) {
-            	LevelMap[i][j] = (char) jsonMap.getJSONArray(i).get(j);
-            }
-        }
 	}
 	
 	public int getLevelWidth(){
 		return levelWidth;
 	}
 
-	public char[][] getLevel() {
-		return LevelMap;
+	public JSONArray getLevel() {
+		return jsonMap;
 	}
 
 	public int getLevelHeight() {
