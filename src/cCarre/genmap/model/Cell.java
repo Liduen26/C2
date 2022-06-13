@@ -91,7 +91,8 @@ public class Cell extends Region {
 		occuped = true;
 		
 		switch (cellId) {
-		case 0:
+		case '0':
+			occuped = false;
 			Rectangle vide = new Rectangle();
 			vide.setWidth(width);
 			vide.setHeight(width);
@@ -100,7 +101,7 @@ public class Cell extends Region {
 			this.getChildren().add(vide);
 			break;
 			
-		case 1: 
+		case '1': 
 			Rectangle ground = new Rectangle();
 			ground.setWidth(width);
 			ground.setHeight(width);
@@ -109,7 +110,7 @@ public class Cell extends Region {
 			this.getChildren().add(ground);
 			break;
 			
-		case 2:
+		case '2':
 			// Ajoute un carr� blanc avant de mettre le triangle
 			Rectangle vide2 = new Rectangle();
 			vide2.setWidth(width);
@@ -130,7 +131,7 @@ public class Cell extends Region {
 			break;
 			
 		default:
-			cellId = 0;
+			cellId = '0';
 			occuped = false;
 			break;
 		}

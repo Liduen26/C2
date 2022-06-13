@@ -485,11 +485,10 @@ public class GenController {
         File file = fileChooser.showOpenDialog(new Stage());
     	FileReader reader = new FileReader(file);
 
-    	JSONArray jsonMap = (JSONArray) parser.parse(reader); // parse
-        JSONArray element1 = jsonMap; // element1 recupere la map
-        JSONArray element2 = (JSONArray) jsonMap.get(0); // element2 recupere une ligne de la map
+    	JSONArray element1 = (JSONArray) parser.parse(reader); // parse
+        JSONArray element2 = (JSONArray) element1.get(0); // element1 recupere la map        
         
-        // Crï¿½er un tableau 2D pour exploiter la map choisie
+        // Créer un tableau 2D pour exploiter la map choisie
     	char[][] tabMap = new char[element1.size()][element2.size()];
     	
     	// Remplit le tableau 2D
@@ -497,16 +496,24 @@ public class GenController {
             element2 = (JSONArray) element1.get(i); // passe ï¿½ la prochaine ligne
             for(int j = 0; j < element2.size(); ++j) {
                 System.out.print(element2.get(j));
-                tabMap[i][j] = (char) ((Long) element2.get(0)).intValue();
+                
+                int iO = ((Long) element2.get(j)).intValue();
+                char cO = (char) (iO + '0');
+                tabMap[i][j] = cO;
+                //tabMap[i][j] = (char) ((Long) element2.get(j)).intValue();
             }
             System.out.println(""); // saute une ligne
         }
         
-		// Remplit la grille avec la map chargï¿½e
+		// Remplit la grille avec la map chargée
 		for(Node cell : grille.getChildren()) {
 			Cell c = new Cell(cell);
 			if(cell instanceof Cell) {
 				c = (Cell) cell;
+			}
+			if(c.getY() == element1.size()-1 && c.getX() == element2.size()-1){
+				System.out.println("STOOOOOOOOOOOOOOOPPPPPPPPPPPPP");
+				break;
 			}
 			c.setCellId(tabMap[c.getY()][c.getX()]);
 			c.loadMapPaint();
