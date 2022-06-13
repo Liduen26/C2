@@ -2,18 +2,11 @@ package cCarre.genmap.view;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.google.common.eventbus.Subscribe;
-
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -41,13 +34,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.FileChooser;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -428,7 +419,7 @@ public class GenController {
         }
         */
     }
-}
+
 	
 	@Subscribe
 	public void myPopup(PopupEvent e) {
