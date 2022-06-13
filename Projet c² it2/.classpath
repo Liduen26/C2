@@ -19,7 +19,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="src/cCarre/Menu/json-simple-3.1.1.jar"/>
-	<classpathentry kind="lib" path="src/cCarre/genmap/view/json-simple-3.1.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

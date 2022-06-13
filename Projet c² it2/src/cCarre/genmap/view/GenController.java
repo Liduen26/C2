@@ -408,7 +408,7 @@ public class GenController {
 		int width = 400;
 		int height = 200;
 		
-		// Crï¿½ation de la vBox, et set de set propriï¿½tï¿½s et css
+		// Crï¿½ation de la vBox, et set de set propriétés et css
 		VBox popup = new VBox();
 		popup.setPrefWidth(width);
 		popup.setMaxHeight(height);
