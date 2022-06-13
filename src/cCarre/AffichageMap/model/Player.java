@@ -24,6 +24,12 @@ public class Player extends Parent{
 	int height,width;
 	
 	int constGrav;
+
+	
+	
+	public void SetColor(Color color) {
+		playerRectangle.setFill(color);
+	}
 	
 	public Player(int x, int y, int width, int height, Color color, AnchorPane rootLayout, int constGrav, int constV) {
 		this.setWidth(width);
@@ -108,9 +114,10 @@ public class Player extends Parent{
 		vVert.setEndY(p3.getY());
 	}
 	
-	public void death(double spawnX, double spawnY, AnchorPane rootLayout){
+	public void death(double spawnX, double spawnY, AnchorPane rootLayout, Label Coin){
 		tp(spawnX, spawnY);
     	rootLayout.setLayoutX(0); // TP la cam�ra au d�but du jeu
+		Coin.setLayoutX(0);
     	Ebus.get().post(new MoveGridEvent(0));
 	}
 

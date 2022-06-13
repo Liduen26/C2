@@ -1,9 +1,15 @@
 package cCarre.AffichageMap.view;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
@@ -11,13 +17,13 @@ import cCarre.AffichageMap.model.Ground;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Player;
-import cCarre.genmap.events.Ebus;
-import cCarre.genmap.events.MoveGridEvent;
+import cCarre.Menu.GameMenuController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
@@ -25,6 +31,9 @@ import javafx.util.Duration;
 
 
 public class MainController {
+
+
+	private GameMenuController mainApp;
 
 	private ArrayList<Shape> platforms = new ArrayList<Shape>();
 	private ArrayList<Shape> triangles = new ArrayList<Shape>();
@@ -47,7 +56,7 @@ public class MainController {
 	double distanceY;
 	double verticalVelocity = 0;
 	boolean onGround = false;
-	
+	int pieces = 0;
 	boolean canJump = false;
 	int spawnX, spawnY;
 	boolean running = true;
@@ -61,22 +70,24 @@ public class MainController {
 
 	@FXML
 	private Player player;
+	
+	@FXML
+	private Label Coin;
 
 	@FXML
 	private AnchorPane rootLayout;
-
+	
 	@FXML
 	private void initialize() {
+		
 		//init temps
 		newTime = System.nanoTime();
 		time = System.currentTimeMillis();
-		
-		System.out.println(level);
-		
+
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
-		JSONArray Level = level.getLevel();
+		char[][] Level = level.getLevel();
 
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
@@ -94,7 +105,7 @@ public class MainController {
 					triangles.add(triangle);
 					break;
 				case '3' :
-					Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.YELLOW, rootLayout);
+					Coin coin = new Coin(x*elementSize+15, y*elementSize+15, 30, 30, Color.YELLOW, rootLayout);
 					coins.add(coin);
 					break;
 				case '8' :
@@ -105,14 +116,10 @@ public class MainController {
 					FinishBlock finishBlock = new FinishBlock(x*elementSize, y*elementSize, elementSize, elementSize, Color.GREEN, rootLayout);
 					finishBlocks.add(finishBlock);
 					break;
-				case 's' :
-					// Test rapide de l'�diteur
-					spawnX = x*elementSize;
-					spawnY = y*elementSize-1;
-					break;
 				}
 			}
 		}
+
 		player = new Player(spawnX, spawnY, elementSize, elementSize, Color.BLUE, rootLayout, constGrav, constV);
 		
 		// La cam�ra suit le joueur
@@ -120,14 +127,15 @@ public class MainController {
             int offset = newValue.intValue();
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
-                System.out.println(rootLayout.getLayoutX());
+                Coin.setLayoutX(+(offset - 300));
                 
                 // Si le jeu vient de l'�diteur, transmet les coo � la grille
-				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
+//				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
             }
         });
 		
 		loop(144); // Let's go into the GAME !
+		loadCoin();
 	}
 
 	/**
@@ -188,13 +196,14 @@ public class MainController {
 	            
 				// meurt quand tombe dans le vide
 				if(player.getTranslateY()>800) {
-					player.death(spawnX, spawnY, rootLayout);
+					player.death(spawnX, spawnY, rootLayout, Coin);
 				}
 				// Empeche de charger un saut pendant un saut
 				if(jump == true) {
 					canJump = false;
-				}
+				}						
 			}
+			Coin.setText("Pieces : "+pieces);
 		}));
 
 		time1.setCycleCount(Animation.INDEFINITE);
@@ -210,31 +219,20 @@ public class MainController {
 		for (Shape platform : platforms) {
         	if (platform != player.playerRectangle) {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
-				if (intersect.getBoundsInLocal().getHeight() != -1) {
-					if (intersect.getBoundsInLocal().getHeight() <= intersect.getBoundsInLocal().getWidth()) {
-						
-						if(intersect.getBoundsInLocal().getMinY() > platform.getTranslateY()) {
-							// plafond -> MORT
-							verticalVelocity = 0;
-							player.death(spawnX,spawnY, rootLayout);
-						} else {
-							System.out.println(intersect.getBoundsInLocal().getMinY());
-							System.out.println(platform.getTranslateY());
-							
-							// AU sol
-							player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
-//	        				player.setTranslateY(player.getTranslateY() + (distanceY - 0.0001));
-							verticalVelocity = 0;
-							onGround = true;
-							canJump = true;
-							
-						}
-					} else {
-						// Cot� -> MORT
-						verticalVelocity = 0;
-						player.death(spawnX,spawnY, rootLayout);
-					}
-				}
+        		if (intersect.getBoundsInLocal().getHeight() != -1) {
+        			// Collision cot�e
+        			if(player.getTranslateY()+45>platform.getTranslateY()) {
+        				player.death(spawnX,spawnY, rootLayout, Coin);
+        				verticalVelocity = 0;
+    				
+    				// sol
+        			} else {
+        				verticalVelocity = 0;
+        				player.setTranslateY(platform.getTranslateY()-player.getHeight());
+        				onGround = true;
+        				canJump = true;
+        			}
+        		}
         	}
         }
 	}
@@ -253,7 +251,7 @@ public class MainController {
 			}
 		}
 		if (collisionDetected) {
-			player.death(spawnX,spawnY, rootLayout);
+			player.death(spawnX,spawnY, rootLayout, Coin);
 		}
 	}
 	
@@ -278,6 +276,8 @@ public class MainController {
 			if (!(Boolean)coin.getProperties().get("alive")) {
 				it.remove();
 				rootLayout.getChildren().remove(coin);
+				pieces ++;
+				saveCoin(pieces);
 			}
 		}
 	}
@@ -303,7 +303,7 @@ public class MainController {
 		// Affichage FPS
 		if(System.currentTimeMillis() - time >= 1000) {
 			//fps.setText("FPS : " + frame);
-			//System.out.println("FPS : " + frame);
+			System.out.println("FPS : " + frame);
 			frame = 0;
 			time = System.currentTimeMillis();				
 		} 
@@ -335,6 +335,62 @@ public class MainController {
 	public void setMap(String string) {
 		// TODO Auto-generated method stub
 		this.level = string;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void saveCoin(int pieces) {
+		FileWriter file = null;
+		JSONObject obj = new JSONObject();
+		obj.put("nbrsCoin", new Integer(pieces));
+		System.out.println(obj);
+		
+		try {
+			file =new FileWriter("./pieces.json");
+			file.write(obj.toJSONString());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+ 
+            try {
+                file.flush();
+                file.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }	
+	}
+	
+	public void loadCoin() {
+		
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+         
+        try (FileReader reader = new FileReader("pieces.json"))
+        {
+        	
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+            
+            // Cast JSON file
+            JSONObject JsonCoin = (JSONObject) obj;
+            System.out.println(JsonCoin);
+            System.out.println(JsonCoin.get("nbrsCoin").getClass());
+            
+          // pieces = Math.toIntExact(JsonCoin.get("nbrsCoin"));
+            
+      //      ((Long)jsonObject.get("nbrsCoin")).intValue();
+            pieces = ((Long) JsonCoin.get("nbrsCoin")).intValue();
+            
+            System.out.println(pieces+"test");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 	}
 
 }

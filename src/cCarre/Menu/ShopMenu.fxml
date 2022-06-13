@@ -10,26 +10,42 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.Menu.ShopMenuController">
    <children>
-      <Pane prefHeight="400.0" prefWidth="600.0">
+      <Pane prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@button2.css" AnchorPane.topAnchor="0.0">
          <children>
-            <Button layoutX="274.0" layoutY="329.0" mnemonicParsing="false" onAction="#GoToBaseMenu" text="Retour" />
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="52.0" layoutX="106.0" layoutY="73.0" stroke="BLACK" strokeType="INSIDE" width="52.0" />
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#35ff1f" height="52.0" layoutX="274.0" layoutY="73.0" stroke="BLACK" strokeType="INSIDE" width="52.0" />
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ff1f1f" height="52.0" layoutX="431.0" layoutY="73.0" stroke="BLACK" strokeType="INSIDE" width="52.0" />
-            <Label layoutX="109.0" layoutY="136.0" text="50 Golds" />
-            <Label layoutX="276.0" layoutY="136.0" text="50 Golds" />
-            <Label layoutX="434.0" layoutY="136.0" text="50 Golds" />
-            <Circle fill="DODGERBLUE" layoutX="132.0" layoutY="226.0" radius="26.0" stroke="BLACK" strokeType="INSIDE" />
-            <Circle fill="DODGERBLUE" layoutX="299.0" layoutY="226.0" radius="26.0" stroke="BLACK" strokeType="INSIDE" />
-            <Circle fill="DODGERBLUE" layoutX="457.0" layoutY="226.0" radius="26.0" stroke="BLACK" strokeType="INSIDE" />
-            <Label layoutX="109.0" layoutY="268.0" text="50 Golds" />
-            <Label layoutX="277.0" layoutY="268.0" text="50 Golds" />
-            <Label layoutX="434.0" layoutY="268.0" text="50 Golds" />
-            <Label layoutX="210.0" layoutY="14.0" text="BOUTIQUE">
+            <Label layoutX="745.0" layoutY="70.0" text="BOUTIQUE" textFill="WHITE">
                <font>
-                  <Font size="38.0" />
+                  <Font size="96.0" />
                </font>
             </Label>
+            <Button layoutX="850.0" layoutY="842.0" mnemonicParsing="false" onAction="#GoToBaseMenu" styleClass="a" stylesheets="@button2.css" text="Retour">
+               <font>
+                  <Font size="48.0" />
+               </font>
+            </Button>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="BLUE" height="100.0" layoutX="278.0" layoutY="300.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ff1f2d" height="100.0" layoutX="625.0" layoutY="300.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="GREEN" height="100.0" layoutX="1055.0" layoutY="300.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="YELLOW" height="100.0" layoutX="1478.0" layoutY="300.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+            <Button layoutX="238.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToBlue" styleClass="a" stylesheets="@button2.css" text="Select">
+               <font>
+                  <Font size="48.0" />
+               </font>
+            </Button>
+            <Button layoutX="579.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToRed" styleClass="a" stylesheets="@button2.css" text="Select">
+               <font>
+                  <Font size="48.0" />
+               </font>
+            </Button>
+            <Button layoutX="1008.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToGreen" styleClass="a" stylesheets="@button2.css" text="Select">
+               <font>
+                  <Font size="48.0" />
+               </font>
+            </Button>
+            <Button layoutX="1429.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToYellow" styleClass="a" stylesheets="@button2.css" text="Select">
+               <font>
+                  <Font size="48.0" />
+               </font>
+            </Button>
          </children>
       </Pane>
    </children>
