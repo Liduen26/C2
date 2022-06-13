@@ -6,26 +6,29 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.Menu.OptionsMenuController">
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.Menu.OptionsMenuController">
    <children>
-      <Pane prefHeight="400.0" prefWidth="600.0">
+      <Pane layoutX="-6.0" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@button2.css">
          <children>
-            <Label layoutX="221.0" layoutY="36.0" text="OPTIONS">
+            <Label layoutX="793.0" layoutY="135.0" text="OPTIONS" textFill="WHITE">
                <font>
-                  <Font size="38.0" />
+                  <Font size="96.0" />
                </font>
             </Label>
-            <Button layoutX="212.0" layoutY="127.0" mnemonicParsing="false" text="MUSIQUE : ON">
+            <Button layoutX="250.0" layoutY="415.0" mnemonicParsing="false" styleClass="a" stylesheets="@button2.css" text="MUSIQUE : ON">
                <font>
-                  <Font size="22.0" />
+                  <Font size="72.0" />
                </font>
             </Button>
-            <Button layoutX="242.0" layoutY="212.0" mnemonicParsing="false" text="SFX : ON">
+            <Button layoutX="1270.0" layoutY="418.0" mnemonicParsing="false" styleClass="a" stylesheets="@button2.css" text="SFX : ON">
                <font>
-                  <Font size="22.0" />
+                  <Font size="72.0" />
                </font>
             </Button>
-            <Button layoutX="274.0" layoutY="335.0" mnemonicParsing="false" onAction="#GoToBaseMenu" text="Retour" />
+            <Button layoutX="858.0" layoutY="862.0" mnemonicParsing="false" onAction="#GoToBaseMenu" styleClass="a" stylesheets="@button2.css" text="Retour">
+               <font>
+                  <Font size="48.0" />
+               </font></Button>
          </children>
       </Pane>
    </children>

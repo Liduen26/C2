@@ -11,6 +11,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 
@@ -18,8 +20,9 @@ import javafx.stage.Stage;
 public class BaseMenuController {
 
 @FXML public Button GoToGameMenu;
+@FXML private ImageView imageView;
 
-
+//Image img = new Image(getClass().getResource("@../../images/logoc².png").toExternalForm());
 
 
 	public void GoToGameMenu(ActionEvent event) throws IOException {
@@ -28,7 +31,11 @@ public class BaseMenuController {
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		window.setScene(tableViewScene);
+		window.setMaximized(true);
+		window.setHeight(1080);
+		window.setWidth(1920);
 		window.show();
+
 	}
 	
 	
@@ -39,6 +46,7 @@ public class BaseMenuController {
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
+		window.setMaximized(true);
 		window.show();
 	}
 	
@@ -49,8 +57,12 @@ public class BaseMenuController {
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
+		window.setMaximized(true);
 		window.show();
 	}
 	
+	public void GoToVoid(ActionEvent event) throws IOException {
+		System.exit(0);
+	}
 	
 }

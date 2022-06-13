@@ -13,8 +13,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
-
-
 public class Cell extends Parent {
 	private boolean occuped = false;
 	private int width;
@@ -61,10 +59,9 @@ public class Cell extends Parent {
 				erase();
 			}
 		});
-		
 	}
 	
-	private void onPaint() {
+	public void onPaint() {
 		if(!occuped) {
 			paint();
 		}

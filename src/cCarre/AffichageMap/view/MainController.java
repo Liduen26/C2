@@ -18,13 +18,15 @@ import cCarre.AffichageMap.model.Ground;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Player;
+import cCarre.Menu.GameMenuController;
+import cCarre.Menu.ShopMenuController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.binding.DoubleExpression;
 import javafx.fxml.FXML;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
@@ -32,6 +34,9 @@ import javafx.util.Duration;
 
 
 public class MainController {
+
+
+	private GameMenuController mainApp;
 
 	private ArrayList<Shape> platforms = new ArrayList<Shape>();
 	private ArrayList<Shape> triangles = new ArrayList<Shape>();
@@ -82,7 +87,6 @@ public class MainController {
 		newTime = System.nanoTime();
 		time = System.currentTimeMillis();
 
-		
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
@@ -118,6 +122,7 @@ public class MainController {
 				}
 			}
 		}
+
 		player = new Player(spawnX, spawnY, elementSize, elementSize, Color.BLUE, rootLayout, constGrav, constV);
 		
 		// La cam�ra suit le joueur

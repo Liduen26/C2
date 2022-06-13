@@ -22,6 +22,12 @@ public class Player extends Parent{
 	int height,width;
 	
 	int constGrav;
+
+	
+	
+	public void SetColor(Color color) {
+		playerRectangle.setFill(color);
+	}
 	
 	public Player(int x, int y, int width, int height, Color color, AnchorPane rootLayout, int constGrav, int constV) {
 		this.setWidth(width);

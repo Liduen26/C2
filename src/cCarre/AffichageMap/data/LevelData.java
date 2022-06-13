@@ -35,7 +35,7 @@ public class LevelData {
     };
     
     /**
-     * Passe à la moulinette le vieux format de map et le transformen en JSONArray
+     * Passe ï¿½ la moulinette le vieux format de map et le transformen en JSONArray
      * @param level La map en String[]
      * @return Un JSONArry de la map
      */
