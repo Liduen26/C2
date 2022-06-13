@@ -2,7 +2,6 @@ package cCarre.Menu;
 
 
 
-import java.io.File;
 import java.io.IOException;
 
 import javafx.event.ActionEvent;
@@ -65,5 +64,8 @@ public class BaseMenuController {
 		window.show();
 	}
 	
+	public void GoToVoid(ActionEvent event) throws IOException {
+		System.exit(0);
+	}
 	
 }

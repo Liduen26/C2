@@ -11,6 +11,7 @@ import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Player;
 import cCarre.Menu.GameMenuController;
+import cCarre.Menu.ShopMenuController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -112,7 +113,8 @@ public class MainController {
 				}
 			}
 		}
-		player = new Player(spawnX, spawnY, elementSize, elementSize, Color.BLUE, rootLayout, constGrav, constV);
+		Color color = ShopMenuController.Getcolor();
+		player = new Player(spawnX, spawnY, elementSize, elementSize, color, rootLayout, constGrav, constV);
 		
 		// La caméra suit le joueur
         player.translateXProperty().addListener((obs, old, newValue) -> {
