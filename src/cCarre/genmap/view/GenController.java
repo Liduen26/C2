@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -12,6 +13,7 @@ import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 
+import cCarre.AffichageMap.data.LevelData;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
 import cCarre.Menu.MainMenu;
@@ -39,8 +41,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -70,18 +70,13 @@ public class GenController {
     private HBox saveBar;
 	
 	// Vars --------------------------
+	FileChooser fileChooser = new FileChooser();
     final int widthCell = (60 - 1);
     private GridPane grille;
 	private double oldX;
 	private double newX;
 	private Rectangle2D screenBounds;
 	private double playerSpeed = 0;
-	double initialPtX = 0;
-	double initialPtY = 0;
-	
-	Rectangle select;
-
-	FileChooser fileChooser = new FileChooser();
 	
 	public void setMainGen(MainGen mainGen) {
 		this.mainGen = mainGen;
@@ -89,12 +84,6 @@ public class GenController {
 	
 	@FXML
 	private void initialize() {
-		// Init de la grille ----------------------------------------------------------------------
-		screenBounds = Screen.getPrimary().getBounds();
-
-		// Se place dans disque D quand on save
-//        fileChooser.setInitialDirectory(new File("C:\\"));
-		
 		double rWidth = screenBounds.getWidth() / widthCell;
 		double rHeight = screenBounds.getHeight() / widthCell;
 		
@@ -107,14 +96,13 @@ public class GenController {
 		for(int y = 0; y < rHeight; y++) {
 			for(int x = 0; x < rWidth -2; x++) {
 				Cell cell = new Cell(widthCell, x, y);
-				
 				grille.add(cell, x, y);
 			}
 		}
 		root.getChildren().add(grille);
 		
 		// G�re le depl de la grille ac le clic molette
-		handleMouseEvents();
+		handleMoveGrid();
 		
 		// Permet a cette classe de s'abonner � des events 
 		Ebus.get().register(this);
@@ -127,20 +115,17 @@ public class GenController {
 				String id = btnAct.getId();
 				
 				ToolBar.setItem(id);
+				ToolBar.getItem();
 			});
 		}
-		
-		select = new Rectangle();
-		select.setFill(Color.RED);
-		select.setOpacity(0.2);
-		select.setFocusTraversable(true);
 	}
 	
 	// QuickTest ----------------------------------------------------------------------------------
 	@FXML
     void handleTest(ActionEvent event) throws IOException {
-		boolean go = true;
-		ToolBar.setItem("test");
+		// Charge la map
+		JSONArray mapGen = new JSONArray();
+		JSONArray line = new JSONArray();
 		
 		
 		if(go) {
@@ -182,8 +167,16 @@ public class GenController {
 	@Subscribe
 	private void gridGameMoving(MoveGridEvent e) {
 		grille.setLayoutX(e.getX());
-		System.out.println(grille.getLayoutX()+"\n");
 	}
+	
+	
+	
+	// Save ---------------------------------------------------------------------------------------
+	@FXML
+    private void handleSaving(ActionEvent event) {
+		
+    }
+	
 	
 	
 	
@@ -192,49 +185,20 @@ public class GenController {
 	/**
 	 * D�placement de la grille avec le clic molette
 	 */
-	private void handleMouseEvents() {
+	private void handleMoveGrid() {
 		// Event qui attendent le drag de la fen�tre ----------------------------------------------
 		grille.setOnMousePressed(e -> {
-			// D�but / init
 			if(e.getButton() == MouseButton.MIDDLE) {
-				// D�placement de la grille
 				e.setDragDetect(true);
 				newX = e.getSceneX();
-				
-			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
-				Cell c = null;
-				System.out.println(e.getTarget());
-				if(e.getTarget() instanceof Cell) {
-					c = (Cell) e.getTarget();
-					System.out.println(c.isSelected());
-					
-					if(c.isSelected()) {
-						// Depl de la selection
-						
-					} 
-				} else {
-					// Zone de s�lection
-					
-					this.unselect();
-					select.setLayoutX(e.getX());
-					select.setLayoutY(e.getY());
-					select.setWidth(0);
-					select.setHeight(0);
-					initialPtX = e.getX() + grille.getLayoutX();
-					initialPtY = e.getY();
-					
-					root.getChildren().add(select);
-				}
 			}
 		});
-		
 		grille.setOnMouseDragged(e -> {
-			// D�placement de la souris
+			// Si on drag avec le clic molette .... ->
 			if(e.getButton() == MouseButton.MIDDLE) {
-				// Si on drag avec le clic molette .... ->
 				double mouseX = e.getSceneX();
 				double delta = 0;
-				
+							
 				oldX = newX;
 				newX = mouseX;
 				delta = newX - oldX;
@@ -247,95 +211,13 @@ public class GenController {
 				if((grille.getLayoutX() + delta) < 0 && (grille.getLayoutX() + delta) > -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
 					grille.setLayoutX(grille.getLayoutX() + delta);
 				}
-				
-			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
-				Cell c = new Cell((Node) e.getTarget());
-				if(e.getTarget() instanceof Cell) {
-					c = (Cell) e.getTarget();
-				}
-				
-				if(c.isSelected()) {
-					// Depl de la sel�ction
-//					System.out.println(c.isSelected());
-					
-				} else {
-					// Zone de s�lection
-					switch (ToolBar.getItem()) {
-					case "select":
-						double deltaX = (e.getX() + grille.getLayoutX()) - initialPtX;
-					    double deltaY = e.getY() - initialPtY;
-
-					    if(deltaX < 0) {
-					        select.setLayoutX(e.getX() + grille.getLayoutX());
-					        select.setWidth(-deltaX);
-					    } else {
-					        select.setLayoutX(initialPtX);
-					        select.setWidth((e.getX() + grille.getLayoutX()) - initialPtX);
-					    }
-
-					    if(deltaY < 0) {
-					        select.setLayoutY( e.getY());
-					        select.setHeight(-deltaY);
-					    } else {
-					        select.setLayoutY(initialPtY);
-					        select.setHeight(e.getY() - initialPtY);
-					    }
-						
-						break;
-					}
-				}
 			}
 		});
-		
-		grille.setOnMouseReleased(e -> {
-			// Relachement du clic
-			if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
-				// Regarde toutes les cases 
-				for(Node cell : grille.getChildren()) {
-					Cell c = new Cell(cell);
-					if(cell instanceof Cell) {
-						c = (Cell) cell;
-					}
-					
-					// Cherche les cellules dans la zone de selection
-					if(((c.getX()+1) * widthCell) > select.getLayoutX() && (c.getX() * widthCell) < (select.getLayoutX() + select.getWidth()) 
-					&& ((c.getY()+1) * widthCell) > select.getLayoutY() && (c.getY() * widthCell) < (select.getLayoutY() + select.getHeight())) {
-						// Si y a pas que le background, alors 
-						if(c.getChildrenUnmodifiable().size() > 2) {
-							c.setSelected(true);
-						}							
-					}
-				}
-				
-				root.getChildren().remove(select);
-			}
-		});
-		
 	}
-	
-	/**
-	 * D�selectionne toutes les cases de la grille
-	 */
-	private void unselect() {
-		for(Node cell : grille.getChildren()) {
-			Cell c;
-			if(cell instanceof Cell) {
-				c = (Cell) cell;
-			} else {
-				c = new Cell(cell);
-			}
-			
-			if(c.isSelected()) {
-				c.setSelected(false);
- 			}
-		}
-	}
-
-	
 	
 	// Ecoute le bus d'�vent pour savoir si la taille de la grille doit changer -------------------
 	/**
-	 * G�re l'ajout de colonnes � la grille, se d�clenche via l'event bus
+	 * G�re l'ajout de colonnes � la grille, se d�lcnche via l'event bus
 	 * @param e l'event auquel il est abonn�
 	 */
 	@Subscribe
@@ -378,7 +260,7 @@ public class GenController {
 			}
 			
 			// Si y a pas que le background, alors on change le mostX
-			if(c.getChildrenUnmodifiable().size() > 2) {
+			if(c.getChildrenUnmodifiable().size() > 1) {
 				x = (c.getX() > x) ? c.getX() : x;
 			}
 		}
@@ -433,6 +315,101 @@ public class GenController {
 		window.setWidth(600);
 		window.show();
 	}
+	
+	
+	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
+	public void GoToSave(ActionEvent event) throws IOException {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
+		Parent root = (Parent) loader.load();
+		Scene scene = new Scene(root);
+		Stage stage = new Stage();
+		stage.setScene(scene);
+		stage.setTitle("My Window");
+		stage.show();
+		
+		SaveController sc = loader.getController();
+		sc.setData(getCustomMap());
+		
+	}
+	
+	private int[][] getCustomMap() {
+		// Obtention du nbr de colonnes et lignes
+		Node cells = grille.getChildren().get(grille.getChildren().size() - 1);
+		Cell c1 = new Cell(cells);
+		if(cells instanceof Cell) {
+			c1 = (Cell) cells;
+		}
+		int nCol = c1.getX();
+		int nRow = c1.getY();
+		
+		//Cr�ation du tableau 2D
+		int[][] cellTab = new int[nRow+1][nCol+1];
+		//System.out.println(" MAX : "+nCol+", "+nRow);
+		
+		// remplit le tableau 2D
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+			}
+			//System.out.println(c.getX()+", "+c.getY());
+			cellTab[c.getY()][c.getX()] = c.getCellId();
+		}
+		
+		return cellTab;
+	}
+	
+    void load() {
+    	
+        File file = fileChooser.showOpenDialog(new Stage());
+    	
+        if(file != null){
+            try {
+                Scanner scanner = new Scanner(file);
+                while(scanner.hasNextLine()){
+                	//contenu+=(scanner.nextLine() + "\n");
+                	//scanner.getJSONArray(i).get(j);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    	
+    	
+    	
+    	/*
+        File file = fileChooser.showOpenDialog(new Stage());
+        String contenu;
+        int i,j;
+        
+        JSONArray tab2D = new JSONArray(file);
+        
+        Object elementTab = tab2D.getJSONArray(1).get(1);
+        
+        System.out.println("ELEMENT TAB : "+elementTab);
+	*/
+    	
+    	
+    	
+    	
+        /*
+
+        String a = file.getJSONArray(i).get(j);
+
+        if(file != null){
+            try {
+                Scanner scanner = new Scanner(file);
+                while(scanner.hasNextLine()){
+                	contenu+=(scanner.nextLine() + "\n");
+                	scanner.getJSONArray(i).get(j);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        */
+    }
+
 	
 	@Subscribe
 	public void myPopup(PopupEvent e) {

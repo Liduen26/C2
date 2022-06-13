@@ -7,11 +7,13 @@ import cCarre.AffichageMap.view.MainController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class GameMenuController {
@@ -25,11 +27,12 @@ public class GameMenuController {
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
+		window.setMaximized(true);
 		window.show();
 	}
 	
 	public void LaunchGame(ActionEvent event) throws IOException {
-		// Dï¿½finis la map ï¿½ utiliser, attend un JSONArray
+		// Définis la map à utiliser, attend un JSONArray
 		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
 		
 		// Load root layout from fxml file.
@@ -44,11 +47,10 @@ public class GameMenuController {
         window.setScene(scene);
         
         MainController controller = loader.getController();
+       
+        // Chemin du fichier json (à faire)
         
 		window.setMaximized(true);
-		window.setHeight(1080);
-		window.setWidth(1920);
-		
 		window.show();
 		
 		scene.setOnKeyPressed(e ->{
@@ -63,8 +65,6 @@ public class GameMenuController {
 		
 		window.setScene(tableViewScene);
 		window.setMaximized(true);
-		window.setHeight(1080);
-		window.setWidth(1920);
 		window.show();
 	}
 }

@@ -10,12 +10,17 @@ public class ToolBar {
 	private static int mostX;
 	private static int startPlaced = 0;
 	private static int endPlaced = 0;
-	private static boolean preTest = false;
-	
-
 	public ToolBar() {}
 	
+	// Paserelle d'infos --------------------------------------------------------------------------
+	
+	
 
+	// Objet servant � r�cup�rer les �tat des btns ------------------------------------------------
+	
+	
+	
+	
 	// Getter - Setters ---------------------------------------------------------------------------
 	public static void setItem(String id) {
 		item = id;
@@ -66,13 +71,5 @@ public class ToolBar {
 	
 	public static int getEndPlace() {
 		return endPlaced;
-	}
-	
-	public static boolean isPreTest() {
-		return preTest;
-	}
-
-	public static void setPreTest(boolean preTest) {
-		ToolBar.preTest = preTest;
 	}
 }
