@@ -101,7 +101,8 @@ public class Cell extends Region {
 			ground.setWidth(width);
 			ground.setHeight(width);
 			ground.setFill(Color.ROYALBLUE);
-			
+			ground.setMouseTransparent(true);
+
 			this.getChildren().add(ground);
 			break;
 			
@@ -111,6 +112,8 @@ public class Cell extends Region {
 			vide2.setWidth(width);
 			vide2.setHeight(width);
 			vide2.setFill(Color.WHITE);
+			vide2.setMouseTransparent(true);
+
 			this.getChildren().add(vide2);
 			
 			// Ajoute le triangle
@@ -121,6 +124,7 @@ public class Cell extends Region {
 	                (double) (width), (double) (width), 
 	             });
 			triangle.setFill(Color.RED);
+			triangle.setMouseTransparent(true);
 
 			this.getChildren().add(triangle);
 			break;

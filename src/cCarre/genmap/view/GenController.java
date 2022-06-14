@@ -76,7 +76,9 @@ public class GenController {
 
 	FileChooser fileChooser = new FileChooser();
 	
-    final int widthCell = (60 - 1);
+	
+    int widthCell = (60 - 1);
+    
     private GridPane grille;
 	private double oldX;
 	private double newX;
@@ -90,6 +92,10 @@ public class GenController {
 		screenBounds = Screen.getPrimary().getBounds();
 		
 		double hBar = upBar.getPrefHeight();
+		
+		System.out.println("Width : "+screenBounds.getWidth());
+		System.out.println("Height : "+screenBounds.getHeight());
+		widthCell = (int) (screenBounds.getWidth()/32 - 1);
 		
 		double rWidth = screenBounds.getWidth() / widthCell;
 		double rHeight = (screenBounds.getHeight() - hBar) / widthCell;
@@ -487,6 +493,9 @@ public class GenController {
     	JSONArray element1 = (JSONArray) parser.parse(reader); // parse
         JSONArray element2 = (JSONArray) element1.get(0); // element1 recupere la map        
         
+        // Agrandi la grille en fonction de la map chargée
+		Ebus.get().post(new AddLengthGrilleEvent(element2.size()));
+
         // Créer un tableau 2D pour exploiter la map choisie
     	char[][] tabMap = new char[element1.size()][element2.size()];
     	
@@ -517,6 +526,9 @@ public class GenController {
 			c.setCellId(tabMap[c.getY()][c.getX()]);
 			c.loadMapPaint();
 		}
+		
+		// Supprime les cases vides en trop
+		Ebus.get().post(new RemoveLengthGrilleEvent(20));
     }
 	
 	private char[][] getCustomMap() {
