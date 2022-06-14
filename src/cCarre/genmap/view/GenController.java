@@ -90,12 +90,9 @@ public class GenController {
 		screenBounds = Screen.getPrimary().getBounds();
 		
 		double hBar = upBar.getPrefHeight();
-		System.out.println(screenBounds.getHeight());
-		System.out.println(hBar);
 		
 		double rWidth = screenBounds.getWidth() / widthCell;
 		double rHeight = (screenBounds.getHeight() - hBar) / widthCell;
-		System.out.println(rHeight);
 		
 		grille = new GridPane();
 		grille.setHgap(1);

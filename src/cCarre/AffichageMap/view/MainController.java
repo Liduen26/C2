@@ -358,7 +358,6 @@ public class MainController {
 		FileWriter file = null;
 		JSONObject obj = new JSONObject();
 		obj.put("nbrsCoin", new Integer(pieces));
-		System.out.println(obj);
 		
 		try {
 			file =new FileWriter("./pieces.json");
@@ -385,21 +384,13 @@ public class MainController {
          
         try (FileReader reader = new FileReader("pieces.json"))
         {
-        	
             //Read JSON file
             Object obj = jsonParser.parse(reader);
             
             // Cast JSON file
             JSONObject JsonCoin = (JSONObject) obj;
-            System.out.println(JsonCoin);
-            System.out.println(JsonCoin.get("nbrsCoin").getClass());
             
-          // pieces = Math.toIntExact(JsonCoin.get("nbrsCoin"));
-            
-      //      ((Long)jsonObject.get("nbrsCoin")).intValue();
             pieces = ((Long) JsonCoin.get("nbrsCoin")).intValue();
-            
-            System.out.println(pieces+"test");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
