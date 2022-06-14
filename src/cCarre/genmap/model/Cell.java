@@ -64,12 +64,14 @@ public class Cell extends Region {
 			} else if(e.getButton() == MouseButton.SECONDARY) {
 				e.setDragDetect(true);
 				erase();
-				// Cause une erreur mais �a marche qu'averc �a }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-				this.startFullDrag();
 			}
 		});
 		this.setOnDragDetected(e -> {
-			this.startFullDrag();
+			if(e.getButton() == MouseButton.PRIMARY) {
+				this.startFullDrag();
+			} else if(e.getButton() == MouseButton.SECONDARY) {
+				this.startFullDrag();
+			}
 		});
 		this.setOnMouseDragOver (e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {

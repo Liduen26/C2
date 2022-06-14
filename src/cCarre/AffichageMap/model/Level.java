@@ -12,7 +12,6 @@ public class Level {
 	private static JSONArray jsonMap;
 	
 	public Level() {
-		System.out.println(jsonMap.get(1));
 		this.idLevel = 0;
 		this.levelLength = ((JSONArray) jsonMap.get(0)).size();
 		this.levelWidth = this.levelLength * 60;

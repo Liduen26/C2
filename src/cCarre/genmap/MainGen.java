@@ -37,7 +37,6 @@ public class MainGen extends Application {
 			
 			// Mise en relation avec le controller
 			GenController controller = loader.getController();
-			controller.setMainGen(this);
 			
 			primaryStage.show();
 						

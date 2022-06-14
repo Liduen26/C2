@@ -95,6 +95,7 @@ public class MainController {
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
 				char text = (char) ((JSONArray) Level.get(y)).get(x);
+				
 				switch(text) {
 				case '0' :
 					// ici c'est vide
@@ -235,12 +236,9 @@ public class MainController {
 	        				verticalVelocity = 0;
 	        				player.death(spawnX,spawnY, rootLayout, Coin);
 						} else {
-//							System.out.println(intersect.getBoundsInLocal().getMinY());
-//							System.out.println(platform.getTranslateY());
-								
 							// AU sol
 							player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
-//	        				player.setTranslateY(player.getTranslateY() + (distanceY - 0.0001));
+							
 							verticalVelocity = 0;
 							onGround = true;
 							canJump = true;
