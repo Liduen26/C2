@@ -528,7 +528,7 @@ public class GenController {
 		}
 		
 		// Supprime les cases vides en trop
-		Ebus.get().post(new RemoveLengthGrilleEvent(20));
+		Ebus.get().post(new RemoveLengthGrilleEvent(30));
     }
 	
 	private char[][] getCustomMap() {
