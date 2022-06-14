@@ -92,9 +92,7 @@ public class GenController {
 		screenBounds = Screen.getPrimary().getBounds();
 		
 		double hBar = upBar.getPrefHeight();
-		
-		System.out.println("Width : "+screenBounds.getWidth());
-		System.out.println("Height : "+screenBounds.getHeight());
+
 		widthCell = (int) (screenBounds.getWidth()/32 - 1);
 		
 		double rWidth = screenBounds.getWidth() / widthCell;

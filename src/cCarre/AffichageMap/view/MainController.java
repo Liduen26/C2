@@ -25,11 +25,13 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javafx.stage.Screen;
 import javafx.util.Duration;
 
 
@@ -43,8 +45,7 @@ public class MainController {
 	private ArrayList<Shape> finishBlocks = new ArrayList<Shape>();
 	private ArrayList<Shape> coins = new ArrayList<Shape>();
 
-	final int elementSize = 60;
-
+	int elementSize = 60;
 
 	// Vars ---------------
 	long oldTime;
@@ -67,8 +68,12 @@ public class MainController {
 	
 	// Pour changer la vitsse
 	int constV = 270; 
-	final int constGrav = 700;
+	int constGrav = 700;
+	double jumpForce = 600;
 	
+	// taille de l'écran
+	private Rectangle2D screenBounds = Screen.getPrimary().getBounds();
+
 	boolean edit = false;
 
 	@FXML
@@ -83,6 +88,17 @@ public class MainController {
 	@FXML
 	private void initialize() {
 		
+		// Adapte la vitesse et la gravité et les éléments à la taille de l'écran
+		float varVit = (float)1920/constV;		
+		constV = (int) ((int) screenBounds.getWidth()/varVit);
+		
+		float varGrav = (float)1920/constGrav;		
+		constGrav = (int) ((int) screenBounds.getWidth()/varGrav);
+		
+		jumpForce = (int) (screenBounds.getWidth()/(1920/jumpForce));
+		elementSize = (int) (screenBounds.getWidth()/(1920/elementSize));
+//		System.out.println("Vitesse : "+constV+" Grav : "+constGrav+" jumpForce : "+jumpForce+" ElementSize : "+elementSize);
+
 		//init temps
 		newTime = System.nanoTime();
 		time = System.currentTimeMillis();
@@ -156,7 +172,6 @@ public class MainController {
 			
 			if(running) {
 				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
-				double jumpForce = 600;
 	
 				dt = affFPS();
 				temps = dt / 1000000000; //dt par sec
