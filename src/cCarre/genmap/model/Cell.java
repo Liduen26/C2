@@ -93,13 +93,7 @@ public class Cell extends Region {
 		
 		switch (cellId) {
 		case '0':
-			occuped = false;
-			Rectangle vide = new Rectangle();
-			vide.setWidth(width);
-			vide.setHeight(width);
-			vide.setFill(Color.WHITE);
-			
-			this.getChildren().add(vide);
+			erase();
 			break;
 			
 		case '1': 
