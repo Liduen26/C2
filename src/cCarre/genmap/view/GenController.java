@@ -64,6 +64,9 @@ public class GenController {
     
     @FXML
     private HBox saveBar;
+    
+    @FXML
+    private HBox upBar;
 	
 	// Vars --------------------------
     double initialPtX = 0;
@@ -86,8 +89,13 @@ public class GenController {
 	private void initialize() {
 		screenBounds = Screen.getPrimary().getBounds();
 		
+		double hBar = upBar.getPrefHeight();
+		System.out.println(screenBounds.getHeight());
+		System.out.println(hBar);
+		
 		double rWidth = screenBounds.getWidth() / widthCell;
-		double rHeight = screenBounds.getHeight() / widthCell;
+		double rHeight = (screenBounds.getHeight() - hBar) / widthCell;
+		System.out.println(rHeight);
 		
 		grille = new GridPane();
 		grille.setHgap(1);
@@ -95,8 +103,8 @@ public class GenController {
 		grille.setGridLinesVisible(true);
 		
 		// Remplissage de la grille
-		for(int y = 0; y < rHeight; y++) {
-			for(int x = 0; x < rWidth -2; x++) {
+		for(int y = 0; y < rHeight - 1; y++) {
+			for(int x = 0; x < rWidth - 1; x++) {
 				Cell cell = new Cell(widthCell, x, y);
 				grille.add(cell, x, y);
 			}

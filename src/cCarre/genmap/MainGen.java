@@ -7,12 +7,13 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
 public class MainGen extends Application {
 	private Stage primaryStage;
-	private AnchorPane mainLayout;
+	private VBox mainLayout;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -29,7 +30,7 @@ public class MainGen extends Application {
 			// Chargement du layout principal
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainGen.class.getResource("view/GenLayout.fxml"));
-			mainLayout = (AnchorPane) loader.load();
+			mainLayout = (VBox) loader.load();
 			
 			// Affichage de la sc�ne contenant le layout pr�c�demment charg�
 			Scene scene = new Scene(mainLayout);

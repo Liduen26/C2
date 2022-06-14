@@ -1,5 +1,5 @@
 * {
-    -color-back: #00b4a5;
+    -color-back: white;
 }
 
 .background {
@@ -7,7 +7,7 @@
 }
 
 .toolBar {
-    -fx-background-color: #fff;
+    -fx-background-color: -color-back;
     
 }
 

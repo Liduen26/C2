@@ -238,7 +238,7 @@ public class MainController {
 						} else {
 							// AU sol
 							player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
-							
+								
 							verticalVelocity = 0;
 							onGround = true;
 							canJump = true;
