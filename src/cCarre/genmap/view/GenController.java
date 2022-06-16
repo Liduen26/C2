@@ -33,6 +33,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
@@ -56,10 +57,22 @@ public class GenController {
 
     @FXML
     private Button groundBtn;
-
+    
+    @FXML
+    private Button coinBtn;
+    
     @FXML
     private Button obstacleBtn;
     
+    @FXML
+    private ColorPicker coinColor;
+    
+    @FXML
+    private ColorPicker groundColor;
+    
+    @FXML
+    private ColorPicker obstacleColor;
+   
     @FXML
     private Button test;
     
@@ -505,6 +518,14 @@ public class GenController {
 	
 	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
 	public void GoToSave(ActionEvent event) throws IOException, ParseException {
+		Color groundColor1 = groundColor.getValue();
+		Color groundColor2 = obstacleColor.getValue();
+		Color groundColor3 = coinColor.getValue();
+		
+		System.out.println("ground : "+groundColor1);
+		System.out.println("obstacle : "+groundColor2);
+		System.out.println("coin : "+groundColor3);
+
 		// Load (mais n'affiche pas) la page fxml d�di�e � la save pour ensuite envoyer la map � la classe SaveController
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
 		Parent root = (Parent) loader.load();
@@ -590,5 +611,11 @@ public class GenController {
 		}
 		
 		return cellTab;
+	}
+	
+	// test
+	void setcolor() {
+		Color groundColor2 = groundColor.getValue();
+		System.out.println("groundColor2");
 	}
 }

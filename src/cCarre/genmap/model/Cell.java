@@ -2,6 +2,7 @@ package cCarre.genmap.model;
 
 import java.util.ArrayList;
 
+import cCarre.AffichageMap.model.Coin;
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.PopupEvent;
@@ -129,6 +130,18 @@ public class Cell extends Region {
 			this.getChildren().add(triangle);
 			break;
 			
+		case '3': 
+			Rectangle coin = new Rectangle();
+			coin.setWidth(width/2);
+			coin.setHeight(width/2);
+			coin.setTranslateX(width / 4);
+			coin.setTranslateY(width / 4);
+			coin.setFill(Color.YELLOW);
+			coin.setMouseTransparent(true);
+
+			this.getChildren().add(coin);
+			break;
+			
 		default:
 			cellId = '0';
 			occuped = false;
@@ -173,6 +186,19 @@ public class Cell extends Region {
 			cellId = '2';
 
 			this.getChildren().add(triangle);
+			break;
+			
+		case "coinBtn": 
+			Rectangle coin = new Rectangle();
+			coin.setWidth(width/2);
+			coin.setHeight(width/2);
+			coin.setTranslateX(width / 4);
+			coin.setTranslateY(width / 4);
+			coin.setFill(Color.YELLOW);
+			coin.setMouseTransparent(true);
+			cellId = '3';
+			//Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.YELLOW, rootLayout);
+			this.getChildren().add(coin);
 			break;
 			
 		case "departBtn":

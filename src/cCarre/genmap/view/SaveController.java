@@ -70,7 +70,12 @@ public class SaveController implements Initializable {
                 	lineJSON.add(line[x]);
                 }
             }
-        	content += tab2D.toString();
+        	
+//        	String[] charTab = {"bleu","red","yellow"};
+//            printWriter.write(charTab[0]);
+//            printWriter.write(charTab[1]);
+//            printWriter.write(charTab[2]);
+
             tab2D.writeJSONString(printWriter);
 
             printWriter.close();
