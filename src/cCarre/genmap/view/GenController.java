@@ -83,10 +83,11 @@ public class GenController {
 	private double newX;
 	private double hBar = 0;
 	private boolean inTesting = false;
+	private double coTest = 0;
 	
 	private Rectangle2D screenBounds;
-	private AnchorPane game;
-	FXMLLoader gameLoader;
+
+	private MainController mainController;
 	
 	@SuppressWarnings("unused")
 	private double playerSpeed = 0;
@@ -174,27 +175,31 @@ public class GenController {
             	lineJSON.add(line[x]);
             }
         }
-		
+    	
+    	
 		// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
 		root.requestFocus();
 		
 		// Dï¿½finis la map ï¿½ utiliser, attend un JSONArray
 		Level.setJsonLevel(mapGen);
 		
+		// Set the x coordinate of the start of the game
+		coTest = grille.getLayoutX();
+		
 		// Load game FXML
-		gameLoader = new FXMLLoader();
+		FXMLLoader gameLoader = new FXMLLoader();
 		gameLoader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
-		game = (AnchorPane) gameLoader.load();
+		AnchorPane game = (AnchorPane) gameLoader.load();
 		
 		// Met le jeu par dessus la grille
 		root.getChildren().add(game);
 		
-		MainController controller = gameLoader.getController();
-		playerSpeed = controller.getSpeedPlayer();
-		controller.setEdit(true, hBar);
+		mainController = gameLoader.getController();
+		playerSpeed = mainController.getSpeedPlayer();
+		mainController.setEdit(true, hBar);
 		
 		root.setOnKeyPressed(evt ->{
-			controller.jump();
+			mainController.jump();
 		});
 		// /!\ Penser ï¿½ remove l'event sur le btn return /!\	
 	}
@@ -318,7 +323,7 @@ public class GenController {
 					if(((c.getX()+1) * widthCell) > select.getLayoutX() && (c.getX() * widthCell) < (select.getLayoutX() + select.getWidth()) 
 					&& ((c.getY()+1) * widthCell) > select.getLayoutY() && (c.getY() * widthCell) < (select.getLayoutY() + select.getHeight())) {
 						// Si y a pas que le background, alors 
-						if(c.getChildrenUnmodifiable().size() > 2) {
+						if(c.getChildrenUnmodifiable().size() > 3) {
 							c.setSelected(true);
 						}							
 					}
@@ -363,7 +368,7 @@ public class GenController {
 		int nRow = 0;
 
 		for(int j = 0; j < deltaX; j++) {
-			// Regarde le num de col et de ligne de la derniï¿½re cellule
+			// Regarde le num de col et de ligne de la dernière cellule
 			Cell c = (Cell) grille.getChildren().get(grille.getChildren().size() - 1);
 			
 			nCol = c.getX();
@@ -393,7 +398,7 @@ public class GenController {
 			}
 			
 			// Si y a pas que le background, alors on change le mostX
-			if(c.getChildrenUnmodifiable().size() > 2) {
+			if(c.getChildrenUnmodifiable().size() > 3) {
 				x = (c.getX() > x) ? c.getX() : x;
 			}
 		}
@@ -448,14 +453,35 @@ public class GenController {
 			window.setMaximized(true);
 			window.show();
 			
-		} else {
+		} else if (inTesting && mainController == null) {
+			ToolBar.setItem("");
+			
+			// Active tout les btns de la toolbar et change le retour
+			toolBar.setDisable(false);
+			test.setDisable(false);
+			saveBar.setDisable(false);
+			
+			// Arrête le test
+			inTesting = false;
+			
+		} else if(inTesting && mainController != null){
 			// En test, on sort du jeu
-			System.out.println(root.getChildren().get(root.getChildren().size() - 1));
-			AnchorPane gameFxml = (AnchorPane) root.getChildren().get(root.getChildren().size() - 1);
+			root.getChildren().remove(root.getChildren().size() - 1);
+
+			mainController.setStop();
 			
-			Scene scene = (Scene) gameFxml.getScene();
+			// Active tout les btns de la toolbar et change le retour
+			toolBar.setDisable(false);
+			test.setDisable(false);
+			saveBar.setDisable(false);
 			
-		}
+			// Arrête le test
+			inTesting = false;
+			
+			// Replace la cam
+			grille.setLayoutX(coTest);
+			
+		} 
 	}
 	
 	

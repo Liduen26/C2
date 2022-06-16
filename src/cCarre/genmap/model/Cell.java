@@ -22,8 +22,9 @@ public class Cell extends Region {
 	private int width;
 	private int x, y;
 	private Rectangle back;
-	private char cellId;
 	private Rectangle selection;
+	private Rectangle hover;
+	private char cellId;
 	private boolean selected = false;
 
 	public Cell(Node cell) {
@@ -58,6 +59,16 @@ public class Cell extends Region {
 		selection.setMouseTransparent(true);
 		
 		
+		hover = new Rectangle();
+		hover.setFill(Color.DARKCYAN);
+		hover.setWidth(width);
+		hover.setHeight(width);
+		hover.setOpacity(0);
+		hover.setMouseTransparent(true);
+		
+		this.getChildren().add(hover);
+		
+		
 		this.getChildren().add(selection);
 		
 		this.setOnMousePressed(e -> {
@@ -88,15 +99,20 @@ public class Cell extends Region {
 		
 		this.setOnMouseEntered(e -> {
 			if(ToolBar.getItem().equals("test")) {
-				
+				hover.setOpacity(0.3);
+			}
+		});
+		this.setOnMouseExited(e -> {
+			if(ToolBar.getItem().equals("test")) {
+				hover.setOpacity(0);
 			}
 		});
 	}
 	
 	private void onPaint() {
-		if(!occuped) {
+		if(!occuped || (occuped && ToolBar.getItem().equals("test") && this.getCellId() == '8')) {
 			paint();
-		}
+		} 
 	}
 	
 	public void loadMapPaint() {
@@ -244,8 +260,11 @@ public class Cell extends Region {
 			
 		case "test": 
 			cellId = 's';
-			Ebus.get().post(new LaunchGameEvent());
 			ToolBar.setItem("");
+			hover.setOpacity(0);
+
+			Ebus.get().post(new LaunchGameEvent());
+			cellId = '0';
 			break;
 			
 		default:
@@ -265,7 +284,7 @@ public class Cell extends Region {
 		ArrayList<Node> toRem = new ArrayList<Node>();
 		if(occuped) {
 			for(Node node : this.getChildren()) {
-				if(node != back) {
+				if(node != back && node != selection && node != hover) {
 					// V�rifie si c'est le start ou le d�but qui a �t� delete
 					ToolBar.setStartPlaced((node.getId() == "start" ) ? 0 : ToolBar.getStartPlace());
 					ToolBar.setEndPlaced((node.getId() == "end" ) ? 0 : ToolBar.getEndPlace());

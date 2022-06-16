@@ -30,7 +30,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
@@ -412,5 +411,9 @@ public class MainController {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+	}
+
+	public void setStop() {
+		running = false;
 	}
 }
