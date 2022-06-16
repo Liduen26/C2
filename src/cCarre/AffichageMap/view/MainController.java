@@ -199,7 +199,9 @@ public class MainController {
 	            	}
 	
 	            	if (collisionDetected) {
+            			collisionDetected = false;
 	            		running = false;
+	            		fin();
 	            	}
 	            }
 	            
@@ -212,6 +214,16 @@ public class MainController {
 					canJump = false;
 				}						
 			}
+			
+//            for (Shape finishBlock : finishBlocks) {
+//            	if (finishBlock != player.playerRectangle) {
+//            		Shape intersect = Shape.intersect(player.playerRectangle, finishBlock);
+//            		if (intersect.getBoundsInLocal().getWidth() != -1) {
+//            			fin();
+//            		}
+//            	}
+//            }	
+            	
 			Coin.setText("Pieces : "+pieces);
 		}));
 
@@ -219,6 +231,8 @@ public class MainController {
 		time1.play();
 	}
 	
+
+
 	/**
 	 * G�re la d�tection de la collision avec les plateformes, 
 	 * tue si le player est sur le c�t�, au sol s'il est sur le dessus
@@ -398,6 +412,10 @@ public class MainController {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+	}
+	
+	private void fin() {
+		System.out.println("fin");
 	}
 
 }
