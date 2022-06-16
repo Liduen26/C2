@@ -253,7 +253,7 @@ public class Cell extends Region {
 		}
 	}
 
-	private void erase() {
+	public void erase() {
 		ArrayList<Node> toRem = new ArrayList<Node>();
 		if(occuped) {
 			for(Node node : this.getChildren()) {

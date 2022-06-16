@@ -20,6 +20,7 @@ import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
+import cCarre.genmap.events.RemovePartGrilleEvent;
 import cCarre.genmap.model.Cell;
 import cCarre.genmap.model.ToolBar;
 import javafx.animation.PauseTransition;
@@ -424,6 +425,38 @@ public class GenController {
 		}
 	}
 	
+	@Subscribe
+	private void handleRemovePart(RemovePartGrilleEvent e) {
+		ArrayList<Cell> toRem = new ArrayList<Cell>();
+		int x = 0;
+		ToolBar.setMostX(e.getX());
+
+		// Fait defiler les cells
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+			}
+			if(c.getX() > e.getX()) {
+				c.erase();
+			}
+
+			// Si y a pas que le background, alors on change le mostX
+			if(c.getChildrenUnmodifiable().size() > 2) {
+				x = (c.getX() > x) ? c.getX() : x;
+			}
+		}
+		ToolBar.setMostX(x);
+
+		// Decale la cam si y a plus assez de cases peintes dans le champ
+		if(grille.getLayoutX() < -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
+			double x2 = -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2);
+			x2 = (x2 >= 0) ? 0 : x2;
+
+			grille.setLayoutX(x2);
+		}
+	}
+	
 	// btn Retour ---------------------------------------------------------------------------------
 	public void GoToBaseMenu(ActionEvent event) throws IOException {
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../../Menu/BaseMenu.fxml"));
@@ -512,6 +545,7 @@ public class GenController {
         }
         
 		// Remplit la grille avec la map chargée
+        int lastX = 0;
 		for(Node cell : grille.getChildren()) {
 			Cell c = new Cell(cell);
 			if(cell instanceof Cell) {
@@ -523,10 +557,13 @@ public class GenController {
 			}
 			c.setCellId(tabMap[c.getY()][c.getX()]);
 			c.loadMapPaint();
+			lastX = c.getX();
 		}
 		
 		// Supprime les cases vides en trop
-		Ebus.get().post(new RemoveLengthGrilleEvent(30));
+		//Ebus.get().post(new RemoveLengthGrilleEvent(30));
+		Ebus.get().post(new RemovePartGrilleEvent(lastX));
+
     }
 	
 	private char[][] getCustomMap() {
