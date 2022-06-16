@@ -17,6 +17,7 @@ import cCarre.AffichageMap.view.MainController;
 import cCarre.Menu.MainMenu;
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.LaunchGameEvent;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
@@ -80,16 +81,21 @@ public class GenController {
     private GridPane grille;
 	private double oldX;
 	private double newX;
+	private double hBar = 0;
+	private boolean inTesting = false;
 	
 	private Rectangle2D screenBounds;
+	private AnchorPane game;
+	FXMLLoader gameLoader;
 	
+	@SuppressWarnings("unused")
 	private double playerSpeed = 0;
 	
 	@FXML
 	private void initialize() {
 		screenBounds = Screen.getPrimary().getBounds();
 		
-		double hBar = upBar.getPrefHeight();
+		hBar = upBar.getPrefHeight();
 		
 		double rWidth = screenBounds.getWidth() / widthCell;
 		double rHeight = (screenBounds.getHeight() - hBar) / widthCell;
@@ -134,54 +140,64 @@ public class GenController {
 	
 	// QuickTest ----------------------------------------------------------------------------------
 	@FXML
-    void handleTest(ActionEvent event) throws IOException {
-		boolean go = true;
-		ToolBar.setItem("test");
-		
-		if(go) {
-			// Charge la map
-			JSONArray mapGen = new JSONArray();
-			char[][] tab = getCustomMap();
-	    	
-	    	for (int y = 0; y < tab.length; y++) {
-	            char[] line = tab[y];
-	            JSONArray lineJSON = new JSONArray();
-	            mapGen.add(lineJSON);
-	            for (int x = 0; x < tab[y].length; x++) {
-	            	lineJSON.add(line[x]);
-	            }
-	        }
-	    	
+    void handleTest(ActionEvent event){
+		if(!inTesting) {
+			ToolBar.setItem("test");	
 			
-			// D�sactive tout les btns de la toolbar et change le retour<
+			// D�sactive tout les btns de la toolbar et change le retour
 			toolBar.setDisable(true);
 			test.setDisable(true);
 			saveBar.setDisable(true);
 			
-			// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
-			root.requestFocus();
+			inTesting = true;
 			
-			// D�finis la map � utiliser, attend un JSONArray
-			Level.setJsonLevel(mapGen);
+			Ebus.get().post(new PopupEvent("Warining !", "Click on a cell to place the player and start the test."));
 			
-			// Load person overview.
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
-			AnchorPane game = (AnchorPane) loader.load();
+		} else {
 			
-			// met le jeu par dessus la grille
-			root.getChildren().add(game);
 			
-			MainController controller = loader.getController();
-			playerSpeed = controller.getSpeedPlayer();
-			controller.setEdit(true);
-			
-			root.setOnKeyPressed(e ->{
-				controller.jump();
-			});
-			// /!\ Penser � remove l'event sur le btn return /!\	
 		}
     }
+	
+	@SuppressWarnings("unchecked")
+	@Subscribe
+	private void launchGame(LaunchGameEvent e) throws IOException {
+		// Charge la map
+		JSONArray mapGen = new JSONArray();
+		char[][] tab = getCustomMap();
+    	
+    	for (int y = 0; y < tab.length; y++) {
+            char[] line = tab[y];
+            JSONArray lineJSON = new JSONArray();
+            mapGen.add(lineJSON);
+            for (int x = 0; x < tab[y].length; x++) {
+            	lineJSON.add(line[x]);
+            }
+        }
+		
+		// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
+		root.requestFocus();
+		
+		// D�finis la map � utiliser, attend un JSONArray
+		Level.setJsonLevel(mapGen);
+		
+		// Load game FXML
+		gameLoader = new FXMLLoader();
+		gameLoader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
+		game = (AnchorPane) gameLoader.load();
+		
+		// Met le jeu par dessus la grille
+		root.getChildren().add(game);
+		
+		MainController controller = gameLoader.getController();
+		playerSpeed = controller.getSpeedPlayer();
+		controller.setEdit(true, hBar);
+		
+		root.setOnKeyPressed(evt ->{
+			controller.jump();
+		});
+		// /!\ Penser � remove l'event sur le btn return /!\	
+	}
 	
 	@Subscribe
 	private void gridGameMoving(MoveGridEvent e) {
@@ -399,7 +415,6 @@ public class GenController {
 			c1 = (Cell) cells;
 		}
 		int nCol = c1.getX();
-		int nRow = c1.getY();
 
 		// Supprime une colones de grille
 		ArrayList<Cell> toRem = new ArrayList<Cell>();
@@ -421,15 +436,26 @@ public class GenController {
 	}
 	
 	// btn Retour ---------------------------------------------------------------------------------
-	public void GoToBaseMenu(ActionEvent event) throws IOException {
-		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../../Menu/BaseMenu.fxml"));
-		Scene tableViewScene = new Scene(tableViewParent);
-		
-		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
-		
-		window.setScene(tableViewScene);
-		window.setMaximized(true);
-		window.show();
+	public void btnReturn(ActionEvent event) throws IOException {
+		if(!inTesting) {
+			// Pas en test, on revient au menu
+			Parent tableViewParent = FXMLLoader.load(getClass().getResource("../../Menu/BaseMenu.fxml"));
+			Scene tableViewScene = new Scene(tableViewParent);
+			
+			Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
+			
+			window.setScene(tableViewScene);
+			window.setMaximized(true);
+			window.show();
+			
+		} else {
+			// En test, on sort du jeu
+			System.out.println(root.getChildren().get(root.getChildren().size() - 1));
+			AnchorPane gameFxml = (AnchorPane) root.getChildren().get(root.getChildren().size() - 1);
+			
+			Scene scene = (Scene) gameFxml.getScene();
+			
+		}
 	}
 	
 	
@@ -544,4 +570,6 @@ public class GenController {
 		
 		return cellTab;
 	}
+	
+	
 }

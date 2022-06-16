@@ -30,6 +30,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
@@ -53,23 +54,30 @@ public class MainController {
 	double temps;
 	int frame;
 	long time;
-	boolean jump = false;
+	
 	double vitesse;
 	double distanceX;
 	double distanceY;
 	double verticalVelocity = 0;
-	boolean onGround = false;
-	int pieces = 0;
-	boolean canJump = false;
 	int spawnX, spawnY;
-	boolean running = true;
+	
+	int pieces = 0;
+	
+	boolean jump = false;
+	boolean onGround = false;
+	boolean canJump = false;
+	
 	String level = "";
+	boolean running = true;
+	boolean newSpawn = false;
+	
 	
 	// Pour changer la vitsse
 	int constV = 270; 
 	final int constGrav = 700;
 	
 	boolean edit = false;
+	double toolBarHeight = 0;
 
 	@FXML
 	private Player player;
@@ -113,8 +121,10 @@ public class MainController {
 					coins.add(coin);
 					break;
 				case '8' :
-					spawnX = x*elementSize;
-					spawnY = y*elementSize-1;
+					if(!newSpawn) {
+						spawnX = x * elementSize;
+						spawnY = y * elementSize - 1;
+					}
 					break;
 				case '9' :
 					FinishBlock finishBlock = new FinishBlock(x*elementSize, y*elementSize, elementSize, elementSize, Color.GREEN, rootLayout);
@@ -122,8 +132,9 @@ public class MainController {
 					break;
 				case 's' :
 					// Test rapide de l'éditeur
-					spawnX = x*elementSize;
-					spawnY = y*elementSize-1;
+					spawnX = x * elementSize;
+					spawnY = y * elementSize - 1;
+					newSpawn = true;
 					break;
 				}
 			}
@@ -229,22 +240,24 @@ public class MainController {
         	if (platform != player.playerRectangle) {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
-        			if (intersect.getBoundsInLocal().getHeight() <= intersect.getBoundsInLocal().getWidth()) {
-						
-						if(intersect.getBoundsInLocal().getMinY() > platform.getTranslateY()) {
+        			if (intersect.getBoundsInLocal().getHeight() - toolBarHeight <= intersect.getBoundsInLocal().getWidth()) {
+        				
+						if(intersect.getBoundsInLocal().getMinY() - toolBarHeight > platform.getTranslateY()) {
 							// plafond -> MORT
 	        				verticalVelocity = 0;
 	        				player.death(spawnX,spawnY, rootLayout, Coin);
+	        				System.out.println("Ca c le plafond");
 						} else {
 							// AU sol
 							player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
-								
+//							System.out.println("Sol");
 							verticalVelocity = 0;
 							onGround = true;
 							canJump = true;
 						}
 					} else {
 						// Coté -> MORT
+						System.out.println("Ca c un bord");
 						verticalVelocity = 0;
 						player.death(spawnX,spawnY, rootLayout, Coin);
         			}
@@ -344,8 +357,9 @@ public class MainController {
 		return edit;
 	}
 
-	public void setEdit(boolean edit) {
+	public void setEdit(boolean edit, double height) {
 		this.edit = edit;
+		this.toolBarHeight = (edit == true) ? height : 0;
 	}
 
 	public void setMap(String string) {
@@ -399,5 +413,4 @@ public class MainController {
             e.printStackTrace();
         }
 	}
-
 }

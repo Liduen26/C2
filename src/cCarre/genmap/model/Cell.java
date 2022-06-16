@@ -2,8 +2,11 @@ package cCarre.genmap.model;
 
 import java.util.ArrayList;
 
+import javax.tools.Tool;
+
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
+import cCarre.genmap.events.LaunchGameEvent;
 import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
 import javafx.scene.Node;
@@ -78,6 +81,14 @@ public class Cell extends Region {
 				onPaint();
 			} else if(e.getButton() == MouseButton.SECONDARY) {
 				erase();
+			}
+		});
+		
+		
+		
+		this.setOnMouseEntered(e -> {
+			if(ToolBar.getItem().equals("test")) {
+				
 			}
 		});
 	}
@@ -191,13 +202,13 @@ public class Cell extends Region {
 				} else {
 					occuped = false;
 					
-					Ebus.get().post(new PopupEvent("Attention !", "Le d�part doit �tre plac� � gauche de l'arriv�e"));
+					Ebus.get().post(new PopupEvent("Warning !", "The start must be placed to the left of the finish line"));
 				}
 			} else {
 				// Si un d�part a d�j� �t� plac� 
 				occuped = false;
 
-				Ebus.get().post(new PopupEvent("Attention !", "Un d�part a d�j� �t� plac�"));
+				Ebus.get().post(new PopupEvent("Warning !", "A Start has already been placed"));
 			}
 			break;
 			
@@ -221,22 +232,23 @@ public class Cell extends Region {
 				} else {
 					occuped = false;
 					
-					Ebus.get().post(new PopupEvent("Attention !", "L'arriv�e doit �tre plac�e � droite du d�part"));
+					Ebus.get().post(new PopupEvent("Warning !", "The finish line must be placed to the right of the start"));
 				}
 			} else {
 				// Si une arriv�e a d�j� �t� plac�e
 				occuped = false;
 
-				Ebus.get().post(new PopupEvent("Attention !", "Une arriv�e a d�j� �t� plac�e"));
+				Ebus.get().post(new PopupEvent("Warning !", "A finish line has alerady been placed"));
 			}
 			break;
 			
 		case "test": 
 			cellId = 's';
+			Ebus.get().post(new LaunchGameEvent());
+			ToolBar.setItem("");
 			break;
 			
 		default:
-			cellId = 0;
 			occuped = false;
 			break;
 		}

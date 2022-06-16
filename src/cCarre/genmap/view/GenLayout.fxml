@@ -33,7 +33,7 @@
             </HBox>
             <HBox alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT" spacing="10.0" HBox.hgrow="SOMETIMES">
                <children>
-                  <Button mnemonicParsing="false" onAction="#GoToBaseMenu" text="Retour" />
+                  <Button mnemonicParsing="false" onAction="#btnReturn" text="Retour" />
                </children>
             </HBox>
          </children>
