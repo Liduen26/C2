@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -157,19 +159,9 @@ public class GenController {
 		ToolBar.setItem("test");
 		
 		if(go) {
-			// Charge la map
-			JSONArray mapGen = new JSONArray();
-			char[][] tab = getCustomMap();
-	    	
-	    	for (int y = 0; y < tab.length; y++) {
-	            char[] line = tab[y];
-	            JSONArray lineJSON = new JSONArray();
-	            mapGen.add(lineJSON);
-	            for (int x = 0; x < tab[y].length; x++) {
-	            	lineJSON.add(line[x]);
-	            }
-	        }
-	    	
+			// Charge la map			
+			JSONObject mapObject = getCustomMap();
+	    	JSONArray mapGen = (JSONArray) mapObject.get("map");
 			
 			// Dï¿½sactive tout les btns de la toolbar et change le retour<
 			toolBar.setDisable(true);
@@ -521,10 +513,6 @@ public class GenController {
 		Color groundColor1 = groundColor.getValue();
 		Color groundColor2 = obstacleColor.getValue();
 		Color groundColor3 = coinColor.getValue();
-		
-		System.out.println("ground : "+groundColor1);
-		System.out.println("obstacle : "+groundColor2);
-		System.out.println("coin : "+groundColor3);
 
 		// Load (mais n'affiche pas) la page fxml dï¿½diï¿½e ï¿½ la save pour ensuite envoyer la map ï¿½ la classe SaveController
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
@@ -540,9 +528,12 @@ public class GenController {
 
     	// Demande ï¿½ l'utilisateur de choisir un fichier
         File file = fileChooser.showOpenDialog(new Stage());
-    	FileReader reader = new FileReader(file);
-
-    	JSONArray element1 = (JSONArray) parser.parse(reader); // parse
+    	Reader reader = new FileReader(file);
+      	
+        JSONObject jsonObject = (JSONObject) parser.parse(reader);
+    	    	
+    	JSONArray element1 = (JSONArray) jsonObject.get("map"); // parse
+    	
         JSONArray element2 = (JSONArray) element1.get(0); // element1 recupere la map        
         
         // Agrandi la grille en fonction de la map chargée
@@ -573,21 +564,20 @@ public class GenController {
 				c = (Cell) cell;
 			}
 			if(c.getY() == element1.size()-1 && c.getX() == element2.size()-1){
-				System.out.println("STOOOOOOOOOOOOOOOPPPPPPPPPPPPP");
 				break;
 			}
 			c.setCellId(tabMap[c.getY()][c.getX()]);
-			c.loadMapPaint();
+			c.loadMapPaint(jsonObject);
 			lastX = c.getX();
 		}
 		
 		// Supprime les cases vides en trop
-		//Ebus.get().post(new RemoveLengthGrilleEvent(30));
 		Ebus.get().post(new RemovePartGrilleEvent(lastX));
-
     }
 	
-	private char[][] getCustomMap() {
+	private JSONObject getCustomMap() {
+		JSONObject customMapObject = new JSONObject();
+		
 		// Obtention du nbr de colonnes et lignes
 		Node cells = grille.getChildren().get(grille.getChildren().size() - 1);
 		Cell c1 = new Cell(cells);
@@ -610,12 +600,25 @@ public class GenController {
 			cellTab[c.getY()][c.getX()] = c.getCellId();
 		}
 		
-		return cellTab;
-	}
-	
-	// test
-	void setcolor() {
-		Color groundColor2 = groundColor.getValue();
-		System.out.println("groundColor2");
+		// Transforme le tableau en JsonArray
+    	JSONArray mapJsonArray = new JSONArray();
+    	for (int y = 0; y < cellTab.length; y++) {
+            char[] line = cellTab[y];
+            JSONArray lineJSON = new JSONArray();
+            mapJsonArray.add(lineJSON);
+            for (int x = 0; x < line.length; x++) {
+            	lineJSON.add(line[x]);
+            }
+        }
+  		
+    	JSONObject colorArray = new JSONObject();
+    	colorArray.put("ground",""+groundColor.getValue());
+    	colorArray.put("obstacle",""+obstacleColor.getValue());
+    	colorArray.put("coin",""+coinColor.getValue());
+
+		customMapObject.put("color", colorArray);
+		customMapObject.put("map", mapJsonArray);
+
+		return customMapObject;
 	}
 }

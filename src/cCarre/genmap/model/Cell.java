@@ -2,7 +2,8 @@ package cCarre.genmap.model;
 
 import java.util.ArrayList;
 
-import cCarre.AffichageMap.model.Coin;
+import org.json.simple.JSONObject;
+
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.PopupEvent;
@@ -14,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
+import javafx.scene.paint.Color;
 
 public class Cell extends Region {
 	private boolean occuped = false;
@@ -89,7 +91,10 @@ public class Cell extends Region {
 		}
 	}
 	
-	public void loadMapPaint() {
+	public void loadMapPaint(JSONObject mapObject) {
+		Color customColor;
+		String color;
+		String hexColor;
 		occuped = true;
 		
 		switch (cellId) {
@@ -98,16 +103,24 @@ public class Cell extends Region {
 			break;
 			
 		case '1': 
+			color = (String) ((JSONObject) mapObject.get("color")).get("ground");
+			hexColor = "#"+color.substring(2,8);
+            customColor = Color.valueOf(hexColor);
+
 			Rectangle ground = new Rectangle();
 			ground.setWidth(width);
 			ground.setHeight(width);
-			ground.setFill(Color.ROYALBLUE);
+			ground.setFill(customColor);
 			ground.setMouseTransparent(true);
 
 			this.getChildren().add(ground);
 			break;
 			
 		case '2':
+			color = (String) ((JSONObject) mapObject.get("color")).get("obstacle");
+			hexColor = "#"+color.substring(2,8);
+            customColor = Color.valueOf(hexColor);
+            
 			// Ajoute un carr� blanc avant de mettre le triangle
 			Rectangle vide2 = new Rectangle();
 			vide2.setWidth(width);
@@ -124,19 +137,23 @@ public class Cell extends Region {
 	                (double) 0, (double) (width), 
 	                (double) (width), (double) (width), 
 	             });
-			triangle.setFill(Color.RED);
+			triangle.setFill(customColor);
 			triangle.setMouseTransparent(true);
 
 			this.getChildren().add(triangle);
 			break;
 			
 		case '3': 
+			color = (String) ((JSONObject) mapObject.get("color")).get("coin");
+			hexColor = "#"+color.substring(2,8);
+            customColor = Color.valueOf(hexColor);
+            
 			Rectangle coin = new Rectangle();
 			coin.setWidth(width/2);
 			coin.setHeight(width/2);
 			coin.setTranslateX(width / 4);
 			coin.setTranslateY(width / 4);
-			coin.setFill(Color.YELLOW);
+			coin.setFill(customColor);
 			coin.setMouseTransparent(true);
 
 			this.getChildren().add(coin);
