@@ -26,10 +26,14 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
@@ -63,6 +67,8 @@ public class MainController {
 	boolean canJump = false;
 	int spawnX, spawnY;
 	boolean running = true;
+	boolean recc = true; 
+
 	String level = "";
 	
 	// Pour changer la vitsse
@@ -76,6 +82,9 @@ public class MainController {
 	
 	@FXML
 	private Label Coin;
+	
+	@FXML
+	private Label popup;
 
 	@FXML
 	private AnchorPane rootLayout;
@@ -121,7 +130,7 @@ public class MainController {
 					finishBlocks.add(finishBlock);
 					break;
 				case 's' :
-					// Test rapide de l'éditeur
+					// Test rapide de l'ï¿½diteur
 					spawnX = x*elementSize;
 					spawnY = y*elementSize-1;
 					break;
@@ -137,6 +146,7 @@ public class MainController {
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
                 Coin.setLayoutX(+(offset - 300));
+
                 
                 // Si le jeu vient de l'ï¿½diteur, transmet les coo ï¿½ la grille
 				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
@@ -201,7 +211,7 @@ public class MainController {
 	            	if (collisionDetected) {
             			collisionDetected = false;
 	            		running = false;
-	            		fin();
+	            		fin(recc);
 	            	}
 	            }
 	            
@@ -225,6 +235,7 @@ public class MainController {
 //            }	
             	
 			Coin.setText("Pieces : "+pieces);
+		//	popup.setText("");
 		}));
 
 		time1.setCycleCount(Animation.INDEFINITE);
@@ -258,7 +269,7 @@ public class MainController {
 							canJump = true;
 						}
 					} else {
-						// Coté -> MORT
+						// Cotï¿½ -> MORT
 						verticalVelocity = 0;
 						player.death(spawnX,spawnY, rootLayout, Coin);
         			}
@@ -414,8 +425,43 @@ public class MainController {
         }
 	}
 	
-	private void fin() {
-		System.out.println("fin");
+	private void fin(boolean recc) {
+		if (recc == true) {
+			
+			show("endd",rootLayout);
+			
+			recc = false;
+			System.out.println("fin");
+		}
 	}
+	
+	 private static int TIMEOUT = 2400;
+	 
+     public static void show(final String message, final AnchorPane rootLayout) {
+         Stage stage = (Stage) rootLayout.getScene().getWindow();
+         final Popup popup = createPopup(message);
+         popup.setOnShown(e -> {
+             popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2);
+             popup.setY(stage.getY() + stage.getHeight() / 1.2 - popup.getHeight() / 2);
+         });
+         popup.show(stage);
+
+         new Timeline(new KeyFrame(
+                 Duration.millis(TIMEOUT),
+                 ae -> popup.hide())).play();
+     }
+
+     private static Popup createPopup(final String message) {
+         final Popup popup = new Popup();
+         popup.setAutoFix(true);
+         Label label = new Label(message);
+       //  label.getStylesheets().add("./popup.css");
+         label.getStyleClass().add("popup");
+         popup.getContent().add(label);
+         System.out.println(label.getStylesheets());
+         return popup;
+     }
+
+
 
 }
