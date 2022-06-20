@@ -152,7 +152,7 @@ public class Cell extends Region {
 			hexColor = "#"+color.substring(2,8);
             customColor = Color.valueOf(hexColor);
             
-			// Ajoute un carre blanc avant de mettre le triangle
+			// Ajoute un carre blanc avant de mettre le coin
 			Rectangle vide3 = new Rectangle();
 			vide3.setWidth(width);
 			vide3.setHeight(width);
@@ -188,12 +188,6 @@ public class Cell extends Region {
 	}
 	
 	private void paint() {
-		// Variables pour les couleurs
-//		Color customColor;
-//		String color;
-//		String hexColor;
-//		Color couleur = null;
-		
 		occuped = true;
 		
 		// Regarde quel item est sï¿½lectionnï¿½ pour la peinture
@@ -201,10 +195,6 @@ public class Cell extends Region {
 		
 		switch (item) {
 		case "groundBtn": 
-			//Recupere la couleur choisie 
-//			color = (String) colors.get("ground");
-//			hexColor = "#"+color.substring(2,8);
-//            customColor = Color.valueOf(hexColor);
             
             //Créer le rectangle
 			Rectangle ground = new Rectangle();

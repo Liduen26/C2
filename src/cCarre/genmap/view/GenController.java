@@ -27,6 +27,7 @@ import cCarre.genmap.model.Cell;
 import cCarre.genmap.model.ToolBar;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -114,6 +115,11 @@ public class GenController {
 	@FXML
 	private void initialize() {
 		
+		// Set les couleurs par défaut des différents elements
+        ToolBar.setGroundColor(groundColor.getValue());
+        ToolBar.setObstacleColor(obstacleColor.getValue());
+        ToolBar.setCoinColor(coinColor.getValue());
+		
 		screenBounds = Screen.getPrimary().getBounds();
 		
 		double hBar = upBar.getPrefHeight();
@@ -152,22 +158,27 @@ public class GenController {
 				ToolBar.setItem(id);
 			});
 		}
-		
-		// _____________________________________________________________________________
-		
-	    ColorPicker picker = new ColorPicker(Color.ALICEBLUE);
-	    Text text = new Text("Color Picker");
-	    
-	    labelTest.textFillProperty().bind(obstacleColor.valueProperty());
-	    
-	    System.out.println("TST : "+labelTest);
-		// _____________________________________________________________________________
 
-		
 		select = new Rectangle();
 		select.setFill(Color.RED);
 		select.setOpacity(0.2);
 		select.setFocusTraversable(true);
+
+		
+        // Event handler pour le choix des couleurs
+        EventHandler<ActionEvent> changeColorEvent = new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e)
+            {
+                ToolBar.setGroundColor(groundColor.getValue());
+                ToolBar.setObstacleColor(obstacleColor.getValue());
+                ToolBar.setCoinColor(coinColor.getValue());
+            }
+        };
+  
+        // Listener des changements de couleur
+        groundColor.setOnAction(changeColorEvent);
+        obstacleColor.setOnAction(changeColorEvent);
+        coinColor.setOnAction(changeColorEvent);
 	}
 	
 	// QuickTest ----------------------------------------------------------------------------------
