@@ -8,6 +8,7 @@ import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
+import cCarre.genmap.view.GenController;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
@@ -24,8 +25,8 @@ public class Cell extends Region {
 	private Rectangle back;
 	private char cellId;
 	private Rectangle selection;
-	private boolean selected = false;
-
+	private boolean selected = false;	
+	
 	public Cell(Node cell) {
 		super();
 	}
@@ -103,6 +104,7 @@ public class Cell extends Region {
 			break;
 			
 		case '1': 
+			//Recupere la couleur choisie 
 			color = (String) ((JSONObject) mapObject.get("color")).get("ground");
 			hexColor = "#"+color.substring(2,8);
             customColor = Color.valueOf(hexColor);
@@ -117,11 +119,12 @@ public class Cell extends Region {
 			break;
 			
 		case '2':
+			//Recupere la couleur choisie 
 			color = (String) ((JSONObject) mapObject.get("color")).get("obstacle");
 			hexColor = "#"+color.substring(2,8);
             customColor = Color.valueOf(hexColor);
             
-			// Ajoute un carrï¿½ blanc avant de mettre le triangle
+			// Ajoute un carre blanc avant de mettre le triangle
 			Rectangle vide2 = new Rectangle();
 			vide2.setWidth(width);
 			vide2.setHeight(width);
@@ -144,10 +147,21 @@ public class Cell extends Region {
 			break;
 			
 		case '3': 
+			//Recupere la couleur choisie 
 			color = (String) ((JSONObject) mapObject.get("color")).get("coin");
 			hexColor = "#"+color.substring(2,8);
             customColor = Color.valueOf(hexColor);
             
+			// Ajoute un carre blanc avant de mettre le triangle
+			Rectangle vide3 = new Rectangle();
+			vide3.setWidth(width);
+			vide3.setHeight(width);
+			vide3.setFill(Color.WHITE);
+			vide3.setMouseTransparent(true);
+
+			this.getChildren().add(vide3);
+			
+			//Ajoute la piece
 			Rectangle coin = new Rectangle();
 			coin.setWidth(width/2);
 			coin.setHeight(width/2);
@@ -174,6 +188,12 @@ public class Cell extends Region {
 	}
 	
 	private void paint() {
+		// Variables pour les couleurs
+//		Color customColor;
+//		String color;
+//		String hexColor;
+//		Color couleur = null;
+		
 		occuped = true;
 		
 		// Regarde quel item est sï¿½lectionnï¿½ pour la peinture
@@ -181,10 +201,16 @@ public class Cell extends Region {
 		
 		switch (item) {
 		case "groundBtn": 
+			//Recupere la couleur choisie 
+//			color = (String) colors.get("ground");
+//			hexColor = "#"+color.substring(2,8);
+//            customColor = Color.valueOf(hexColor);
+            
+            //Créer le rectangle
 			Rectangle ground = new Rectangle();
 			ground.setWidth(width);
 			ground.setHeight(width);
-			ground.setFill(Color.ROYALBLUE);
+			ground.setFill(ToolBar.getGroundColor());
 			ground.setMouseTransparent(true);
 			cellId = '1';
 			
@@ -198,7 +224,7 @@ public class Cell extends Region {
 	                (double) 0, (double) (width), 
 	                (double) (width), (double) (width), 
 	             });
-			triangle.setFill(Color.RED);
+			triangle.setFill(ToolBar.getObstacleColor());
 			triangle.setMouseTransparent(true);
 			cellId = '2';
 
@@ -211,7 +237,7 @@ public class Cell extends Region {
 			coin.setHeight(width/2);
 			coin.setTranslateX(width / 4);
 			coin.setTranslateY(width / 4);
-			coin.setFill(Color.YELLOW);
+			coin.setFill(ToolBar.getCoinColor());
 			coin.setMouseTransparent(true);
 			cellId = '3';
 			//Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.YELLOW, rootLayout);

@@ -1,15 +1,20 @@
 package cCarre.genmap.model;
 
 import cCarre.genmap.events.Ebus;
+import javafx.scene.paint.Color;
 import cCarre.genmap.events.AddLengthGrilleEvent;
 
-public class ToolBar {
+public final class ToolBar {
 	private static String item;
 	private static boolean test = false;
 	private static boolean click;
 	private static int mostX;
 	private static int startPlaced = 0;
 	private static int endPlaced = 0;
+	private static Color groundColor = null;
+	private static Color obstacleColor = null;
+	private static Color coinColor = null;
+
 	public ToolBar() {}
 	
 	// Paserelle d'infos --------------------------------------------------------------------------
@@ -71,5 +76,31 @@ public class ToolBar {
 	
 	public static int getEndPlace() {
 		return endPlaced;
+	}
+	
+	// Couleurs
+	
+	public static Color getGroundColor() {
+		return groundColor;
+	}
+
+	public static void setGroundColor(Color groundColor) {
+		ToolBar.groundColor = groundColor;
+	}
+
+	public static Color getObstacleColor() {
+		return obstacleColor;
+	}
+
+	public static void setObstacleColor(Color obstacleColor) {
+		ToolBar.obstacleColor = obstacleColor;
+	}
+
+	public static Color getCoinColor() {
+		return coinColor;
+	}
+
+	public static void setCoinColor(Color coinColor) {
+		ToolBar.coinColor = coinColor;
 	}
 }

@@ -37,6 +37,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -44,6 +45,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -51,6 +53,9 @@ import javafx.util.Duration;
 
 public class GenController {
 	// Blocs -------------------------
+    @FXML
+    private Label labelTest;
+	
 	@FXML
     private AnchorPane root;
 	
@@ -74,6 +79,9 @@ public class GenController {
     
     @FXML
     private ColorPicker obstacleColor;
+    
+    @FXML
+    private MenuBar menuBar;
    
     @FXML
     private Button test;
@@ -105,6 +113,7 @@ public class GenController {
 	
 	@FXML
 	private void initialize() {
+		
 		screenBounds = Screen.getPrimary().getBounds();
 		
 		double hBar = upBar.getPrefHeight();
@@ -138,13 +147,22 @@ public class GenController {
 		// Tracking des btns de la toolBar --------------------------------------------------------
 		for(Node btn : toolBar.getChildren()) {
 			btn.setOnMouseClicked(e -> {
-				final Node btnAct = (Node) e.getSource();
-				String id = btnAct.getId();
+				String id = btn.getId();
 				
 				ToolBar.setItem(id);
-				ToolBar.getItem();
 			});
 		}
+		
+		// _____________________________________________________________________________
+		
+	    ColorPicker picker = new ColorPicker(Color.ALICEBLUE);
+	    Text text = new Text("Color Picker");
+	    
+	    labelTest.textFillProperty().bind(obstacleColor.valueProperty());
+	    
+	    System.out.println("TST : "+labelTest);
+		// _____________________________________________________________________________
+
 		
 		select = new Rectangle();
 		select.setFill(Color.RED);
@@ -510,10 +528,6 @@ public class GenController {
 	
 	// -------------------------- PARTIE DEDIEE A LA SAVE ----------------------------------------------
 	public void GoToSave(ActionEvent event) throws IOException, ParseException {
-		Color groundColor1 = groundColor.getValue();
-		Color groundColor2 = obstacleColor.getValue();
-		Color groundColor3 = coinColor.getValue();
-
 		// Load (mais n'affiche pas) la page fxml d�di�e � la save pour ensuite envoyer la map � la classe SaveController
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("Save.fxml"));
 		Parent root = (Parent) loader.load();
@@ -620,5 +634,13 @@ public class GenController {
 		customMapObject.put("map", mapJsonArray);
 
 		return customMapObject;
+	}
+	
+	public JSONObject getColors() {
+    	JSONObject colors = new JSONObject();
+    	colors.put("ground",""+groundColor.getValue());
+    	colors.put("obstacle",""+obstacleColor.getValue());
+    	colors.put("coin",""+coinColor.getValue());
+		return colors;
 	}
 }
