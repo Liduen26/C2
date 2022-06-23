@@ -29,7 +29,6 @@ import cCarre.genmap.model.ToolBar;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -49,7 +48,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -261,17 +259,20 @@ public class GenController {
 	@Subscribe
 	private void launchGame(LaunchGameEvent e) throws IOException {
 		// Charge la map
-		JSONArray mapGen = new JSONArray();
-		char[][] tab = getCustomMap();
-    	
-    	for (int y = 0; y < tab.length; y++) {
-            char[] line = tab[y];
-            JSONArray lineJSON = new JSONArray();
-            mapGen.add(lineJSON);
-            for (int x = 0; x < tab[y].length; x++) {
-            	lineJSON.add(line[x]);
-            }
-        }
+		JSONObject file = this.getCustomMap();
+		JSONArray mapGen = (JSONArray) file.get("map");
+//		char[][] tab = null;
+//		
+//		
+//    	
+//    	for (int y = 0; y < tab.length; y++) {
+//            char[] line = tab[y];
+//            JSONArray lineJSON = new JSONArray();
+//            mapGen.add(lineJSON);
+//            for (int x = 0; x < tab[y].length; x++) {
+//            	lineJSON.add(line[x]);
+//            }
+//        }
     	
     	
 		// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
