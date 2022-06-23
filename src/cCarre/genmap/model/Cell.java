@@ -75,7 +75,7 @@ public class Cell extends Region {
 			if(e.getButton() == MouseButton.PRIMARY) {
 				e.setDragDetect(true);
 				onPaint();
-			} else if(e.getButton() == MouseButton.SECONDARY) {
+			} else if(e.getButton() == MouseButton.SECONDARY && !ToolBar.getItem().equals("test")) {
 				e.setDragDetect(true);
 				erase();
 			}
@@ -83,14 +83,14 @@ public class Cell extends Region {
 		this.setOnDragDetected(e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
 				this.startFullDrag();
-			} else if(e.getButton() == MouseButton.SECONDARY) {
+			} else if(e.getButton() == MouseButton.SECONDARY && !ToolBar.getItem().equals("test")) {
 				this.startFullDrag();
 			}
 		});
 		this.setOnMouseDragOver (e -> {
 			if(e.getButton() == MouseButton.PRIMARY) {
 				onPaint();
-			} else if(e.getButton() == MouseButton.SECONDARY) {
+			} else if(e.getButton() == MouseButton.SECONDARY && !ToolBar.getItem().equals("test")) {
 				erase();
 			}
 		});

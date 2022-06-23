@@ -284,11 +284,11 @@ public class GenController {
 				// Sélection---------------------------------------------------------------------------------
 				
 				
-				if() {
-					// Depl de la seléction
-					
-					
-				} else {
+//				if(false) {
+//					// Depl de la seléction
+//					
+//					
+//				} else {
 					// Zone de sélection
 					switch (ToolBar.getItem()) {
 					case "select":
@@ -313,7 +313,7 @@ public class GenController {
 						
 						break;
 					}
-				}
+//				}
 			}
 			
 		});
@@ -507,6 +507,7 @@ public class GenController {
 			window.show();
 			
 		} else if (inTesting && mainController == null) {
+			System.out.println("slt");
 			ToolBar.setItem("");
 			
 			// Active tout les btns de la toolbar et change le retour
