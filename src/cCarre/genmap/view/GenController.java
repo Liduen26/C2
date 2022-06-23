@@ -28,6 +28,7 @@ import cCarre.genmap.model.ToolBar;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -167,12 +168,46 @@ public class GenController {
 		
         // Event handler pour le choix des couleurs
         EventHandler<ActionEvent> changeColorEvent = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
-                ToolBar.setGroundColor(groundColor.getValue());
-                ToolBar.setObstacleColor(obstacleColor.getValue());
-                ToolBar.setCoinColor(coinColor.getValue());
-            }
+        	public void handle(ActionEvent e)
+        	{
+        		if(e.getSource() == groundColor) {
+        			ToolBar.setGroundColor(groundColor.getValue());
+        			for(Node cell : grille.getChildren()) {
+        				Cell c = new Cell(cell);
+        				if(cell instanceof Cell) {
+        					c = (Cell) cell;
+        					if(c.getCellId() == '1') {
+        						c.erase(false);
+        						c.paint("groundBtn");
+        					}
+        				}
+        			}
+        		}else if(e.getSource() == obstacleColor){
+        			ToolBar.setObstacleColor(obstacleColor.getValue());
+        			for(Node cell : grille.getChildren()) {
+        				Cell c = new Cell(cell);
+        				if(cell instanceof Cell) {
+        					c = (Cell) cell;
+        					if(c.getCellId() == '2') {
+        						c.erase(false);
+        						c.paint("obstacleBtn");
+        					}
+        				}
+        			}
+        		}else if(e.getSource() == coinColor){
+        			ToolBar.setCoinColor(coinColor.getValue());
+        			for(Node cell : grille.getChildren()) {
+        				Cell c = new Cell(cell);
+        				if(cell instanceof Cell) {
+        					c = (Cell) cell;
+        					if(c.getCellId() == '3') {
+        						c.erase(false);
+        						c.paint("coinBtn");
+        					}
+        				}
+        			}
+        		}
+        	}
         };
   
         // Listener des changements de couleur
@@ -472,7 +507,7 @@ public class GenController {
 				c = (Cell) cell;
 			}
 			if(c.getX() > e.getX()) {
-				c.erase();
+				c.erase(true);
 			}
 
 			// Si y a pas que le background, alors on change le mostX
@@ -598,6 +633,27 @@ public class GenController {
 		
 		// Supprime les cases vides en trop
 		Ebus.get().post(new RemovePartGrilleEvent(lastX));
+		
+		// Set les colors pickers sur la couleur de la map chargee pour pas que le joueur ait à re-pick sa couleur
+    	groundColor.setValue(stringToColor(jsonObject, "ground"));
+    	obstacleColor.setValue(stringToColor(jsonObject, "obstacle"));
+    	coinColor.setValue(stringToColor(jsonObject, "coin"));
+		ToolBar.setGroundColor(groundColor.getValue());
+		ToolBar.setObstacleColor(obstacleColor.getValue());
+		ToolBar.setCoinColor(coinColor.getValue());
+    }
+
+	// Passe une couleur de String à Color
+    Color stringToColor(JSONObject jsonObject, String mapElement){
+		Color customColor;
+		String color;
+		String hexColor;
+		
+		color = (String) ((JSONObject) jsonObject.get("color")).get(mapElement);
+
+		hexColor = "#"+color.substring(2,8);
+        customColor = Color.valueOf(hexColor);
+		return customColor;
     }
 	
 	private JSONObject getCustomMap() {

@@ -67,7 +67,7 @@ public class Cell extends Region {
 				onPaint();
 			} else if(e.getButton() == MouseButton.SECONDARY) {
 				e.setDragDetect(true);
-				erase();
+				erase(true);
 			}
 		});
 		this.setOnDragDetected(e -> {
@@ -81,14 +81,14 @@ public class Cell extends Region {
 			if(e.getButton() == MouseButton.PRIMARY) {
 				onPaint();
 			} else if(e.getButton() == MouseButton.SECONDARY) {
-				erase();
+				erase(true);
 			}
 		});
 	}
 	
 	private void onPaint() {
 		if(!occuped) {
-			paint();
+			paint(null);
 		}
 	}
 	
@@ -100,30 +100,20 @@ public class Cell extends Region {
 		
 		switch (cellId) {
 		case '0':
-			erase();
+			erase(true);
 			break;
 			
 		case '1': 
-			//Recupere la couleur choisie 
-			color = (String) ((JSONObject) mapObject.get("color")).get("ground");
-			hexColor = "#"+color.substring(2,8);
-            customColor = Color.valueOf(hexColor);
-
 			Rectangle ground = new Rectangle();
 			ground.setWidth(width);
 			ground.setHeight(width);
-			ground.setFill(customColor);
+			ground.setFill(stringToColor(mapObject, "ground"));
 			ground.setMouseTransparent(true);
 
 			this.getChildren().add(ground);
 			break;
 			
 		case '2':
-			//Recupere la couleur choisie 
-			color = (String) ((JSONObject) mapObject.get("color")).get("obstacle");
-			hexColor = "#"+color.substring(2,8);
-            customColor = Color.valueOf(hexColor);
-            
 			// Ajoute un carre blanc avant de mettre le triangle
 			Rectangle vide2 = new Rectangle();
 			vide2.setWidth(width);
@@ -140,18 +130,13 @@ public class Cell extends Region {
 	                (double) 0, (double) (width), 
 	                (double) (width), (double) (width), 
 	             });
-			triangle.setFill(customColor);
+			triangle.setFill(stringToColor(mapObject, "obstacle"));
 			triangle.setMouseTransparent(true);
 
 			this.getChildren().add(triangle);
 			break;
 			
 		case '3': 
-			//Recupere la couleur choisie 
-			color = (String) ((JSONObject) mapObject.get("color")).get("coin");
-			hexColor = "#"+color.substring(2,8);
-            customColor = Color.valueOf(hexColor);
-            
 			// Ajoute un carre blanc avant de mettre le coin
 			Rectangle vide3 = new Rectangle();
 			vide3.setWidth(width);
@@ -167,14 +152,78 @@ public class Cell extends Region {
 			coin.setHeight(width/2);
 			coin.setTranslateX(width / 4);
 			coin.setTranslateY(width / 4);
-			coin.setFill(customColor);
+			coin.setFill(stringToColor(mapObject, "coin"));
 			coin.setMouseTransparent(true);
 
 			this.getChildren().add(coin);
 			break;
 			
+		case '8':
+			if(!ToolBar.isStartPlaced()) {
+				// S'il n'y a pas encore de dï¿½part placï¿½
+				
+				if(ToolBar.isEndPlaced() == false || ToolBar.getEndPlace() > this.x) {
+					// Si la fin est bien a droite du start, ou pas placï¿½e
+					Rectangle start = new Rectangle();
+					start.setWidth(width);
+					start.setHeight(width);
+					start.setFill(Color.DARKGREEN);
+					start.setId("start");
+					start.setMouseTransparent(true);
+					cellId = '8';
+					
+					this.getChildren().add(start);
+					ToolBar.setStartPlaced(x);
+					
+				} else {
+					occuped = false;
+					
+					Ebus.get().post(new PopupEvent("Attention !", "Le dï¿½part doit ï¿½tre placï¿½ ï¿½ gauche de l'arrivï¿½e"));
+				}
+			} else {
+				// Si un dï¿½part a dï¿½jï¿½ ï¿½tï¿½ placï¿½ 
+				occuped = false;
+
+				Ebus.get().post(new PopupEvent("Attention !", "Un dï¿½part a dï¿½jï¿½ ï¿½tï¿½ placï¿½"));
+			}
+			break;
+			
+		case '9':
+			if(!ToolBar.isEndPlaced()) {
+				// S'il n'y a pas encore d'arrivï¿½e placï¿½e
+				
+				if(ToolBar.isStartPlaced() == false || ToolBar.getStartPlace() < this.x) {
+					// Si le start est bien a gauche de la fin, ou pas placï¿½e
+					Rectangle end = new Rectangle();
+					end.setWidth(width);
+					end.setHeight(width);
+					end.setFill(Color.DARKRED);
+					end.setId("end");
+					end.setMouseTransparent(true);
+					cellId = '9';
+					
+					this.getChildren().add(end);
+					ToolBar.setEndPlaced(x);
+					
+				} else {
+					occuped = false;
+					
+					Ebus.get().post(new PopupEvent("Attention !", "L'arrivï¿½e doit ï¿½tre placï¿½e ï¿½ droite du dï¿½part"));
+				}
+			} else {
+				// Si une arrivï¿½e a dï¿½jï¿½ ï¿½tï¿½ placï¿½e
+				occuped = false;
+
+				Ebus.get().post(new PopupEvent("Attention !", "Une arrivï¿½e a dï¿½jï¿½ ï¿½tï¿½ placï¿½e"));
+			}
+			break;
+			
+		case 's': 
+			cellId = 's';
+			break;
+			
 		default:
-			cellId = '0';
+			cellId = 0;
 			occuped = false;
 			break;
 		}
@@ -187,11 +236,28 @@ public class Cell extends Region {
 		}
 	}
 	
-	private void paint() {
+	// Passe une couleur de String à Color
+    Color stringToColor(JSONObject jsonObject, String mapElement){
+		Color customColor;
+		String color;
+		String hexColor;
+		
+		color = (String) ((JSONObject) jsonObject.get("color")).get(mapElement);
+
+		hexColor = "#"+color.substring(2,8);
+        customColor = Color.valueOf(hexColor);
+		return customColor;
+    }
+	
+	// Mettre customItem en null par defaut, customItem est utilisé par le changement de couleur
+	public void paint(String customItem) {
 		occuped = true;
 		
 		// Regarde quel item est sï¿½lectionnï¿½ pour la peinture
 		String item = ToolBar.getItem();
+		if(customItem != null) {
+			item = customItem;
+		}
 		
 		switch (item) {
 		case "groundBtn": 
@@ -311,8 +377,9 @@ public class Cell extends Region {
 			}
 		}
 	}
-
-	public void erase() {
+	
+	// RemoveLenght n'est sur false que pour le changement de couleur dans le colorPicker
+	public void erase(boolean RemoveLenght) {
 		ArrayList<Node> toRem = new ArrayList<Node>();
 		if(occuped) {
 			for(Node node : this.getChildren()) {
@@ -329,7 +396,7 @@ public class Cell extends Region {
 				this.getChildren().remove(rem);
 			}
 			
-			if(ToolBar.getMostX() == x) {
+			if(ToolBar.getMostX() == x && RemoveLenght == true) {
 				Ebus.get().post(new RemoveLengthGrilleEvent(x));
 			}
 			occuped = false;
