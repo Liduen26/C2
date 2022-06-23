@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -21,10 +23,13 @@ import cCarre.genmap.events.LaunchGameEvent;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
+import cCarre.genmap.events.RemovePartGrilleEvent;
 import cCarre.genmap.model.Cell;
 import cCarre.genmap.model.ToolBar;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -34,7 +39,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -42,6 +49,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -49,6 +57,9 @@ import javafx.util.Duration;
 
 public class GenController {
 	// Blocs -------------------------
+    @FXML
+    private Label labelTest;
+	
 	@FXML
     private AnchorPane root;
 	
@@ -57,10 +68,25 @@ public class GenController {
 
     @FXML
     private Button groundBtn;
-
+    
+    @FXML
+    private Button coinBtn;
+    
     @FXML
     private Button obstacleBtn;
     
+    @FXML
+    private ColorPicker coinColor;
+    
+    @FXML
+    private ColorPicker groundColor;
+    
+    @FXML
+    private ColorPicker obstacleColor;
+    
+    @FXML
+    private MenuBar menuBar;
+   
     @FXML
     private Button test;
     
@@ -78,7 +104,9 @@ public class GenController {
 
 	FileChooser fileChooser = new FileChooser();
 	
-    final int widthCell = (60 - 1);
+	
+    int widthCell = (60 - 1);
+    
     private GridPane grille;
 	private double oldX;
 	private double newX;
@@ -96,9 +124,17 @@ public class GenController {
 	
 	@FXML
 	private void initialize() {
+		
+		// Set les couleurs par dÃ©faut des diffÃ©rents elements
+        ToolBar.setGroundColor(groundColor.getValue());
+        ToolBar.setObstacleColor(obstacleColor.getValue());
+        ToolBar.setCoinColor(coinColor.getValue());
+		
 		screenBounds = Screen.getPrimary().getBounds();
 		
-		hBar = upBar.getPrefHeight();
+		double hBar = upBar.getPrefHeight();
+
+		widthCell = (int) (screenBounds.getWidth()/32 - 1);
 		
 		double rWidth = screenBounds.getWidth() / widthCell;
 		double rHeight = (screenBounds.getHeight() - hBar) / widthCell;
@@ -132,10 +168,9 @@ public class GenController {
 				this.unselect();
 				
 				ToolBar.setItem(id);
-				ToolBar.getItem();
 			});
 		}
-		
+
 		select = new Rectangle();
 		select.setFill(Color.RED);
 		select.setOpacity(0.2);
@@ -149,6 +184,56 @@ public class GenController {
 		selected.setStrokeDashOffset(150.0);
 		selected.setCursor(Cursor.MOVE);
 		
+
+		
+        // Event handler pour le choix des couleurs
+        EventHandler<ActionEvent> changeColorEvent = new EventHandler<ActionEvent>() {
+        	public void handle(ActionEvent e)
+        	{
+        		if(e.getSource() == groundColor) {
+        			ToolBar.setGroundColor(groundColor.getValue());
+        			for(Node cell : grille.getChildren()) {
+        				Cell c = new Cell(cell);
+        				if(cell instanceof Cell) {
+        					c = (Cell) cell;
+        					if(c.getCellId() == '1') {
+        						c.erase(false);
+        						c.paint("groundBtn");
+        					}
+        				}
+        			}
+        		}else if(e.getSource() == obstacleColor){
+        			ToolBar.setObstacleColor(obstacleColor.getValue());
+        			for(Node cell : grille.getChildren()) {
+        				Cell c = new Cell(cell);
+        				if(cell instanceof Cell) {
+        					c = (Cell) cell;
+        					if(c.getCellId() == '2') {
+        						c.erase(false);
+        						c.paint("obstacleBtn");
+        					}
+        				}
+        			}
+        		}else if(e.getSource() == coinColor){
+        			ToolBar.setCoinColor(coinColor.getValue());
+        			for(Node cell : grille.getChildren()) {
+        				Cell c = new Cell(cell);
+        				if(cell instanceof Cell) {
+        					c = (Cell) cell;
+        					if(c.getCellId() == '3') {
+        						c.erase(false);
+        						c.paint("coinBtn");
+        					}
+        				}
+        			}
+        		}
+        	}
+        };
+  
+        // Listener des changements de couleur
+        groundColor.setOnAction(changeColorEvent);
+        obstacleColor.setOnAction(changeColorEvent);
+        coinColor.setOnAction(changeColorEvent);
 	}
 	
 	// QuickTest ----------------------------------------------------------------------------------
@@ -229,9 +314,9 @@ public class GenController {
 	private void handleMouseEvents() {
 		// Event qui attendent le drag de la fenï¿½tre ----------------------------------------------
 		grille.setOnMousePressed(e -> {
-			// Début / init
+			// Dï¿½but / init
 			if(e.getButton() == MouseButton.MIDDLE) {
-				// Déplacement de la grille
+				// Dï¿½placement de la grille
 				e.setDragDetect(true);
 				newX = e.getSceneX();
 				
@@ -246,7 +331,7 @@ public class GenController {
 						
 						
 					} else {
-						// Zone de sélection
+						// Zone de sï¿½lection
 						
 						this.unselect();
 						select.setLayoutX(e.getX());
@@ -262,7 +347,7 @@ public class GenController {
 			}
 		});
 		grille.setOnMouseDragged(e -> {
-			// Déplacement de la souris
+			// Dï¿½placement de la souris
 			if(e.getButton() == MouseButton.MIDDLE) {
 				// Si on drag avec le clic molette .... ->
 				double mouseX = e.getSceneX();
@@ -281,15 +366,15 @@ public class GenController {
 					grille.setLayoutX(grille.getLayoutX() + delta);
 				}
 			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
-				// Sélection---------------------------------------------------------------------------------
+				// Sï¿½lection---------------------------------------------------------------------------------
 				
 				
 //				if(false) {
-//					// Depl de la seléction
+//					// Depl de la selï¿½ction
 //					
 //					
 //				} else {
-					// Zone de sélection
+					// Zone de sï¿½lection
 					switch (ToolBar.getItem()) {
 					case "select":
 						double deltaX = (e.getX() + grille.getLayoutX()) - initialPtX;
@@ -338,20 +423,20 @@ public class GenController {
 //				}
 				
 				AnchorPane cadre = new AnchorPane();
-				// Calcul des coordonnées : Cox - (ses co dans sa case) + (Le nbr de cases) - (Le décalage de la grille) 
+				// Calcul des coordonnï¿½es : Cox - (ses co dans sa case) + (Le nbr de cases) - (Le dï¿½calage de la grille) 
 				double x = select.getLayoutX() - (select.getLayoutX() % widthCell) + Math.floor(select.getLayoutX() / widthCell) - grille.getLayoutX();
 				double y = Math.floor(select.getLayoutY() - (select.getLayoutY() % widthCell) + (select.getLayoutY() / widthCell));
 				
-				// x1 : distance coté gauche par rapport au début de la case
+				// x1 : distance cotï¿½ gauche par rapport au dï¿½but de la case
 				double x1 = (select.getLayoutX() % (widthCell + 1));
-				// x1 : distance coté droite par rapport au début de la case
+				// x1 : distance cotï¿½ droite par rapport au dï¿½but de la case
 				double x2 = (select.getWidth() + x1) % (widthCell + 1);
 				// Addition de x1, la largeur, et x2 (+ 1 :D)
 				double width = (x1 + select.getWidth()) + (widthCell - x2) + 1;
 				
-				// x1 : distance coté gauche par rapport au début de la case
+				// x1 : distance cotï¿½ gauche par rapport au dï¿½but de la case
 				double y1 = (select.getLayoutY() % (widthCell + 1));
-				// x1 : distance coté droite par rapport au début de la case
+				// x1 : distance cotï¿½ droite par rapport au dï¿½but de la case
 				double y2 = (select.getHeight() + y1) % (widthCell + 1);
 				// Addition de x1, la largeur, et x2 (+ 1 :D)
 				double height = (y1 + select.getHeight()) + (widthCell - y2) + 1;
@@ -381,7 +466,7 @@ public class GenController {
 	}
 	
 	/**
-	 * Déselectionne toutes les cases de la grille
+	 * Dï¿½selectionne toutes les cases de la grille
 	 */
 	private void unselect() {
 //		for(Node cell : grille.getChildren()) {
@@ -421,7 +506,7 @@ public class GenController {
 		int nRow = 0;
 
 		for(int j = 0; j < deltaX; j++) {
-			// Regarde le num de col et de ligne de la dernière cellule
+			// Regarde le num de col et de ligne de la derniï¿½re cellule
 			Cell c = (Cell) grille.getChildren().get(grille.getChildren().size() - 1);
 			
 			nCol = c.getX();
@@ -493,6 +578,38 @@ public class GenController {
 		}
 	}
 	
+	@Subscribe
+	private void handleRemovePart(RemovePartGrilleEvent e) {
+		ArrayList<Cell> toRem = new ArrayList<Cell>();
+		int x = 0;
+		ToolBar.setMostX(e.getX());
+
+		// Fait defiler les cells
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+			}
+			if(c.getX() > e.getX()) {
+				c.erase(true);
+			}
+
+			// Si y a pas que le background, alors on change le mostX
+			if(c.getChildrenUnmodifiable().size() > 2) {
+				x = (c.getX() > x) ? c.getX() : x;
+			}
+		}
+		ToolBar.setMostX(x);
+
+		// Decale la cam si y a plus assez de cases peintes dans le champ
+		if(grille.getLayoutX() < -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
+			double x2 = -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2);
+			x2 = (x2 >= 0) ? 0 : x2;
+
+			grille.setLayoutX(x2);
+		}
+	}
+	
 	// btn Retour ---------------------------------------------------------------------------------
 	public void btnReturn(ActionEvent event) throws IOException {
 		if(!inTesting) {
@@ -515,7 +632,7 @@ public class GenController {
 			test.setDisable(false);
 			saveBar.setDisable(false);
 			
-			// Arrête le test
+			// Arrï¿½te le test
 			inTesting = false;
 			
 		} else if(inTesting && mainController != null){
@@ -529,7 +646,7 @@ public class GenController {
 			test.setDisable(false);
 			saveBar.setDisable(false);
 			
-			// Arrête le test
+			// Arrï¿½te le test
 			inTesting = false;
 			
 			// Replace la cam
@@ -588,12 +705,18 @@ public class GenController {
 
     	// Demande ï¿½ l'utilisateur de choisir un fichier
         File file = fileChooser.showOpenDialog(new Stage());
-    	FileReader reader = new FileReader(file);
-
-    	JSONArray element1 = (JSONArray) parser.parse(reader); // parse
+    	Reader reader = new FileReader(file);
+      	
+        JSONObject jsonObject = (JSONObject) parser.parse(reader);
+    	    	
+    	JSONArray element1 = (JSONArray) jsonObject.get("map"); // parse
+    	
         JSONArray element2 = (JSONArray) element1.get(0); // element1 recupere la map        
         
-        // Créer un tableau 2D pour exploiter la map choisie
+        // Agrandi la grille en fonction de la map chargï¿½e
+		Ebus.get().post(new AddLengthGrilleEvent(element2.size()));
+
+        // Crï¿½er un tableau 2D pour exploiter la map choisie
     	char[][] tabMap = new char[element1.size()][element2.size()];
     	
     	// Remplit le tableau 2D
@@ -610,22 +733,49 @@ public class GenController {
             System.out.println(""); // saute une ligne
         }
         
-		// Remplit la grille avec la map chargée
+		// Remplit la grille avec la map chargï¿½e
+        int lastX = 0;
 		for(Node cell : grille.getChildren()) {
 			Cell c = new Cell(cell);
 			if(cell instanceof Cell) {
 				c = (Cell) cell;
 			}
 			if(c.getY() == element1.size()-1 && c.getX() == element2.size()-1){
-				System.out.println("STOOOOOOOOOOOOOOOPPPPPPPPPPPPP");
 				break;
 			}
 			c.setCellId(tabMap[c.getY()][c.getX()]);
-			c.loadMapPaint();
+			c.loadMapPaint(jsonObject);
+			lastX = c.getX();
 		}
+		
+		// Supprime les cases vides en trop
+		Ebus.get().post(new RemovePartGrilleEvent(lastX));
+		
+		// Set les colors pickers sur la couleur de la map chargee pour pas que le joueur ait ï¿½ re-pick sa couleur
+    	groundColor.setValue(stringToColor(jsonObject, "ground"));
+    	obstacleColor.setValue(stringToColor(jsonObject, "obstacle"));
+    	coinColor.setValue(stringToColor(jsonObject, "coin"));
+		ToolBar.setGroundColor(groundColor.getValue());
+		ToolBar.setObstacleColor(obstacleColor.getValue());
+		ToolBar.setCoinColor(coinColor.getValue());
+    }
+
+	// Passe une couleur de String ï¿½ Color
+    Color stringToColor(JSONObject jsonObject, String mapElement){
+		Color customColor;
+		String color;
+		String hexColor;
+		
+		color = (String) ((JSONObject) jsonObject.get("color")).get(mapElement);
+
+		hexColor = "#"+color.substring(2,8);
+        customColor = Color.valueOf(hexColor);
+		return customColor;
     }
 	
-	private char[][] getCustomMap() {
+	private JSONObject getCustomMap() {
+		JSONObject customMapObject = new JSONObject();
+		
 		// Obtention du nbr de colonnes et lignes
 		Node cells = grille.getChildren().get(grille.getChildren().size() - 1);
 		Cell c1 = new Cell(cells);
@@ -648,7 +798,34 @@ public class GenController {
 			cellTab[c.getY()][c.getX()] = c.getCellId();
 		}
 		
-		return cellTab;
+		// Transforme le tableau en JsonArray
+    	JSONArray mapJsonArray = new JSONArray();
+    	for (int y = 0; y < cellTab.length; y++) {
+            char[] line = cellTab[y];
+            JSONArray lineJSON = new JSONArray();
+            mapJsonArray.add(lineJSON);
+            for (int x = 0; x < line.length; x++) {
+            	lineJSON.add(line[x]);
+            }
+        }
+  		
+    	JSONObject colorArray = new JSONObject();
+    	colorArray.put("ground",""+groundColor.getValue());
+    	colorArray.put("obstacle",""+obstacleColor.getValue());
+    	colorArray.put("coin",""+coinColor.getValue());
+
+		customMapObject.put("color", colorArray);
+		customMapObject.put("map", mapJsonArray);
+
+		return customMapObject;
+	}
+	
+	public JSONObject getColors() {
+    	JSONObject colors = new JSONObject();
+    	colors.put("ground",""+groundColor.getValue());
+    	colors.put("obstacle",""+obstacleColor.getValue());
+    	colors.put("coin",""+coinColor.getValue());
+		return colors;
 	}
 	
 	

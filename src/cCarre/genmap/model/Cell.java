@@ -3,12 +3,14 @@ package cCarre.genmap.model;
 import java.util.ArrayList;
 
 import javax.tools.Tool;
+import org.json.simple.JSONObject;
 
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.LaunchGameEvent;
 import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
+import cCarre.genmap.view.GenController;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
@@ -16,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
+import javafx.scene.paint.Color;
 
 public class Cell extends Region {
 	private boolean occuped = false;
@@ -77,7 +80,7 @@ public class Cell extends Region {
 				onPaint();
 			} else if(e.getButton() == MouseButton.SECONDARY && !ToolBar.getItem().equals("test")) {
 				e.setDragDetect(true);
-				erase();
+				erase(true);
 			}
 		});
 		this.setOnDragDetected(e -> {
@@ -91,7 +94,7 @@ public class Cell extends Region {
 			if(e.getButton() == MouseButton.PRIMARY) {
 				onPaint();
 			} else if(e.getButton() == MouseButton.SECONDARY && !ToolBar.getItem().equals("test")) {
-				erase();
+				erase(true);
 			}
 		});
 		
@@ -111,33 +114,39 @@ public class Cell extends Region {
 	
 	private void onPaint() {
 		if(!occuped || (occuped && ToolBar.getItem().equals("test") && this.getCellId() == '8')) {
-			paint();
+			paint(null);
 		} 
 	}
 	
-	public void loadMapPaint() {
+	public void loadMapPaint(JSONObject mapObject) {
+		Color customColor;
+		String color;
+		String hexColor;
 		occuped = true;
 		
 		switch (cellId) {
 		case '0':
-			erase();
+			erase(true);
 			break;
 			
 		case '1': 
 			Rectangle ground = new Rectangle();
 			ground.setWidth(width);
 			ground.setHeight(width);
-			ground.setFill(Color.ROYALBLUE);
-			
+			ground.setFill(stringToColor(mapObject, "ground"));
+			ground.setMouseTransparent(true);
+
 			this.getChildren().add(ground);
 			break;
 			
 		case '2':
-			// Ajoute un carr� blanc avant de mettre le triangle
+			// Ajoute un carre blanc avant de mettre le triangle
 			Rectangle vide2 = new Rectangle();
 			vide2.setWidth(width);
 			vide2.setHeight(width);
 			vide2.setFill(Color.WHITE);
+			vide2.setMouseTransparent(true);
+
 			this.getChildren().add(vide2);
 			
 			// Ajoute le triangle
@@ -147,13 +156,100 @@ public class Cell extends Region {
 	                (double) 0, (double) (width), 
 	                (double) (width), (double) (width), 
 	             });
-			triangle.setFill(Color.RED);
+			triangle.setFill(stringToColor(mapObject, "obstacle"));
+			triangle.setMouseTransparent(true);
 
 			this.getChildren().add(triangle);
 			break;
 			
+		case '3': 
+			// Ajoute un carre blanc avant de mettre le coin
+			Rectangle vide3 = new Rectangle();
+			vide3.setWidth(width);
+			vide3.setHeight(width);
+			vide3.setFill(Color.WHITE);
+			vide3.setMouseTransparent(true);
+
+			this.getChildren().add(vide3);
+			
+			//Ajoute la piece
+			Rectangle coin = new Rectangle();
+			coin.setWidth(width/2);
+			coin.setHeight(width/2);
+			coin.setTranslateX(width / 4);
+			coin.setTranslateY(width / 4);
+			coin.setFill(stringToColor(mapObject, "coin"));
+			coin.setMouseTransparent(true);
+
+			this.getChildren().add(coin);
+			break;
+			
+		case '8':
+			if(!ToolBar.isStartPlaced()) {
+				// S'il n'y a pas encore de d�part plac�
+				
+				if(ToolBar.isEndPlaced() == false || ToolBar.getEndPlace() > this.x) {
+					// Si la fin est bien a droite du start, ou pas plac�e
+					Rectangle start = new Rectangle();
+					start.setWidth(width);
+					start.setHeight(width);
+					start.setFill(Color.DARKGREEN);
+					start.setId("start");
+					start.setMouseTransparent(true);
+					cellId = '8';
+					
+					this.getChildren().add(start);
+					ToolBar.setStartPlaced(x);
+					
+				} else {
+					occuped = false;
+					
+					Ebus.get().post(new PopupEvent("Attention !", "Le d�part doit �tre plac� � gauche de l'arriv�e"));
+				}
+			} else {
+				// Si un d�part a d�j� �t� plac� 
+				occuped = false;
+
+				Ebus.get().post(new PopupEvent("Attention !", "Un d�part a d�j� �t� plac�"));
+			}
+			break;
+			
+		case '9':
+			if(!ToolBar.isEndPlaced()) {
+				// S'il n'y a pas encore d'arriv�e plac�e
+				
+				if(ToolBar.isStartPlaced() == false || ToolBar.getStartPlace() < this.x) {
+					// Si le start est bien a gauche de la fin, ou pas plac�e
+					Rectangle end = new Rectangle();
+					end.setWidth(width);
+					end.setHeight(width);
+					end.setFill(Color.DARKRED);
+					end.setId("end");
+					end.setMouseTransparent(true);
+					cellId = '9';
+					
+					this.getChildren().add(end);
+					ToolBar.setEndPlaced(x);
+					
+				} else {
+					occuped = false;
+					
+					Ebus.get().post(new PopupEvent("Attention !", "L'arriv�e doit �tre plac�e � droite du d�part"));
+				}
+			} else {
+				// Si une arriv�e a d�j� �t� plac�e
+				occuped = false;
+
+				Ebus.get().post(new PopupEvent("Attention !", "Une arriv�e a d�j� �t� plac�e"));
+			}
+			break;
+			
+		case 's': 
+			cellId = 's';
+			break;
+			
 		default:
-			cellId = '0';
+			cellId = 0;
 			occuped = false;
 			break;
 		}
@@ -166,18 +262,37 @@ public class Cell extends Region {
 		}
 	}
 	
-	private void paint() {
+	// Passe une couleur de String � Color
+    Color stringToColor(JSONObject jsonObject, String mapElement){
+		Color customColor;
+		String color;
+		String hexColor;
+		
+		color = (String) ((JSONObject) jsonObject.get("color")).get(mapElement);
+
+		hexColor = "#"+color.substring(2,8);
+        customColor = Color.valueOf(hexColor);
+		return customColor;
+    }
+	
+	// Mettre customItem en null par defaut, customItem est utilis� par le changement de couleur
+	public void paint(String customItem) {
 		occuped = true;
 		
 		// Regarde quel item est s�lectionn� pour la peinture
 		String item = ToolBar.getItem();
+		if(customItem != null) {
+			item = customItem;
+		}
 		
 		switch (item) {
 		case "groundBtn": 
+            
+            //Cr�er le rectangle
 			Rectangle ground = new Rectangle();
 			ground.setWidth(width);
 			ground.setHeight(width);
-			ground.setFill(Color.ROYALBLUE);
+			ground.setFill(ToolBar.getGroundColor());
 			ground.setMouseTransparent(true);
 			cellId = '1';
 			
@@ -191,11 +306,24 @@ public class Cell extends Region {
 	                (double) 0, (double) (width), 
 	                (double) (width), (double) (width), 
 	             });
-			triangle.setFill(Color.RED);
+			triangle.setFill(ToolBar.getObstacleColor());
 			triangle.setMouseTransparent(true);
 			cellId = '2';
 
 			this.getChildren().add(triangle);
+			break;
+			
+		case "coinBtn": 
+			Rectangle coin = new Rectangle();
+			coin.setWidth(width/2);
+			coin.setHeight(width/2);
+			coin.setTranslateX(width / 4);
+			coin.setTranslateY(width / 4);
+			coin.setFill(ToolBar.getCoinColor());
+			coin.setMouseTransparent(true);
+			cellId = '3';
+			//Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.YELLOW, rootLayout);
+			this.getChildren().add(coin);
 			break;
 			
 		case "departBtn":
@@ -279,8 +407,9 @@ public class Cell extends Region {
 			}
 		}
 	}
-
-	private void erase() {
+	
+	// RemoveLenght n'est sur false que pour le changement de couleur dans le colorPicker
+	public void erase(boolean RemoveLenght) {
 		ArrayList<Node> toRem = new ArrayList<Node>();
 		if(occuped) {
 			for(Node node : this.getChildren()) {
@@ -297,7 +426,7 @@ public class Cell extends Region {
 				this.getChildren().remove(rem);
 			}
 			
-			if(ToolBar.getMostX() == x) {
+			if(ToolBar.getMostX() == x && RemoveLenght == true) {
 				Ebus.get().post(new RemoveLengthGrilleEvent(x));
 			}
 			occuped = false;
