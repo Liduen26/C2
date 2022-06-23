@@ -14,9 +14,9 @@ import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 
+import cCarre.MainMenu;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
-import cCarre.Menu.MainMenu;
 import cCarre.genmap.events.AddLengthGrilleEvent;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.LaunchGameEvent;
@@ -286,7 +286,7 @@ public class GenController {
 		
 		// Load game FXML
 		FXMLLoader gameLoader = new FXMLLoader();
-		gameLoader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
+		gameLoader.setLocation(MainMenu.class.getResource("./AffichageMap/view/mainLayout.fxml"));
 		AnchorPane game = (AnchorPane) gameLoader.load();
 		
 		// Met le jeu par dessus la grille

@@ -1,19 +1,18 @@
 package cCarre.Menu;
 import java.io.IOException;
 
+import cCarre.MainMenu;
 import cCarre.AffichageMap.data.LevelData;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class GameMenuController {
@@ -37,7 +36,7 @@ public class GameMenuController {
 		
 		// Load root layout from fxml file.
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
+		loader.setLocation(MainMenu.class.getResource("./AffichageMap/view/mainLayout.fxml"));
 		Pane BaseMenu = (Pane) loader.load();
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
