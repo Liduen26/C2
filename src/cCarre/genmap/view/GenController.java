@@ -29,6 +29,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -86,6 +87,7 @@ public class GenController {
 	private double coTest = 0;
 	
 	private Rectangle2D screenBounds;
+	private Rectangle selected;
 
 	private MainController mainController;
 	
@@ -127,6 +129,7 @@ public class GenController {
 			btn.setOnMouseClicked(e -> {
 				final Node btnAct = (Node) e.getSource();
 				String id = btnAct.getId();
+				this.unselect();
 				
 				ToolBar.setItem(id);
 				ToolBar.getItem();
@@ -137,6 +140,15 @@ public class GenController {
 		select.setFill(Color.RED);
 		select.setOpacity(0.2);
 		select.setFocusTraversable(true);
+		
+		
+		selected = new Rectangle();
+		selected.setFill(Color.TRANSPARENT);
+		selected.setStroke(Color.web("0x696C82", 0.5));
+		selected.setStrokeWidth(5);
+		selected.setStrokeDashOffset(150.0);
+		selected.setCursor(Cursor.MOVE);
+		
 	}
 	
 	// QuickTest ----------------------------------------------------------------------------------
@@ -209,7 +221,7 @@ public class GenController {
 		grille.setLayoutX(e.getX());
 	}
 	
-	// Grile dynamique, PAS TOUCHER !!!! ----------------------------------------------------------------------------------------
+	// Grile dynamique -----------------------------------------------------------------------------
 	
 	/**
 	 * Dï¿½placement de la grille avec le clic molette
@@ -224,29 +236,29 @@ public class GenController {
 				newX = e.getSceneX();
 				
 			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
-				Cell c = null;
-//				System.out.println(e.getTarget());
+
 				if(e.getTarget() instanceof Cell) {
-					c = (Cell) e.getTarget();
-//					System.out.println(c.isSelected());
+					Cell c = (Cell) e.getTarget();
 					
 					if(c.isSelected()) {
 						// Depl de la selection
 						
-					} 
-				} else {
-					// Zone de sélection
-					
-					this.unselect();
-					select.setLayoutX(e.getX());
-					select.setLayoutY(e.getY());
-					select.setWidth(0);
-					select.setHeight(0);
-					initialPtX = e.getX() + grille.getLayoutX();
-					initialPtY = e.getY();
-					
-					root.getChildren().add(select);
-				}
+						
+						
+					} else {
+						// Zone de sélection
+						
+						this.unselect();
+						select.setLayoutX(e.getX());
+						select.setLayoutY(e.getY());
+						select.setWidth(0);
+						select.setHeight(0);
+						initialPtX = e.getX() + grille.getLayoutX();
+						initialPtY = e.getY();
+						
+						root.getChildren().add(select);
+					}
+				} 
 			}
 		});
 		grille.setOnMouseDragged(e -> {
@@ -265,19 +277,16 @@ public class GenController {
 //				System.out.println(grille.getLayoutX());
 				
 				// Dï¿½place uniqument si c'est pas < ï¿½ 0
-				if((grille.getLayoutX() + delta) < 0 && (grille.getLayoutX() + delta) > -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
+				if((grille.getLayoutX() + delta) <= 0 && (grille.getLayoutX() + delta) > -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
 					grille.setLayoutX(grille.getLayoutX() + delta);
 				}
 			} else if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
-				// Sélection
-				Cell c = new Cell((Node) e.getTarget());
-				if(e.getTarget() instanceof Cell) {
-					c = (Cell) e.getTarget();
-				}
+				// Sélection---------------------------------------------------------------------------------
 				
-				if(c.isSelected()) {
+				
+				if() {
 					// Depl de la seléction
-//					System.out.println(c.isSelected());
+					
 					
 				} else {
 					// Zone de sélection
@@ -308,48 +317,92 @@ public class GenController {
 			}
 			
 		});
-		
 		grille.setOnMouseReleased(e -> {
 			// Relachement du clic
 			if(e.getButton() == MouseButton.PRIMARY && ToolBar.getItem().equals("select")) {
-				// Regarde toutes les cases 
-				for(Node cell : grille.getChildren()) {
-					Cell c = new Cell(cell);
-					if(cell instanceof Cell) {
-						c = (Cell) cell;
-					}
-					
-					// Cherche les cellules dans la zone de selection
-					if(((c.getX()+1) * widthCell) > select.getLayoutX() && (c.getX() * widthCell) < (select.getLayoutX() + select.getWidth()) 
-					&& ((c.getY()+1) * widthCell) > select.getLayoutY() && (c.getY() * widthCell) < (select.getLayoutY() + select.getHeight())) {
-						// Si y a pas que le background, alors 
-						if(c.getChildrenUnmodifiable().size() > 3) {
-							c.setSelected(true);
-						}							
-					}
-				}
+//				// Regarde toutes les cases 
+//				for(Node cell : grille.getChildren()) {
+//					Cell c = new Cell(cell);
+//					if(cell instanceof Cell) {
+//						c = (Cell) cell;
+//					}
+//					
+//					// Cherche les cellules dans la zone de selection
+//					if(((c.getX()+1) * widthCell) > select.getLayoutX() && (c.getX() * widthCell) < (select.getLayoutX() + select.getWidth()) 
+//					&& ((c.getY()+1) * widthCell) > select.getLayoutY() && (c.getY() * widthCell) < (select.getLayoutY() + select.getHeight())) {
+//						// Si y a pas que le background, alors 
+//						if(c.getChildrenUnmodifiable().size() > 3) {
+//							c.setSelected(true);
+//						}							
+//					}
+//				}
+				
+				AnchorPane cadre = new AnchorPane();
+				// Calcul des coordonnées : Cox - (ses co dans sa case) + (Le nbr de cases) - (Le décalage de la grille) 
+				double x = select.getLayoutX() - (select.getLayoutX() % widthCell) + Math.floor(select.getLayoutX() / widthCell) - grille.getLayoutX();
+				double y = Math.floor(select.getLayoutY() - (select.getLayoutY() % widthCell) + (select.getLayoutY() / widthCell));
+				
+				// x1 : distance coté gauche par rapport au début de la case
+				double x1 = (select.getLayoutX() % (widthCell + 1));
+				// x1 : distance coté droite par rapport au début de la case
+				double x2 = (select.getWidth() + x1) % (widthCell + 1);
+				// Addition de x1, la largeur, et x2 (+ 1 :D)
+				double width = (x1 + select.getWidth()) + (widthCell - x2) + 1;
+				
+				// x1 : distance coté gauche par rapport au début de la case
+				double y1 = (select.getLayoutY() % (widthCell + 1));
+				// x1 : distance coté droite par rapport au début de la case
+				double y2 = (select.getHeight() + y1) % (widthCell + 1);
+				// Addition de x1, la largeur, et x2 (+ 1 :D)
+				double height = (y1 + select.getHeight()) + (widthCell - y2) + 1;
+				
+				selected.setLayoutX(x);
+				selected.setLayoutY(y);
+				selected.setWidth(width);
+				selected.setHeight(height);
 				
 				root.getChildren().remove(select);
+				
+				if(select.getWidth() > 10 && select.getHeight() > 10) {
+					root.getChildren().add(selected);
+				}
 			}
 		});
-		
+	}
+	
+	private double distInCell(double n) {
+		double r = (n % widthCell) + Math.floor(n / widthCell);
+		return r;
+	}
+	
+	private double roundDiz(double n) {
+		double r = Math.round(n / 10) * 10;
+		return r;
 	}
 	
 	/**
 	 * Déselectionne toutes les cases de la grille
 	 */
 	private void unselect() {
-		for(Node cell : grille.getChildren()) {
-			Cell c;
-			if(cell instanceof Cell) {
-				c = (Cell) cell;
-			} else {
-				c = new Cell(cell);
-			}
-			
-			if(c.isSelected()) {
-				c.setSelected(false);
- 			}
+//		for(Node cell : grille.getChildren()) {
+//			Cell c;
+//			if(cell instanceof Cell) {
+//				c = (Cell) cell;
+//			} else {
+//				c = new Cell(cell);
+//			}
+//			
+//			if(c.isSelected()) {
+//				c.setSelected(false);
+// 			}
+//		}
+		
+		if(root.getChildren().contains(selected)) {
+			root.getChildren().remove(selected);
+			selected.setWidth(0);
+			selected.setHeight(0);
+			selected.setLayoutX(0);
+			selected.setLayoutY(0);			
 		}
 	}
 	
