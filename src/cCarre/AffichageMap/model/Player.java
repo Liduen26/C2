@@ -4,12 +4,18 @@ import java.awt.geom.Point2D;
 
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
+import cCarre.genmap.events.PlayerState;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 public class Player extends Parent{
 	
@@ -24,7 +30,9 @@ public class Player extends Parent{
 	int height,width;
 	
 	int constGrav;
-
+	
+	
+	private double n = 0;
 	
 	
 	public void SetColor(Color color) {
@@ -100,7 +108,7 @@ public class Player extends Parent{
 		p3.setLocation(p3.getX(), centreY - verticalVelocity);
 	}
 	
-	public void tp(double X, double Y){
+	public void respawn(double X, double Y){
 		this.setTranslateX(X);
 		this.setTranslateY(Y);
 		
@@ -115,10 +123,32 @@ public class Player extends Parent{
 	}
 	
 	public void death(double spawnX, double spawnY, AnchorPane rootLayout, Label Coin){
-		tp(spawnX, spawnY);
-    	rootLayout.setLayoutX(0); // TP la camï¿½ra au dï¿½but du jeu
-		Coin.setLayoutX(0);
-    	Ebus.get().post(new MoveGridEvent(0));
+		// Pause du jeu et lancement de l'anim de mort
+		Ebus.get().post(new PlayerState(false));
+		
+		// Disparition du player
+		this.setOpacity(0);
+		
+		// Pause de 2s, puis fait disparaitre la popup
+		PauseTransition delay = new PauseTransition(Duration.seconds(1));
+		delay.setOnFinished( event -> {
+			// Set le player au départ
+			respawn(spawnX, spawnY);
+			
+			// Reset de la cam
+	    	rootLayout.setLayoutX(0); // TP la camï¿½ra au dï¿½but du jeu
+			Coin.setLayoutX(0);
+	    	Ebus.get().post(new MoveGridEvent(0));
+	    	
+	    	// Arrete l'anim de mort
+	    	Ebus.get().post(new PlayerState(true));
+	    	
+	    	// Réapparition du player
+	    	this.setOpacity(1);
+	    	
+		});
+		delay.play();
+		
 	}
 
 	public int getHeight() {
@@ -137,10 +167,12 @@ public class Player extends Parent{
 		return width;
 	}
 
-
-
 	public void setWidth(int width) {
 		this.width = width;
+	}
+	
+	public Rectangle getPlayerRectangle() {
+		return playerRectangle;
 	}
 	
 	public double getSpeed() {

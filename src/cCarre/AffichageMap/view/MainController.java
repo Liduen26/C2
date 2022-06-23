@@ -12,6 +12,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.common.eventbus.Subscribe;
+
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
 import cCarre.AffichageMap.model.Ground;
@@ -21,6 +23,7 @@ import cCarre.AffichageMap.model.Player;
 import cCarre.Menu.GameMenuController;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
+import cCarre.genmap.events.PlayerState;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -29,6 +32,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
@@ -70,13 +74,18 @@ public class MainController {
 	boolean running = true;
 	boolean newSpawn = false;
 	
+	boolean dead = false;
+	private Rectangle ragdoll = null;
 	
-	// Pour changer la vitsse
+	
+	// Pour changer la vitesse
 	int constV = 270; 
 	final int constGrav = 700;
 	
 	boolean edit = false;
 	double toolBarHeight = 0;
+	
+	double vAnimDeath = 1000;
 
 	@FXML
 	private Player player;
@@ -93,6 +102,8 @@ public class MainController {
 		//init temps
 		newTime = System.nanoTime();
 		time = System.currentTimeMillis();
+		
+		Ebus.get().register(this);
 
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
@@ -155,6 +166,13 @@ public class MainController {
 		
 		loop(500); // Let's go into the GAME !
 		loadCoin();
+		
+		// Création du cube d'anim de mort
+		ragdoll = new Rectangle();
+		
+		
+		// Opacité de base
+		ragdoll.setOpacity(0.5);
 	}
 
 	/**
@@ -163,14 +181,13 @@ public class MainController {
 	 */
 	private void loop(int fps) {
 		Timeline time1 = new Timeline(new KeyFrame(Duration.millis(1000 / (fps - 2)), e -> {
+			dt = affFPS();
+			temps = dt / 1000000000; //dt par sec
 			
 			if(running) {
 				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
 				double jumpForce = 600;
-	
-				dt = affFPS();
-				temps = dt / 1000000000; //dt par sec
-	
+
 				// distanceX vect entre centre du joueur et le point (vitesse)
 				vitesse = player.p1.distance(player.centreX, player.centreY);
 				
@@ -220,7 +237,18 @@ public class MainController {
 				// Empeche de charger un saut pendant un saut
 				if(jump == true) {
 					canJump = false;
-				}						
+				}
+				
+			} else if (!running && dead){
+				// Le joueur est mort
+				double facteur = vAnimDeath * temps;
+				
+				ragdoll.setHeight(ragdoll.getHeight() + (facteur*2));
+				ragdoll.setWidth(ragdoll.getWidth() + (facteur*2));
+				ragdoll.setLayoutX(ragdoll.getLayoutX() - facteur);
+				ragdoll.setLayoutY(ragdoll.getLayoutY() - facteur);
+				
+				ragdoll.setOpacity(ragdoll.getOpacity() - 0.0065);
 			}
 			Coin.setText("Pieces : "+pieces);
 		}));
@@ -245,7 +273,7 @@ public class MainController {
 							// plafond -> MORT
 	        				verticalVelocity = 0;
 	        				player.death(spawnX,spawnY, rootLayout, Coin);
-	        				System.out.println("Ca c le plafond");
+	        				System.out.println("Ca c le plafond -------------------------------------------------------------------------------------");
 						} else {
 							// AU sol
 							player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
@@ -256,7 +284,7 @@ public class MainController {
 						}
 					} else {
 						// Coté -> MORT
-						System.out.println("Ca c un bord");
+						System.out.println("Ca c un bord -------------------------------------------------------------------------------------");
 						verticalVelocity = 0;
 						player.death(spawnX,spawnY, rootLayout, Coin);
         			}
@@ -340,7 +368,7 @@ public class MainController {
 	}
 
 	public void jump() {
-		if(jump == false && canJump == true) {
+		if(jump == false && canJump == true && running) {
 			jump = true;
 			canJump = false;
 		}
@@ -415,5 +443,33 @@ public class MainController {
 
 	public void setStop() {
 		running = false;
+	}
+	
+	
+	@Subscribe
+	public void setPlayerState(PlayerState e) {
+		
+		if(e.getState()) {
+			// Le joueur respawn
+			running = e.getState();
+			dead = !e.getState();
+			
+			rootLayout.getChildren().remove(ragdoll);
+		} else {
+			// Le joueur meurt
+			running = e.getState();
+			dead = !e.getState();
+			
+			// Placement du ragdoll de mort
+			ragdoll.setWidth(player.getPlayerRectangle().getWidth() - (player.getPlayerRectangle().getWidth() / 2));
+			ragdoll.setHeight(player.getPlayerRectangle().getHeight() - (player.getPlayerRectangle().getHeight() / 2));
+			ragdoll.setLayoutX(player.getTranslateX() + player.getPlayerRectangle().getTranslateX() + (player.getPlayerRectangle().getWidth() / 4));
+			ragdoll.setLayoutY(player.getTranslateY() + player.getPlayerRectangle().getTranslateY() + (player.getPlayerRectangle().getHeight() / 4));
+			ragdoll.setFill(player.getPlayerRectangle().getFill());
+			
+			ragdoll.setOpacity(0.5);
+			
+			rootLayout.getChildren().add(ragdoll);
+		}
 	}
 }
