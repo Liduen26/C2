@@ -1,5 +1,6 @@
 package cCarre.AffichageMap.view;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -32,6 +33,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -103,7 +106,7 @@ public class MainController {
 	
 	@FXML
 	private void initialize() {
-		
+		startMusic();
 		// Adapte la vitesse et la gravit� et les �l�ments � la taille de l'�cran
 		float varVit = (float)1920/constV;		
 		constV = (int) ((int) screenBounds.getWidth()/varVit);
@@ -277,6 +280,31 @@ public class MainController {
 	 * G�re la d�tection de la collision avec les plateformes, 
 	 * tue si le player est sur le c�t�, au sol s'il est sur le dessus
 	 */
+	
+	void startMusic() {
+		MediaPlayer musicplayer; {
+
+			/* Put your music file IN THE JAR, "getResourceAsStream()" is
+    the API you want to use. Put the DollyParton.mp3 into the Windows
+    folder src/rockymountain. NetBeans automatically copies the mp3
+    to the folder build/classes/rockymountain. */
+
+			Media mp3MusicFile = new Media(getClass().getResource("music1.mp3").toExternalForm()); 
+
+			musicplayer = new MediaPlayer(mp3MusicFile);
+			musicplayer.setAutoPlay(true);
+			musicplayer.setVolume(0.9);   // from 0 to 1      
+
+			//***************** loop (repeat) the music  ******************
+			musicplayer.setOnEndOfMedia(new Runnable() {    
+				public void run() {
+					musicplayer.seek(Duration.ZERO); 
+				}
+			});  
+		}
+		//*************** end of loop (repeat) the music  **************
+	}
+	
 	private void platfCollision() {
 		onGround = false;
 		for (Shape platform : platforms) {
