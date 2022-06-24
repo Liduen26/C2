@@ -12,6 +12,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.common.eventbus.Subscribe;
+
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
 import cCarre.AffichageMap.model.Ground;
@@ -21,19 +23,21 @@ import cCarre.AffichageMap.model.Player;
 import cCarre.Menu.GameMenuController;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
+import cCarre.genmap.events.PopupEvent;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
+import javafx.stage.Screen;
 import javafx.util.Duration;
 
 
@@ -76,6 +80,8 @@ public class MainController {
 	final int constGrav = 700;
 	
 	boolean edit = false;
+	
+	private Rectangle2D screenBounds;
 
 	@FXML
 	private Player player;
@@ -91,6 +97,8 @@ public class MainController {
 	
 	@FXML
 	private void initialize() {
+		
+		screenBounds = Screen.getPrimary().getBounds();
 		
 		//init temps
 		newTime = System.nanoTime();
@@ -428,39 +436,69 @@ public class MainController {
 	private void fin(boolean recc) {
 		if (recc == true) {
 			
-			show("endd",rootLayout);
+			popup();
 			
 			recc = false;
 			System.out.println("fin");
 		}
 	}
 	
-	 private static int TIMEOUT = 2400;
-	 
-     public static void show(final String message, final AnchorPane rootLayout) {
-         Stage stage = (Stage) rootLayout.getScene().getWindow();
-         final Popup popup = createPopup(message);
-         popup.setOnShown(e -> {
-             popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2);
-             popup.setY(stage.getY() + stage.getHeight() / 1.2 - popup.getHeight() / 2);
-         });
-         popup.show(stage);
-
-         new Timeline(new KeyFrame(
-                 Duration.millis(TIMEOUT),
-                 ae -> popup.hide())).play();
-     }
-
-     private static Popup createPopup(final String message) {
-         final Popup popup = new Popup();
-         popup.setAutoFix(true);
-         Label label = new Label(message);
-       //  label.getStylesheets().add("./popup.css");
-         label.getStyleClass().add("popup");
-         popup.getContent().add(label);
-         System.out.println(label.getStylesheets());
-         return popup;
-     }
+	@Subscribe
+	public void popup() {
+		// Tailles max
+		int width = 400;
+		int height = 200;
+		
+		// Cr�ation de la vBox, et set de set propri�t�s et css
+		VBox popup = new VBox();
+		popup.setPrefWidth(width);
+		popup.setMaxHeight(height);
+		popup.setLayoutX((screenBounds.getWidth() / 2) - (popup.getPrefWidth()/ 2));
+		popup.setLayoutY((screenBounds.getHeight() / 3));
+		popup.setAlignment(Pos.CENTER);
+		popup.setStyle("-fx-opacity: 0.6; -fx-padding: 20px; -fx-background-color: #3107F0; -fx-border-color: red; -fx-border-radius: 20px;");
+//		popup.getStyleClass().add(".popup");
+//        popup.getStylesheets().add("src/cCarre/genmap/view/viewpopup.css");
+        
+		
+		Label text = new Label();
+		text.setText("gagné");
+		
+		popup.getChildren().add(text);
+		rootLayout.getChildren().add(popup);
+		
+		// Pause de 2s, puis fait disparaitre la popup
+		PauseTransition delay = new PauseTransition(Duration.seconds(2));
+		delay.setOnFinished( event -> rootLayout.getChildren().remove(popup));
+		delay.play();
+	}
+	
+//	 private static int TIMEOUT = 2400;
+//	 
+//     public static void show(final String message, final AnchorPane rootLayout) {
+//         Stage stage = (Stage) rootLayout.getScene().getWindow();
+//         final Popup popup = createPopup(message);
+//         popup.setOnShown(e -> {
+//             popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2);
+//             popup.setY(stage.getY() + stage.getHeight() / 1.2 - popup.getHeight() / 2);
+//         });
+//         popup.show(stage);
+//
+//         new Timeline(new KeyFrame(
+//                 Duration.millis(TIMEOUT),
+//                 ae -> popup.hide())).play();
+//     }
+//
+//     private static Popup createPopup(final String message) {
+//         final Popup popup = new Popup();
+//         popup.setAutoFix(true);
+//         Label label = new Label(message);
+//       //  label.getStylesheets().add("./popup.css");
+//         label.getStyleClass().add("popup");
+//         popup.getContent().add(label);
+//         System.out.println(label.getStylesheets());
+//         return popup;
+//     }
 
 
 
