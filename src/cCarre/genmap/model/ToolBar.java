@@ -55,7 +55,7 @@ public final class ToolBar {
 	}
 	
 	public static boolean isStartPlaced() {
-		return (startPlaced == 0) ? false : true;
+		return (startPlaced == -1) ? false : true;
 	}
 
 	public static void setStartPlaced(int startPlaced) {
@@ -67,7 +67,7 @@ public final class ToolBar {
 	}
 
 	public static boolean isEndPlaced() {
-		return (endPlaced == 0) ? false : true;
+		return (endPlaced == -1) ? false : true;
 	}
 
 	public static void setEndPlaced(int endPlaced) {

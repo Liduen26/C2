@@ -415,8 +415,8 @@ public class Cell extends Region {
 			for(Node node : this.getChildren()) {
 				if(node != back && node != selection && node != hover) {
 					// V�rifie si c'est le start ou le d�but qui a �t� delete
-					ToolBar.setStartPlaced((node.getId() == "start" ) ? 0 : ToolBar.getStartPlace());
-					ToolBar.setEndPlaced((node.getId() == "end" ) ? 0 : ToolBar.getEndPlace());
+					ToolBar.setStartPlaced((node.getId() == "start" ) ? -1 : ToolBar.getStartPlace());
+					ToolBar.setEndPlaced((node.getId() == "end" ) ? -1 : ToolBar.getEndPlace());
 					
 					toRem.add(node);
 					cellId = '0';

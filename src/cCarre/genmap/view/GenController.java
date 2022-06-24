@@ -127,7 +127,11 @@ public class GenController {
         ToolBar.setGroundColor(groundColor.getValue());
         ToolBar.setObstacleColor(obstacleColor.getValue());
         ToolBar.setCoinColor(coinColor.getValue());
-		
+        //Set les variables de la Toolbar par defaut
+        ToolBar.setStartPlaced(-1);
+        ToolBar.setEndPlaced(-1);
+        ToolBar.setItem("groundBtn");
+
 		screenBounds = Screen.getPrimary().getBounds();
 		
 		double hBar = upBar.getPrefHeight();
