@@ -124,26 +124,27 @@ public class MainController {
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
-		JSONArray Level = level.getLevel();
+		JSONObject Level = level.getLevel();
+		JSONArray map = (JSONArray) Level.get("map");
 
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
-				char text = (char) ((JSONArray) Level.get(y)).get(x);
-				
+				char text = (char) ((JSONArray) map.get(y)).get(x);
+
 				switch(text) {
 				case '0' :
 					// ici c'est vide
 					break;
 				case '1' :
-					Ground platform = new Ground(x*elementSize, y*elementSize, elementSize, elementSize, Color.BROWN, rootLayout);
+					Ground platform = new Ground(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("ground")), rootLayout);
 					platforms.add(platform);
 					break;
 				case '2' :
-					Obstacle triangle = new Obstacle(x*elementSize, y*elementSize, elementSize, elementSize, Color.RED, rootLayout);
+					Obstacle triangle = new Obstacle(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("obstacle")), rootLayout);
 					triangles.add(triangle);
 					break;
 				case '3' :
-					Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.YELLOW, rootLayout);
+					Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.valueOf((String) ((JSONObject) Level.get("color")).get("coin")), rootLayout);
 					coins.add(coin);
 					break;
 				case '8' :
@@ -222,13 +223,15 @@ public class MainController {
 	
 				distanceX = vitesse * temps;
 				distanceY = verticalVelocity * temps;
-	
+				System.out.println(distanceY);
+				
 				// Met a jour les position
 				player.depl(distanceX, distanceY, jumpForce, verticalVelocity);
 				
-				platfCollision(); // Check plateforme collision
-				triangleCollision();// Check triangle collision
-				coinCollision();// Check coin collision
+				collisions(); // check les collision et la mort du joueur
+				
+				coinCollision(); // ramasse les coins si on passe dessus
+				
 				
 				// Si le joueur touche la ligne d'arrivï¿½e
 	            boolean collisionDetected = false;
@@ -273,12 +276,29 @@ public class MainController {
 		time1.play();
 	}
 	
+	
+	/**
+	 * Rère les collisions et la mort du joueur
+	 */
+	private void collisions() {
+		boolean death = false;
+		
+//		platfollision();
+//		triangleCollision();
+		
+		if(platfollision() || triangleCollision()) {
+			player.death(spawnX,spawnY, rootLayout, Coin);
+		}
+	}
+	
 	/**
 	 * Gï¿½re la dï¿½tection de la collision avec les plateformes, 
 	 * tue si le player est sur le cï¿½tï¿½, au sol s'il est sur le dessus
 	 */
-	private void platfCollision() {
+	private boolean platfollision() {
+		boolean collisionDetected = false;
 		onGround = false;
+		
 		for (Shape platform : platforms) {
         	if (platform != player.playerRectangle) {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
@@ -288,7 +308,7 @@ public class MainController {
 						if(intersect.getBoundsInLocal().getMinY() - toolBarHeight > platform.getTranslateY()) {
 							// plafond -> MORT
 	        				verticalVelocity = 0;
-	        				player.death(spawnX,spawnY, rootLayout, Coin);
+	        				collisionDetected = true;
 	        				System.out.println("Ca c le plafond -------------------------------------------------------------------------------------");
 						} else {
 							// AU sol
@@ -302,29 +322,32 @@ public class MainController {
 						// Cotï¿½ -> MORT
 						System.out.println("Ca c un bord -------------------------------------------------------------------------------------");
 						verticalVelocity = 0;
-						player.death(spawnX,spawnY, rootLayout, Coin);
+						collisionDetected = true;
         			}
         		}
         	}
         }
+		
+		return collisionDetected;
+		
 	}
 
 	/**
 	 * Gestion de la collision avec les formes en triangles
 	 */
-	private void triangleCollision() {
+	private boolean triangleCollision() {
 		boolean collisionDetected = false;
 		for (Shape triangle : triangles) {
 			if (triangle != player.playerRectangle) {
 				Shape intersect = Shape.intersect(player.playerRectangle, triangle);
 				if (intersect.getBoundsInLocal().getWidth() != -1) {
 					collisionDetected = true;
+					System.out.println("Ca c un triangle -------------------------------------------------------------------------------------");
 				}
 			}
 		}
-		if (collisionDetected) {
-			player.death(spawnX,spawnY, rootLayout, Coin);
-		}
+		
+		return collisionDetected;
 	}
 	
 	
@@ -387,6 +410,7 @@ public class MainController {
 		if(jump == false && canJump == true && running) {
 			jump = true;
 			canJump = false;
+			System.out.println("jump");
 		}
 		 
 	}
@@ -484,7 +508,7 @@ public class MainController {
 			ragdoll.setFill(player.getPlayerRectangle().getFill());
 			
 			ragdoll.setOpacity(0.5);
-			
+//			System.out.println(rootLayout.getChildren().contains(ragdoll));
 			rootLayout.getChildren().add(ragdoll);
 		}
 	}

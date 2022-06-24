@@ -1,6 +1,9 @@
 package cCarre.AffichageMap.data;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import javafx.scene.paint.Color;
 
 public class LevelData {
 
@@ -25,12 +28,12 @@ public class LevelData {
 		"0000000000000000000000000000",
 		"0000000000000000000000000000",
 		"0000000000000000000000000000",
-		"0000000010000110000000000000",
-		"0001110000000000000000000000",
 		"0000000000000000000000000000",
 		"0000000000000000000000000000",
-		"0000000000000000000020000000",
-		"0800100010000000003111000110",
+		"0000000000000000000000000000",
+		"0000000000000000000000000000",
+		"0000010000000000000020000000",
+		"0800010000000000003111000110",
 		"1111111111111111111111001111"
     };
     
@@ -39,20 +42,31 @@ public class LevelData {
      * @param level La map en String[]
      * @return Un JSONArry de la map
      */
-    public static JSONArray getLevelInJSON(String[] level) {
+    @SuppressWarnings("unchecked")
+	public static JSONObject getLevelInJSON(String[] level) {
     	int levelHeight = level.length;
     	int levelWidth = level[0].length();
     	char[][] levelTab = new char[levelHeight][levelWidth];
-    	JSONArray json = new JSONArray();
+    	JSONArray map = new JSONArray();
     	
     	for (int y = 0; y < levelHeight; y++) {
             String line = level[y];
             JSONArray lineJSON = new JSONArray();
-            json.add(lineJSON);
+            map.add(lineJSON);
             for (int x = 0; x < levelWidth; x++) {
             	lineJSON.add(line.charAt(x));
             }
         }
+    	
+    	JSONObject json = new JSONObject();
+    	
+    	JSONObject colorObject = new JSONObject();
+    	colorObject.put("ground","#A52A2A");	// Brown
+    	colorObject.put("obstacle","#FF00FF");	// Red
+    	colorObject.put("coin","#FFFF00"); 		// Yellow
+    	
+    	json.put("map", map);
+    	json.put("color", colorObject);
     	
     	return json;
     }

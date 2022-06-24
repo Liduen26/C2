@@ -251,7 +251,7 @@ public class GenController {
 			
 			inTesting = true;
 			
-			Ebus.get().post(new PopupEvent("Warining !", "Click on a cell to place the player and start the test."));
+			Ebus.get().post(new PopupEvent("Warning !", "Click on a cell to place the player and start the test."));
 			
 		} else {
 			
@@ -263,21 +263,7 @@ public class GenController {
 	@Subscribe
 	private void launchGame(LaunchGameEvent e) throws IOException {
 		// Charge la map
-		JSONObject file = this.getCustomMap();
-		JSONArray mapGen = (JSONArray) file.get("map");
-//		char[][] tab = null;
-//		
-//		
-//    	
-//    	for (int y = 0; y < tab.length; y++) {
-//            char[] line = tab[y];
-//            JSONArray lineJSON = new JSONArray();
-//            mapGen.add(lineJSON);
-//            for (int x = 0; x < tab[y].length; x++) {
-//            	lineJSON.add(line[x]);
-//            }
-//        }
-    	
+		JSONObject mapGen = this.getCustomMap();
     	
 		// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
 		root.requestFocus();
@@ -348,7 +334,7 @@ public class GenController {
 						
 						root.getChildren().add(select);
 					}
-				} 
+				}
 			}
 		});
 		grille.setOnMouseDragged(e -> {
@@ -458,16 +444,6 @@ public class GenController {
 				}
 			}
 		});
-	}
-	
-	private double distInCell(double n) {
-		double r = (n % widthCell) + Math.floor(n / widthCell);
-		return r;
-	}
-	
-	private double roundDiz(double n) {
-		double r = Math.round(n / 10) * 10;
-		return r;
 	}
 	
 	/**
@@ -778,6 +754,7 @@ public class GenController {
 		return customColor;
     }
 	
+	@SuppressWarnings("unchecked")
 	private JSONObject getCustomMap() {
 		JSONObject customMapObject = new JSONObject();
 		
