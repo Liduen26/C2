@@ -32,7 +32,7 @@ public class GameMenuController {
 	
 	public void LaunchGame(ActionEvent event) throws IOException {
 		// Définis la map à utiliser, attend un JSONArray
-		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL2));
+		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
 		
 		// Load root layout from fxml file.
 		FXMLLoader loader = new FXMLLoader();
@@ -50,9 +50,14 @@ public class GameMenuController {
 		window.setMaximized(true);
 		window.show();
 		
-		scene.setOnKeyPressed(e ->{
-			controller.jump();
+		scene.setOnKeyPressed(e -> {
+			controller.startJump();
 		});
+		scene.setOnKeyReleased(e -> {
+			controller.stopJump();
+		});
+		
+		
 	}
 	public void GoToEditLevel(ActionEvent event) throws IOException {
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../genmap/view/genLayout.fxml"));

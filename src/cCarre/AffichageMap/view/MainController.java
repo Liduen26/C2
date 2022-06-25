@@ -30,6 +30,7 @@ import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -190,6 +191,8 @@ public class MainController {
 		
 		// Opacitï¿½ de base
 		ragdoll.setOpacity(0.5);
+		
+		
 	}
 
 	/**
@@ -223,7 +226,6 @@ public class MainController {
 	
 				distanceX = vitesse * temps;
 				distanceY = verticalVelocity * temps;
-				System.out.println(distanceY);
 				
 				// Met a jour les position
 				player.depl(distanceX, distanceY, jumpForce, verticalVelocity);
@@ -250,13 +252,10 @@ public class MainController {
 	            }
 	            
 				// meurt quand tombe dans le vide
-				if(player.getTranslateY()>800) {
+				if(player.getTranslateY() > screenBounds.getHeight()) {
 					player.death(spawnX, spawnY, rootLayout, Coin);
 				}
-				// Empeche de charger un saut pendant un saut
-				if(jump == true) {
-					canJump = false;
-				}
+				
 				
 			} else if (!running && dead){
 				// Le joueur est mort
@@ -283,9 +282,6 @@ public class MainController {
 	private void collisions() {
 		boolean death = false;
 		
-//		platfollision();
-//		triangleCollision();
-		
 		if(platfollision() || triangleCollision()) {
 			player.death(spawnX,spawnY, rootLayout, Coin);
 		}
@@ -297,29 +293,41 @@ public class MainController {
 	 */
 	private boolean platfollision() {
 		boolean collisionDetected = false;
+		boolean ground = false;
 		onGround = false;
 		
+		// Collisions au sol
 		for (Shape platform : platforms) {
         	if (platform != player.playerRectangle) {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
         			if (intersect.getBoundsInLocal().getHeight() - toolBarHeight <= intersect.getBoundsInLocal().getWidth()) {
         				
-						if(intersect.getBoundsInLocal().getMinY() - toolBarHeight > platform.getTranslateY()) {
+        				if(intersect.getBoundsInLocal().getMinY() - toolBarHeight > platform.getTranslateY()) {
 							// plafond -> MORT
 	        				verticalVelocity = 0;
 	        				collisionDetected = true;
 	        				System.out.println("Ca c le plafond -------------------------------------------------------------------------------------");
 						} else {
-							// AU sol
-							player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
+							// Sol
+	        				
+	        				player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
 //							System.out.println("Sol");
 							verticalVelocity = 0;
 							onGround = true;
-							canJump = true;
 						}
-					} else {
-						// Cotï¿½ -> MORT
+					} 
+        		}
+        	}
+		}
+		
+		// Collisions coté
+		for (Shape platform : platforms) {
+        	if (platform != player.playerRectangle) {
+        		Shape intersect = Shape.intersect(player.playerRectangle, platform);
+        		if (intersect.getBoundsInLocal().getHeight() != -1) {
+        			if (intersect.getBoundsInLocal().getHeight() - toolBarHeight > intersect.getBoundsInLocal().getWidth()) {
+						// Coté -> MORT
 						System.out.println("Ca c un bord -------------------------------------------------------------------------------------");
 						verticalVelocity = 0;
 						collisionDetected = true;
@@ -406,13 +414,14 @@ public class MainController {
 		return dt;
 	}
 
-	public void jump() {
-		if(jump == false && canJump == true && running) {
-			jump = true;
-			canJump = false;
-			System.out.println("jump");
-		}
-		 
+	public void startJump() {
+		jump = true;
+		System.out.println("jump");
+	}
+	
+	public void stopJump() {
+		jump = false;
+		System.out.println("stopJump");
 	}
 	
 	public double getSpeedPlayer() {

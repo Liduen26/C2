@@ -287,7 +287,7 @@ public class GenController {
 		mainController.setEdit(true, hBar);
 		
 		root.setOnKeyPressed(evt ->{
-			mainController.jump();
+//			mainController.jump();
 		});
 		// /!\ Penser � remove l'event sur le btn return /!\	
 	}
