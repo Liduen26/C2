@@ -12,15 +12,15 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 
-<VBox styleClass="background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.genmap.view.GenController">
+<VBox styleClass="background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.genmap.view.GenController">
    <children>
       <HBox fx:id="upBar" alignment="CENTER_LEFT" prefHeight="90.0" spacing="30.0" styleClass="toolBar">
          <children>
             <HBox fx:id="toolBar" alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" spacing="10.0" styleClass="toolBar" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="groundBtn" mnemonicParsing="false" text="Ground" />
+                  <Button fx:id="groundBtn" mnemonicParsing="false" text="Sol" />
                   <Button fx:id="obstacleBtn" mnemonicParsing="false" text="Obstacle" />
-                  <Button fx:id="coinBtn" mnemonicParsing="false" text="Coin" />
+                  <Button fx:id="coinBtn" mnemonicParsing="false" text="Pièce" />
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
                   <MenuBar fx:id="menuBar">
                     <menus>
@@ -30,7 +30,7 @@
                                  <graphic>
                                     <ColorPicker fx:id="groundColor">
                                        <value>
-                                          <Color red="0.10952728986740112" green="0.1801535040140152" blue="0.8157894611358643" />
+                                          <Color blue="0.8157894611358643" green="0.1801535040140152" red="0.10952728986740112" />
                                        </value>
                                     </ColorPicker>
                                  </graphic>
@@ -39,7 +39,7 @@
                                  <graphic>
                                     <ColorPicker fx:id="obstacleColor">
                                        <value>
-                                          <Color red="1.0" green="0.1944444477558136" blue="0.1944444477558136" />
+                                          <Color blue="0.1944444477558136" green="0.1944444477558136" red="1.0" />
                                        </value>
                                     </ColorPicker>
                                  </graphic>
@@ -48,7 +48,7 @@
                                  <graphic>
                                     <ColorPicker fx:id="coinColor">
                                        <value>
-                                          <Color red="1.0" green="0.9756172895431519" blue="0.26851850748062134" />
+                                          <Color blue="0.26851850748062134" green="0.9756172895431519" red="1.0" />
                                        </value>
                                     </ColorPicker>
                                  </graphic>

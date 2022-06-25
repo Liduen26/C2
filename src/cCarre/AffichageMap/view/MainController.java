@@ -60,6 +60,8 @@ public class MainController {
 	int frame;
 	long time;
 	
+	Timeline time1 = null;
+	
 	double vitesse;
 	double distanceX;
 	double distanceY;
@@ -187,6 +189,7 @@ public class MainController {
 		
 		// Cr�ation du cube d'anim de mort
 		ragdoll = new Rectangle();
+		ragdoll.setManaged(false);
 		
 		
 		// Opacit� de base
@@ -200,7 +203,7 @@ public class MainController {
 	 * @param fps Le nombre d'update, et donc d'images par seconde
 	 */
 	private void loop(int fps) {
-		Timeline time1 = new Timeline(new KeyFrame(Duration.millis(1000 / (fps - 2)), e -> {
+		time1 = new Timeline(new KeyFrame(Duration.millis(1000 / (fps - 2)), e -> {
 			dt = affFPS();
 			temps = dt / 1000000000; //dt par sec
 			
@@ -302,8 +305,10 @@ public class MainController {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
         			if (intersect.getBoundsInLocal().getHeight() - toolBarHeight <= intersect.getBoundsInLocal().getWidth()) {
-        				
         				if(intersect.getBoundsInLocal().getMinY() - toolBarHeight > platform.getTranslateY()) {
+        					System.out.println(toolBarHeight);
+        					System.out.println(intersect.getBoundsInLocal().getMinY()- toolBarHeight);
+        					System.out.println(platform.getTranslateY());
 							// plafond -> MORT
 	        				verticalVelocity = 0;
 	        				collisionDetected = true;
@@ -491,7 +496,7 @@ public class MainController {
 	}
 
 	public void setStop() {
-		running = false;
+		time1.stop();
 	}
 	
 	

@@ -134,7 +134,8 @@ public class GenController {
 
 		screenBounds = Screen.getPrimary().getBounds();
 		
-		double hBar = upBar.getPrefHeight();
+		hBar = upBar.getPrefHeight();
+		
 
 		widthCell = (int) (screenBounds.getWidth()/32 - 1);
 		
@@ -278,6 +279,7 @@ public class GenController {
 		FXMLLoader gameLoader = new FXMLLoader();
 		gameLoader.setLocation(MainMenu.class.getResource("./AffichageMap/view/mainLayout.fxml"));
 		AnchorPane game = (AnchorPane) gameLoader.load();
+		game.setManaged(false);
 		
 		// Met le jeu par dessus la grille
 		root.getChildren().add(game);
@@ -287,9 +289,11 @@ public class GenController {
 		mainController.setEdit(true, hBar);
 		
 		root.setOnKeyPressed(evt ->{
-//			mainController.jump();
+			mainController.startJump();
 		});
-		// /!\ Penser � remove l'event sur le btn return /!\	
+		root.setOnKeyReleased(evt -> {
+			mainController.stopJump();
+		});
 	}
 	
 	@Subscribe
@@ -617,10 +621,11 @@ public class GenController {
 			inTesting = false;
 			
 		} else if(inTesting && mainController != null){
+			System.out.println("ICI");
 			// En test, on sort du jeu
+			mainController.setStop();
 			root.getChildren().remove(root.getChildren().size() - 1);
 
-			mainController.setStop();
 			
 			// Active tout les btns de la toolbar et change le retour
 			toolBar.setDisable(false);
