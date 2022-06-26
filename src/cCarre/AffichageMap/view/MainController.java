@@ -72,7 +72,6 @@ public class MainController {
 	
 	boolean jump = false;
 	boolean onGround = false;
-	boolean canJump = false;
 	
 	String level = "";
 	boolean running = true;
@@ -259,6 +258,7 @@ public class MainController {
 					player.death(spawnX, spawnY, rootLayout, Coin);
 				}
 				
+				Coin.setText("Pieces : "+pieces);
 				
 			} else if (!running && dead){
 				// Le joueur est mort
@@ -271,7 +271,7 @@ public class MainController {
 				
 				ragdoll.setOpacity(ragdoll.getOpacity() - 0.0065);
 			}
-			Coin.setText("Pieces : "+pieces);
+			
 		}));
 
 		time1.setCycleCount(Animation.INDEFINITE);
