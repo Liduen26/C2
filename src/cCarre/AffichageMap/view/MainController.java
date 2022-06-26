@@ -79,6 +79,7 @@ public class MainController {
 	boolean dead = false;
 	private Rectangle ragdoll = null;
 	
+	Shape[][] mapRender = null;
 	
 	// Pour changer la vitesse
 	int constV = 270; 
@@ -128,25 +129,38 @@ public class MainController {
 		JSONObject Level = level.getLevel();
 		JSONArray map = (JSONArray) Level.get("map");
 
+		mapRender = new Shape[levelHeight][levelLength];
+		
+		System.out.println(levelLength);
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
 				char text = (char) ((JSONArray) map.get(y)).get(x);
 
 				switch(text) {
 				case '0' :
-					// ici c'est vide
+					// c'est vide, c'est l'air
+					mapRender[y][x] = null;
 					break;
 				case '1' :
-					Ground platform = new Ground(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("ground")), rootLayout);
+					Ground platform = new Ground(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("ground")));
 					platforms.add(platform);
+					
+					// Ajout au tableau de rendu de la map
+					mapRender[y][x] = platform;
 					break;
 				case '2' :
-					Obstacle triangle = new Obstacle(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("obstacle")), rootLayout);
-					triangles.add(triangle);
+					Obstacle triangle = new Obstacle(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("obstacle")));
+//					triangles.add(triangle);
+
+					// Ajout au tableau de rendu de la map
+					mapRender[y][x] = triangle;
 					break;
 				case '3' :
-					Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.valueOf((String) ((JSONObject) Level.get("color")).get("coin")), rootLayout);
-					coins.add(coin);
+					Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.valueOf((String) ((JSONObject) Level.get("color")).get("coin")));
+//					coins.add(coin);
+
+					// Ajout au tableau de rendu de la map
+					mapRender[y][x] = coin;
 					break;
 				case '8' :
 					if(!newSpawn) {
@@ -155,8 +169,11 @@ public class MainController {
 					}
 					break;
 				case '9' :
-					FinishBlock finishBlock = new FinishBlock(x*elementSize, y*elementSize, elementSize, elementSize, Color.GREEN, rootLayout);
-					finishBlocks.add(finishBlock);
+					FinishBlock finishBlock = new FinishBlock(x*elementSize, y*elementSize, elementSize, elementSize, Color.GREEN);
+//					finishBlocks.add(finishBlock);
+
+					// Ajout au tableau de rendu de la map
+					mapRender[y][x] = finishBlock;
 					break;
 				case 's' :
 					// Test rapide de l'ï¿½diteur
@@ -182,7 +199,7 @@ public class MainController {
             }
         });
 		
-		loop(500); // Let's go into the GAME !
+		loop(200); // Let's go into the GAME !
 		loadCoin();
 		
 		// Crï¿½ation du cube d'anim de mort
@@ -209,6 +226,8 @@ public class MainController {
 				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
 				double jumpForce = 600;
 
+				renderMap();
+				
 				// distanceX vect entre centre du joueur et le point (vitesse)
 				vitesse = player.p1.distance(player.centreX, player.centreY);
 				
@@ -231,7 +250,7 @@ public class MainController {
 				// Met a jour les position
 				player.depl(distanceX, distanceY, jumpForce, verticalVelocity);
 				
-				collisions(); // check les collision et la mort du joueur
+//				collisions(); // check les collision et la mort du joueur
 				
 				coinCollision(); // ramasse les coins si on passe dessus
 				
@@ -277,6 +296,14 @@ public class MainController {
 	}
 	
 	
+	private void renderMap() {
+		// Récupère la position du joueur et affiche uniquement la map dont il a besoin
+		// Ajouter les blocs à leurs liste
+		
+		
+		
+	}
+
 	/**
 	 * Rère les collisions et la mort du joueur
 	 */
