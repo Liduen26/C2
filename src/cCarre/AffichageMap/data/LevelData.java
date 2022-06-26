@@ -3,8 +3,6 @@ package cCarre.AffichageMap.data;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import javafx.scene.paint.Color;
-
 public class LevelData {
 
     public static final String[] LEVEL1 = new String[] {
