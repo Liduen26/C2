@@ -390,6 +390,7 @@ public class Cell extends Region {
 
 			Ebus.get().post(new LaunchGameEvent());
 			cellId = '0';
+			occuped = false;
 			break;
 			
 		default:

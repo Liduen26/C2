@@ -236,7 +236,6 @@ public class MainController {
 				
 				coinCollision(); // ramasse les coins si on passe dessus
 				
-				
 				// Si le joueur touche la ligne d'arriv�e
 	            boolean collisionDetected = false;
 	            for (Shape finishBlock : finishBlocks) {
@@ -254,7 +253,7 @@ public class MainController {
 	            }
 	            
 				// meurt quand tombe dans le vide
-				if(player.getTranslateY() > screenBounds.getHeight()) {
+				if(player.getTranslateY() > screenBounds.getHeight() - toolBarHeight) {
 					player.death(spawnX, spawnY, rootLayout, Coin);
 				}
 				
@@ -368,24 +367,26 @@ public class MainController {
 	 * Gestion de la collision avec un Coin (une pi�ce)
 	 */
 	private void coinCollision() {
-		// Check si le joueur touche une piece et change le statut de la piece
-		for (Shape coin : coins) {
-			if (coin != player.playerRectangle) {
-				Shape intersect = Shape.intersect(player.playerRectangle, coin);
-				if (intersect.getBoundsInLocal().getWidth() != -1) {
-					coin.getProperties().put("alive", false);
+		if(!edit) {
+			// Check si le joueur touche une piece et change le statut de la piece
+			for (Shape coin : coins) {
+				if (coin != player.playerRectangle) {
+					Shape intersect = Shape.intersect(player.playerRectangle, coin);
+					if (intersect.getBoundsInLocal().getWidth() != -1) {
+						coin.getProperties().put("alive", false);
+					}
 				}
 			}
-		}
-
-		// On supprime les coins ramass�s avec iterator car on ne peut pas delete quand on boucle sur la liste
-		for (Iterator<Shape> it = coins.iterator(); it.hasNext(); ) {
-			Node coin = it.next();
-			if (!(Boolean)coin.getProperties().get("alive")) {
-				it.remove();
-				rootLayout.getChildren().remove(coin);
-				pieces ++;
-				saveCoin(pieces);
+	
+			// On supprime les coins ramass�s avec iterator car on ne peut pas delete quand on boucle sur la liste
+			for (Iterator<Shape> it = coins.iterator(); it.hasNext(); ) {
+				Node coin = it.next();
+				if (!(Boolean)coin.getProperties().get("alive")) {
+					it.remove();
+					rootLayout.getChildren().remove(coin);
+					pieces ++;
+					saveCoin(pieces);
+				}
 			}
 		}
 	}
