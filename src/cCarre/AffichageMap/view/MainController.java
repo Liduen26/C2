@@ -33,6 +33,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Screen;
@@ -44,10 +45,10 @@ public class MainController {
 
 	private GameMenuController mainApp;
 
-	private ArrayList<Shape> platforms = new ArrayList<Shape>();
-	private ArrayList<Shape> triangles = new ArrayList<Shape>();
-	private ArrayList<Shape> finishBlocks = new ArrayList<Shape>();
-	private ArrayList<Shape> coins = new ArrayList<Shape>();
+	private ArrayList<Ground> platforms = new ArrayList<Ground>();
+	private ArrayList<Obstacle> triangles = new ArrayList<Obstacle>();
+	private ArrayList<FinishBlock> finishBlocks = new ArrayList<FinishBlock>();
+	private ArrayList<Coin> coins = new ArrayList<Coin>();
 
 	int elementSize = 60;
 
@@ -70,7 +71,7 @@ public class MainController {
 	int pieces = 0;
 	
 	boolean jump = false;
-	boolean onGround = false;
+	boolean onGround = true;
 	
 	String level = "";
 	boolean running = true;
@@ -105,7 +106,6 @@ public class MainController {
 	
 	@FXML
 	private void initialize() {
-		
 		// Adapte la vitesse et la gravitï¿½ et les ï¿½lï¿½ments ï¿½ la taille de l'ï¿½cran
 		float varVit = (float)1920/constV;		
 		constV = (int) ((int) screenBounds.getWidth()/varVit);
@@ -113,9 +113,9 @@ public class MainController {
 		float varGrav = (float)1920/constGrav;		
 		constGrav = (int) ((int) screenBounds.getWidth()/varGrav);
 		
+		// Init la taille des case et la force du saut par rapport à la résolution
 		jumpForce = (int) (screenBounds.getWidth()/(1920/jumpForce));
 		elementSize = (int) (screenBounds.getWidth()/(1920/elementSize));
-//		System.out.println("Vitesse : "+constV+" Grav : "+constGrav+" jumpForce : "+jumpForce+" ElementSize : "+elementSize);
 
 		//init temps
 		newTime = System.nanoTime();
@@ -131,7 +131,6 @@ public class MainController {
 
 		mapRender = new Shape[levelHeight][levelLength];
 		
-		System.out.println(levelLength);
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
 				char text = (char) ((JSONArray) map.get(y)).get(x);
@@ -143,21 +142,18 @@ public class MainController {
 					break;
 				case '1' :
 					Ground platform = new Ground(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("ground")));
-					platforms.add(platform);
 					
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = platform;
 					break;
 				case '2' :
 					Obstacle triangle = new Obstacle(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("obstacle")));
-//					triangles.add(triangle);
 
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = triangle;
 					break;
 				case '3' :
 					Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.valueOf((String) ((JSONObject) Level.get("color")).get("coin")));
-//					coins.add(coin);
 
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = coin;
@@ -170,13 +166,12 @@ public class MainController {
 					break;
 				case '9' :
 					FinishBlock finishBlock = new FinishBlock(x*elementSize, y*elementSize, elementSize, elementSize, Color.GREEN);
-//					finishBlocks.add(finishBlock);
 
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = finishBlock;
 					break;
 				case 's' :
-					// Test rapide de l'ï¿½diteur
+					// Test rapide de l'éditeur
 					spawnX = x * elementSize;
 					spawnY = y * elementSize - 1;
 					newSpawn = true;
@@ -185,6 +180,10 @@ public class MainController {
 			}
 		}
 
+		// précharge le spawn
+		loadSpawn();
+		
+		// Charge le player
 		player = new Player(spawnX, spawnY, elementSize, elementSize, Color.BLUE, rootLayout, constGrav, constV);
 		
 		// La camï¿½ra suit le joueur
@@ -196,6 +195,15 @@ public class MainController {
                 
                 // Si le jeu vient de l'ï¿½diteur, transmet les coo ï¿½ la grille
 				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
+				
+				
+				// Update de l'affichage de la map
+				double div = player.getTranslateX() / elementSize;
+				double oldDiv = 0;
+				if(div > oldDiv) {
+					oldDiv = div;
+					this.renderMap();
+				}
             }
         });
 		
@@ -226,7 +234,7 @@ public class MainController {
 				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
 				double jumpForce = 600;
 
-				renderMap();
+				
 				
 				// distanceX vect entre centre du joueur et le point (vitesse)
 				vitesse = player.p1.distance(player.centreX, player.centreY);
@@ -250,7 +258,7 @@ public class MainController {
 				// Met a jour les position
 				player.depl(distanceX, distanceY, jumpForce, verticalVelocity);
 				
-//				collisions(); // check les collision et la mort du joueur
+				collisions(); // check les collision et la mort du joueur
 				
 				coinCollision(); // ramasse les coins si on passe dessus
 				
@@ -296,12 +304,113 @@ public class MainController {
 	}
 	
 	
+	/**
+	 * Précharge le spawn de la map avant l'apparition du player, et réinitialise les liste de blocs
+	 */
+	private void loadSpawn() {
+		// Chargement du spawn de la map
+		
+		double init = spawnX - elementSize * 5;
+		double end = spawnX + screenBounds.getWidth();
+		
+		// Reset des listes
+		rootLayout.getChildren().removeAll(platforms);
+		rootLayout.getChildren().removeAll(triangles);
+		rootLayout.getChildren().removeAll(finishBlocks);
+		rootLayout.getChildren().removeAll(coins);
+		
+		platforms = new ArrayList<Ground>();
+		triangles = new ArrayList<Obstacle>();
+		finishBlocks = new ArrayList<FinishBlock>();
+		coins = new ArrayList<Coin>();
+		
+		// lis la map de haut en bas, seulement les x dont il a besoin
+		for(int y = 0; y < mapRender.length; y++) {
+			for(int x = (int) Math.max(0, init); x < (int) Math.min(mapRender[0].length, end); x++) {
+				
+				if(mapRender[y][x] != null && ((x * elementSize) > init && (x * elementSize) < end)) {
+					if(mapRender[y][x] instanceof Ground) {
+						platforms.add((Ground) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof Obstacle) {
+						triangles.add((Obstacle) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof Coin) {
+						coins.add((Coin) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof FinishBlock) {
+						finishBlocks.add((FinishBlock) mapRender[y][x]);
+					}
+					
+					rootLayout.getChildren().add(mapRender[y][x]);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Supprime les blocs qui ne sont plus dans le champ, et affiche ceux qui y arrivent
+	 */
 	private void renderMap() {
 		// Récupère la position du joueur et affiche uniquement la map dont il a besoin
 		// Ajouter les blocs à leurs liste
 		
+		double init = player.getTranslateX() - elementSize * 3;
+		double end = player.getTranslateX() + (screenBounds.getWidth() - elementSize * 9);
 		
 		
+		// lis la map de haut en bas, seulement les x dont il a besoin
+		for(int y = 0; y < mapRender.length; y++) {
+			
+			for(int x = Math.max(0, (int) (init / elementSize) - 4); x < Math.min(mapRender[0].length, init / elementSize); x++) {
+				// Supprime ce qui est derriere
+				if(rootLayout.getChildren().contains(mapRender[y][x])) {
+					if(mapRender[y][x].getLayoutX() < init + (elementSize )) {
+						// Suppr des listes de collisions
+						if(mapRender[y][x] instanceof Ground) {
+							platforms.remove((Ground) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof Obstacle) {
+							triangles.remove((Obstacle) mapRender[y][x]);
+							System.out.println(((Obstacle) mapRender[y][x]));
+							
+						} else if(mapRender[y][x] instanceof Coin) {
+							coins.remove((Coin) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof FinishBlock) {
+							finishBlocks.remove((FinishBlock) mapRender[y][x]);
+						}
+						
+						// Suppr le visible
+						rootLayout.getChildren().remove(mapRender[y][x]);
+					}
+				}
+				
+				// Ajoute les cases si besoin
+				if(mapRender[y][x] != null && (mapRender[y][x].getLayoutX() > init) && (mapRender[y][x].getLayoutX() < player.getTranslateX() + end)) {
+					if(!rootLayout.getChildren().contains(mapRender[y][x])) { 
+						// Suppr des listes de collisions
+						if(mapRender[y][x] instanceof Ground) {
+							platforms.add((Ground) mapRender[y][x]);
+							System.out.println("heyy");
+							
+						} else if(mapRender[y][x] instanceof Obstacle) {
+							triangles.add((Obstacle) mapRender[y][x]);
+							System.out.println("oui");
+							
+						} else if(mapRender[y][x] instanceof Coin) {
+							coins.add((Coin) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof FinishBlock) {
+							finishBlocks.add((FinishBlock) mapRender[y][x]);
+						}
+						
+						// Suppr le visible
+						rootLayout.getChildren().add(mapRender[y][x]);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -330,10 +439,10 @@ public class MainController {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
         			if (intersect.getBoundsInLocal().getHeight() - toolBarHeight <= intersect.getBoundsInLocal().getWidth()) {
-        				if(intersect.getBoundsInLocal().getMinY() - toolBarHeight > platform.getTranslateY()) {
+        				if(intersect.getBoundsInLocal().getMinY() - toolBarHeight > platform.getLayoutY()) {
         					System.out.println(toolBarHeight);
         					System.out.println(intersect.getBoundsInLocal().getMinY()- toolBarHeight);
-        					System.out.println(platform.getTranslateY());
+        					System.out.println(platform.getLayoutY());
 							// plafond -> MORT
 	        				verticalVelocity = 0;
 	        				collisionDetected = true;
@@ -341,7 +450,7 @@ public class MainController {
 						} else {
 							// Sol
 	        				
-	        				player.setTranslateY(platform.getTranslateY() - (player.getHeight() - 0.0001));
+	        				player.setTranslateY(platform.getLayoutY() - (player.getHeight() - 0.0001));
 //							System.out.println("Sol");
 							verticalVelocity = 0;
 							onGround = true;
@@ -405,7 +514,7 @@ public class MainController {
 			}
 	
 			// On supprime les coins ramassï¿½s avec iterator car on ne peut pas delete quand on boucle sur la liste
-			for (Iterator<Shape> it = coins.iterator(); it.hasNext(); ) {
+			for (Iterator<Coin> it = coins.iterator(); it.hasNext(); ) {
 				Node coin = it.next();
 				if (!(Boolean)coin.getProperties().get("alive")) {
 					it.remove();
@@ -448,12 +557,10 @@ public class MainController {
 
 	public void startJump() {
 		jump = true;
-		System.out.println("jump");
 	}
 	
 	public void stopJump() {
 		jump = false;
-		System.out.println("stopJump");
 	}
 	
 	public double getSpeedPlayer() {
@@ -536,6 +643,7 @@ public class MainController {
 			dead = !e.getState();
 			
 			rootLayout.getChildren().remove(ragdoll);
+			this.loadSpawn();
 		} else {
 			// Le joueur meurt
 			running = e.getState();
