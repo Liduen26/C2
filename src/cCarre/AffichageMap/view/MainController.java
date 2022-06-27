@@ -453,16 +453,18 @@ public class MainController {
 		VBox popup = new VBox();
 		popup.setPrefWidth(width);
 		popup.setMaxHeight(height);
-		popup.setLayoutX((screenBounds.getWidth() / 2) - (popup.getPrefWidth()/ 2));
-		popup.setLayoutY((screenBounds.getHeight() / 3));
+		popup.setLayoutX((screenBounds.getWidth() / 2) - (popup.getPrefWidth()/ 2) + 400);
+		popup.setLayoutY((screenBounds.getHeight() / 2)  - 250);
 		popup.setAlignment(Pos.CENTER);
-		popup.setStyle("-fx-opacity: 0.6; -fx-padding: 20px; -fx-background-color: #3107F0; -fx-border-color: red; -fx-border-radius: 20px;");
+		popup.setStyle("-fx-background-color: #121212; -fx-background-radius: 10 10 10 10; -fx-padding: 10; -fx-border-color: #c50808; -fx-border-width: 5;");
+		
 //		popup.getStyleClass().add(".popup");
 //        popup.getStylesheets().add("src/cCarre/genmap/view/viewpopup.css");
         
 		
 		Label text = new Label();
 		text.setText("gagné");
+		text.setStyle("-fx-background-color: #121212; -fx-text-fill: yellow; -fx-font-size: 40px");
 		
 		popup.getChildren().add(text);
 		rootLayout.getChildren().add(popup);
