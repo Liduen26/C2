@@ -19,5 +19,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="src/cCarre/AffichageMap/view/jaco-mp3-player-0.9.4.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
