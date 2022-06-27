@@ -3,9 +3,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane stylesheets="@popup.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/18">
+<AnchorPane prefHeight="600.0" prefWidth="400.0" stylesheets="@popup.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label text="Label" />
+      <Label layoutX="186.0" layoutY="283.0" styleClass="popup" stylesheets="@popup.css" text="Label" />
    </children>
 </AnchorPane>
