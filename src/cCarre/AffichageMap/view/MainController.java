@@ -310,7 +310,7 @@ public class MainController {
 	private void loadSpawn() {
 		// Chargement du spawn de la map
 		
-		double init = spawnX - elementSize * 5;
+		double init = spawnX - elementSize * 6;
 		double end = spawnX + screenBounds.getWidth();
 		
 		// Reset des listes
@@ -355,17 +355,22 @@ public class MainController {
 		// Récupère la position du joueur et affiche uniquement la map dont il a besoin
 		// Ajouter les blocs à leurs liste
 		
-		double init = player.getTranslateX() - elementSize * 3;
-		double end = player.getTranslateX() + (screenBounds.getWidth() - elementSize * 9);
+		// constante de marges gauches et droites
+		final int spaceLeft = 7;
+		final int spaceRight = 3;
+		
+		double init = player.getTranslateX() - (elementSize * spaceLeft);
+		double end = player.getTranslateX() + (screenBounds.getWidth() - (elementSize * spaceRight));
 		
 		
 		// lis la map de haut en bas, seulement les x dont il a besoin
 		for(int y = 0; y < mapRender.length; y++) {
 			
-			for(int x = Math.max(0, (int) (init / elementSize) - 4); x < Math.min(mapRender[0].length, init / elementSize); x++) {
+			for(int x = Math.max(0, (int) (init / elementSize) - 4); x < Math.min(mapRender[0].length, end / elementSize); x++) {
 				// Supprime ce qui est derriere
 				if(rootLayout.getChildren().contains(mapRender[y][x])) {
-					if(mapRender[y][x].getLayoutX() < init + (elementSize )) {
+					if(mapRender[y][x].getLayoutX() < init ) {
+						
 						// Suppr des listes de collisions
 						if(mapRender[y][x] instanceof Ground) {
 							platforms.remove((Ground) mapRender[y][x]);
@@ -388,15 +393,14 @@ public class MainController {
 				
 				// Ajoute les cases si besoin
 				if(mapRender[y][x] != null && (mapRender[y][x].getLayoutX() > init) && (mapRender[y][x].getLayoutX() < player.getTranslateX() + end)) {
-					if(!rootLayout.getChildren().contains(mapRender[y][x])) { 
+					if(!rootLayout.getChildren().contains(mapRender[y][x])) {
+						
 						// Suppr des listes de collisions
 						if(mapRender[y][x] instanceof Ground) {
 							platforms.add((Ground) mapRender[y][x]);
-							System.out.println("heyy");
 							
 						} else if(mapRender[y][x] instanceof Obstacle) {
 							triangles.add((Obstacle) mapRender[y][x]);
-							System.out.println("oui");
 							
 						} else if(mapRender[y][x] instanceof Coin) {
 							coins.add((Coin) mapRender[y][x]);
