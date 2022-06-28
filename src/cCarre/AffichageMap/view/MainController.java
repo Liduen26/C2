@@ -18,6 +18,7 @@ import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 
+import cCarre.MainMenu;
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
 import cCarre.AffichageMap.model.Ground;
@@ -31,12 +32,15 @@ import cCarre.genmap.events.PlayerState;
 import jaco.mp3.player.MP3Player;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -83,6 +87,7 @@ public class MainController {
 	boolean dead = false;
 	private Rectangle ragdoll = null;
 	
+	MediaPlayer mediaPlayer;
 	
 	// Pour changer la vitesse
 	int constV = 270; 
@@ -184,7 +189,15 @@ public class MainController {
             }
         });
 		
-		loop(500); // Let's go into the GAME !
+        // Pause de 1s avant de lancer le jeu
+ 		PauseTransition delay = new PauseTransition(Duration.seconds(1));
+ 		delay.setOnFinished( event -> {
+ 			
+ 			loop(500); // Let's go into the GAME !
+ 		});
+ 		delay.play();
+        
+		
 		loadCoin();
 		
 		// Cr�ation du cube d'anim de mort
@@ -199,7 +212,7 @@ public class MainController {
 	    gameSound1 = new MP3Player(new File("sound1.mp3"));
 	    
 	    gameMusic.setRepeat(true);
-	    gameMusic.play();
+//	    gameMusic.play();
 	   	}
 
 	/**
@@ -497,6 +510,23 @@ public class MainController {
 			ragdoll.setOpacity(0.5);
 			
 			rootLayout.getChildren().add(ragdoll);
+			
+			// Son de mort
+//			String path = MainMenu.class.getResource("Minecraft-Death-Sound-Effect.mp3").getPath();
+//			System.out.println(path);
+			
+			File file = new File("resources/Minecraft-Death-Sound-Effect_mp3cut.net.wav");
+			System.out.println(file.exists());
+			
+			Media media = new Media(file.toURI().toString());
+			System.out.println(media.getTracks());
+			
+			mediaPlayer = new MediaPlayer(media);
+			System.out.println(mediaPlayer = new MediaPlayer(media));
+			
+			System.out.println(mediaPlayer.getStatus());
+			mediaPlayer.play();
+			
 		}
 	}
 }

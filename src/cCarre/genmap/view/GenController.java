@@ -265,6 +265,7 @@ public class GenController {
 		// Charge la map
 		JSONObject file = this.getCustomMap();
 		JSONArray mapGen = (JSONArray) file.get("map");
+		System.out.println("test");
 //		char[][] tab = null;
 //		
 //		
