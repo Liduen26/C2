@@ -792,8 +792,8 @@ public class GenController {
 			lastX = c.getX();
 		}
 		
-		// Supprime les cases vides en trop
-		Ebus.get().post(new RemovePartGrilleEvent(lastX));
+		// Supprime les cases vides en trop (Casse l'editeur de map !!)
+		//Ebus.get().post(new RemovePartGrilleEvent(lastX));
 		
 		// Set les colors pickers sur la couleur de la map chargee pour pas que le joueur ait � re-pick sa couleur
     	groundColor.setValue(stringToColor(jsonObject, "ground"));

@@ -24,6 +24,7 @@ import cCarre.Menu.GameMenuController;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PlayerState;
+import cCarre.genmap.model.ToolBar;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -107,7 +108,7 @@ public class MainController {
 	@FXML
 	private void initialize() {
 		// Met la couleur sur le début du niveau
-	    rootLayout.setStyle("-fx-background-color: violet");
+	    rootLayout.setStyle("-fx-background-color: "+ToolBar.getBackgroundColor());
 		// Adapte la vitesse et la gravitï¿½ et les ï¿½lï¿½ments ï¿½ la taille de l'ï¿½cran
 		float varVit = (float)1920/constV;		
 		constV = (int) ((int) screenBounds.getWidth()/varVit);
@@ -197,7 +198,7 @@ public class MainController {
                 
         		// Adapte la taille de l'achor pane au niveau joué, puis change la background color
                 rootLayout.resize((levelLength+25)*elementSize, (levelHeight+6)*elementSize);
-        	    rootLayout.setStyle("-fx-background-color: violet");
+        	    rootLayout.setStyle("-fx-background-color: "+ToolBar.getBackgroundColor());
 
                 // Si le jeu vient de l'ï¿½diteur, transmet les coo ï¿½ la grille
 				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
