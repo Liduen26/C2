@@ -106,6 +106,8 @@ public class MainController {
 	
 	@FXML
 	private void initialize() {
+		// Met la couleur sur le début du niveau
+	    rootLayout.setStyle("-fx-background-color: violet");
 		// Adapte la vitesse et la gravitï¿½ et les ï¿½lï¿½ments ï¿½ la taille de l'ï¿½cran
 		float varVit = (float)1920/constV;		
 		constV = (int) ((int) screenBounds.getWidth()/varVit);
@@ -193,6 +195,10 @@ public class MainController {
                 rootLayout.setLayoutX(-(offset - 300));
                 Coin.setLayoutX(+(offset - 300));
                 
+        		// Adapte la taille de l'achor pane au niveau joué, puis change la background color
+                rootLayout.resize((levelLength+25)*elementSize, (levelHeight+6)*elementSize);
+        	    rootLayout.setStyle("-fx-background-color: violet");
+
                 // Si le jeu vient de l'ï¿½diteur, transmet les coo ï¿½ la grille
 				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
 				

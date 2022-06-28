@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 
-<VBox styleClass="background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.genmap.view.GenController">
+<VBox styleClass="background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.genmap.view.GenController">
    <children>
       <HBox fx:id="upBar" alignment="CENTER_LEFT" prefHeight="90.0" spacing="30.0" styleClass="toolBar">
          <children>
@@ -30,7 +30,7 @@
                                  <graphic>
                                     <ColorPicker fx:id="groundColor">
                                        <value>
-                                          <Color blue="0.8157894611358643" green="0.1801535040140152" red="0.10952728986740112" />
+                                          <Color red="0.10952728986740112" green="0.1801535040140152" blue="0.8157894611358643" />
                                        </value>
                                     </ColorPicker>
                                  </graphic>
@@ -39,7 +39,7 @@
                                  <graphic>
                                     <ColorPicker fx:id="obstacleColor">
                                        <value>
-                                          <Color blue="0.1944444477558136" green="0.1944444477558136" red="1.0" />
+                                          <Color red="1.0" green="0.1944444477558136" blue="0.1944444477558136" />
                                        </value>
                                     </ColorPicker>
                                  </graphic>
@@ -48,9 +48,17 @@
                                  <graphic>
                                     <ColorPicker fx:id="coinColor">
                                        <value>
-                                          <Color blue="0.26851850748062134" green="0.9756172895431519" red="1.0" />
+                                          <Color red="1.0" green="0.9756172895431519" blue="0.26851850748062134" />
                                        </value>
                                     </ColorPicker>
+                                 </graphic>
+                              </MenuItem>
+                              <MenuItem mnemonicParsing="false" text="Background">
+                                 <graphic>
+                                    <ColorPicker fx:id="backgroundColor">
+                                       <value>
+                                          <Color red="0.9960784316062927" green="0.9803921580314636" blue="0.9450980424880981" />
+                                       </value></ColorPicker>
                                  </graphic>
                               </MenuItem>
                         </items>
