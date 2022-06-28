@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,7 +38,10 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
@@ -134,7 +138,8 @@ public class GenController {
 
 		screenBounds = Screen.getPrimary().getBounds();
 		
-		double hBar = upBar.getPrefHeight();
+		hBar = upBar.getPrefHeight();
+		
 
 		widthCell = (int) (screenBounds.getWidth()/32 - 1);
 		
@@ -172,13 +177,14 @@ public class GenController {
 				ToolBar.setItem(id);
 			});
 		}
-
+		
+		// Rectangle rouge de s�lection
 		select = new Rectangle();
 		select.setFill(Color.RED);
 		select.setOpacity(0.2);
 		select.setFocusTraversable(true);
 		
-		
+		// Rectanlge a bord gris de a �t� s�lectionn�
 		selected = new Rectangle();
 		selected.setFill(Color.TRANSPARENT);
 		selected.setStroke(Color.web("0x696C82", 0.5));
@@ -186,56 +192,9 @@ public class GenController {
 		selected.setStrokeDashOffset(150.0);
 		selected.setCursor(Cursor.MOVE);
 		
-
-		
-        // Event handler pour le choix des couleurs
-        EventHandler<ActionEvent> changeColorEvent = new EventHandler<ActionEvent>() {
-        	public void handle(ActionEvent e)
-        	{
-        		if(e.getSource() == groundColor) {
-        			ToolBar.setGroundColor(groundColor.getValue());
-        			for(Node cell : grille.getChildren()) {
-        				Cell c = new Cell(cell);
-        				if(cell instanceof Cell) {
-        					c = (Cell) cell;
-        					if(c.getCellId() == '1') {
-        						c.erase(false);
-        						c.paint("groundBtn");
-        					}
-        				}
-        			}
-        		}else if(e.getSource() == obstacleColor){
-        			ToolBar.setObstacleColor(obstacleColor.getValue());
-        			for(Node cell : grille.getChildren()) {
-        				Cell c = new Cell(cell);
-        				if(cell instanceof Cell) {
-        					c = (Cell) cell;
-        					if(c.getCellId() == '2') {
-        						c.erase(false);
-        						c.paint("obstacleBtn");
-        					}
-        				}
-        			}
-        		}else if(e.getSource() == coinColor){
-        			ToolBar.setCoinColor(coinColor.getValue());
-        			for(Node cell : grille.getChildren()) {
-        				Cell c = new Cell(cell);
-        				if(cell instanceof Cell) {
-        					c = (Cell) cell;
-        					if(c.getCellId() == '3') {
-        						c.erase(false);
-        						c.paint("coinBtn");
-        					}
-        				}
-        			}
-        		}
-        	}
-        };
-  
-        // Listener des changements de couleur
-        groundColor.setOnAction(changeColorEvent);
-        obstacleColor.setOnAction(changeColorEvent);
-        coinColor.setOnAction(changeColorEvent);
+		// G�re les changements de couleur des blocs
+		handleChangeColor();
+        
 	}
 	
 	// QuickTest ----------------------------------------------------------------------------------
@@ -251,35 +210,17 @@ public class GenController {
 			
 			inTesting = true;
 			
-			Ebus.get().post(new PopupEvent("Warining !", "Click on a cell to place the player and start the test."));
+			Ebus.get().post(new PopupEvent("Warning !", "Click on a cell to place the player and start the test."));
 			
-		} else {
-			
-			
-		}
+		} 
     }
 	
 	@SuppressWarnings("unchecked")
 	@Subscribe
 	private void launchGame(LaunchGameEvent e) throws IOException {
 		// Charge la map
-		JSONObject file = this.getCustomMap();
-		JSONArray mapGen = (JSONArray) file.get("map");
-		System.out.println("test");
-//		char[][] tab = null;
-//		
-//		
-//    	
-//    	for (int y = 0; y < tab.length; y++) {
-//            char[] line = tab[y];
-//            JSONArray lineJSON = new JSONArray();
-//            mapGen.add(lineJSON);
-//            for (int x = 0; x < tab[y].length; x++) {
-//            	lineJSON.add(line[x]);
-//            }
-//        }
-    	
-    	
+		JSONObject mapGen = this.getCustomMap();
+		
 		// Met le focus sur l'anchorPane pour ne pas appuyer sur un btn, et pour permettre l'event keyPressed du saut
 		root.requestFocus();
 		
@@ -293,6 +234,7 @@ public class GenController {
 		FXMLLoader gameLoader = new FXMLLoader();
 		gameLoader.setLocation(MainMenu.class.getResource("./AffichageMap/view/mainLayout.fxml"));
 		AnchorPane game = (AnchorPane) gameLoader.load();
+		game.setManaged(false);
 		
 		// Met le jeu par dessus la grille
 		root.getChildren().add(game);
@@ -302,9 +244,11 @@ public class GenController {
 		mainController.setEdit(true, hBar);
 		
 		root.setOnKeyPressed(evt ->{
-			mainController.jump();
+			mainController.startJump();
 		});
-		// /!\ Penser � remove l'event sur le btn return /!\	
+		root.setOnKeyReleased(evt -> {
+			mainController.stopJump();
+		});
 	}
 	
 	@Subscribe
@@ -349,7 +293,7 @@ public class GenController {
 						
 						root.getChildren().add(select);
 					}
-				} 
+				}
 			}
 		});
 		grille.setOnMouseDragged(e -> {
@@ -461,14 +405,56 @@ public class GenController {
 		});
 	}
 	
-	private double distInCell(double n) {
-		double r = (n % widthCell) + Math.floor(n / widthCell);
-		return r;
-	}
 	
-	private double roundDiz(double n) {
-		double r = Math.round(n / 10) * 10;
-		return r;
+	private void handleChangeColor() {
+		// Event handler pour le choix des couleurs
+        EventHandler<ActionEvent> changeColorEvent = new EventHandler<ActionEvent>() {
+        	public void handle(ActionEvent e)
+        	{
+        		if(e.getSource() == groundColor) {
+        			ToolBar.setGroundColor(groundColor.getValue());
+        			for(Node cell : grille.getChildren()) {
+        				Cell c = new Cell(cell);
+        				if(cell instanceof Cell) {
+        					c = (Cell) cell;
+        					if(c.getCellId() == '1') {
+        						c.erase(false);
+        						c.paint("groundBtn");
+        					}
+        				}
+        			}
+        		}else if(e.getSource() == obstacleColor){
+        			ToolBar.setObstacleColor(obstacleColor.getValue());
+        			for(Node cell : grille.getChildren()) {
+        				Cell c = new Cell(cell);
+        				if(cell instanceof Cell) {
+        					c = (Cell) cell;
+        					if(c.getCellId() == '2') {
+        						c.erase(false);
+        						c.paint("obstacleBtn");
+        					}
+        				}
+        			}
+        		}else if(e.getSource() == coinColor){
+        			ToolBar.setCoinColor(coinColor.getValue());
+        			for(Node cell : grille.getChildren()) {
+        				Cell c = new Cell(cell);
+        				if(cell instanceof Cell) {
+        					c = (Cell) cell;
+        					if(c.getCellId() == '3') {
+        						c.erase(false);
+        						c.paint("coinBtn");
+        					}
+        				}
+        			}
+        		}
+        	}
+        };
+  
+        // Listener des changements de couleur
+        groundColor.setOnAction(changeColorEvent);
+        obstacleColor.setOnAction(changeColorEvent);
+        coinColor.setOnAction(changeColorEvent);
 	}
 	
 	/**
@@ -619,15 +605,17 @@ public class GenController {
 	// btn Retour ---------------------------------------------------------------------------------
 	public void btnReturn(ActionEvent event) throws IOException {
 		if(!inTesting) {
-			// Pas en test, on revient au menu
-			Parent tableViewParent = FXMLLoader.load(getClass().getResource("../../Menu/BaseMenu.fxml"));
-			Scene tableViewScene = new Scene(tableViewParent);
-			
-			Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
-			
-			window.setScene(tableViewScene);
-			window.setMaximized(true);
-			window.show();
+			if(showConfirmation("Confirm", "Want to leave ?", "Are you sure you want to leave? It won't save your job.")) {
+				// Pas en test, on revient au menu
+				Parent tableViewParent = FXMLLoader.load(getClass().getResource("../../Menu/BaseMenu.fxml"));
+				Scene tableViewScene = new Scene(tableViewParent);
+				
+				Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
+				
+				window.setScene(tableViewScene);
+				window.setMaximized(true);
+				window.show();				
+			}
 			
 		} else if (inTesting && mainController == null) {
 			System.out.println("slt");
@@ -642,10 +630,11 @@ public class GenController {
 			inTesting = false;
 			
 		} else if(inTesting && mainController != null){
+			System.out.println("ICI");
 			// En test, on sort du jeu
-			root.getChildren().remove(root.getChildren().size() - 1);
-
 			mainController.setStop();
+			root.getChildren().remove(root.getChildren().size() - 1);
+			mainController = null;
 			
 			// Active tout les btns de la toolbar et change le retour
 			toolBar.setDisable(false);
@@ -660,6 +649,29 @@ public class GenController {
 			
 		} 
 	}
+	
+	/**
+	 * Popup de confirmation
+	 * @param title Le titre
+	 * @param header Le header
+	 * @param text Le contenu
+	 * @return true si on appui sur oui, sinon false 
+	 */
+	private boolean showConfirmation(String title, String header, String text) {
+	      Alert alert = new Alert(AlertType.CONFIRMATION);
+	      alert.setTitle(title);
+	      alert.setHeaderText(header);
+	      alert.setContentText(text);
+
+	      // option != null.
+	      Optional<ButtonType> option = alert.showAndWait();
+
+	      if (option.get() == ButtonType.OK) {
+	         return true;
+	      }
+	      
+	      return false;
+	   }
 	
 	
 	@Subscribe
@@ -779,6 +791,7 @@ public class GenController {
 		return customColor;
     }
 	
+	@SuppressWarnings("unchecked")
 	private JSONObject getCustomMap() {
 		JSONObject customMapObject = new JSONObject();
 		

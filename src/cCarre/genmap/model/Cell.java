@@ -2,7 +2,6 @@ package cCarre.genmap.model;
 
 import java.util.ArrayList;
 
-import javax.tools.Tool;
 import org.json.simple.JSONObject;
 
 import cCarre.genmap.events.AddLengthGrilleEvent;
@@ -10,7 +9,6 @@ import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.LaunchGameEvent;
 import cCarre.genmap.events.PopupEvent;
 import cCarre.genmap.events.RemoveLengthGrilleEvent;
-import cCarre.genmap.view.GenController;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
@@ -18,7 +16,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
-import javafx.scene.paint.Color;
 
 public class Cell extends Region {
 	private boolean occuped = false;
@@ -393,6 +390,7 @@ public class Cell extends Region {
 
 			Ebus.get().post(new LaunchGameEvent());
 			cellId = '0';
+			occuped = false;
 			break;
 			
 		default:

@@ -46,15 +46,18 @@ public class GameMenuController {
         window.setScene(scene);
         
         MainController controller = loader.getController();
-       
-        // Chemin du fichier json (à faire)
         
 		window.setMaximized(true);
 		window.show();
 		
-		scene.setOnKeyPressed(e ->{
-			controller.jump();
+		scene.setOnKeyPressed(e -> {
+			controller.startJump();
 		});
+		scene.setOnKeyReleased(e -> {
+			controller.stopJump();
+		});
+		
+		
 	}
 	public void GoToEditLevel(ActionEvent event) throws IOException {
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../genmap/view/genLayout.fxml"));

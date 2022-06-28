@@ -1,8 +1,6 @@
 package cCarre.genmap.model;
 
-import cCarre.genmap.events.Ebus;
 import javafx.scene.paint.Color;
-import cCarre.genmap.events.AddLengthGrilleEvent;
 
 public final class ToolBar {
 	private static String item;

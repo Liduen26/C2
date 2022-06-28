@@ -1,6 +1,7 @@
 package cCarre.AffichageMap.model;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class Level {
 	private final int idLevel;
@@ -9,21 +10,21 @@ public class Level {
 	private int levelWidth;
 	private int levelHeight;
 	
-	private static JSONArray jsonMap;
+	private static JSONObject jsonMap;
 	
 	public Level() {
 		this.idLevel = 0;
-		this.levelLength = ((JSONArray) jsonMap.get(0)).size();
+		this.levelLength = ((JSONArray) ((JSONArray) jsonMap.get("map")).get(0)).size();
 		this.levelWidth = this.levelLength * 60;
 		this.totalCoin = 0;
-		this.levelHeight = jsonMap.size();
+		this.levelHeight = ((JSONArray) jsonMap.get("map")).size();
 	}
 	
 	public int getLevelWidth(){
 		return levelWidth;
 	}
 
-	public JSONArray getLevel() {
+	public JSONObject getLevel() {
 		return jsonMap;
 	}
 
@@ -55,15 +56,11 @@ public class Level {
 		return idLevel;
 	}
 	
-	public static JSONArray setJsonLevel() {
-		return jsonMap;
-	}
-	
 	/**
 	 * M�thode servant � d�finir le level � utiliser, � set avant d'instancier Level (et donc le contrller du jeu)
 	 * @param json Le JSONArray de la map a utiliser
 	 */
-	public static void setJsonLevel(JSONArray json) {
+	public static void setJsonLevel(JSONObject json) {
 		Level.jsonMap = json;
 	}
 }
