@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,39 +15,31 @@ import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 
-import cCarre.MainMenu;
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
 import cCarre.AffichageMap.model.Ground;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Player;
-import cCarre.Menu.GameMenuController;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PlayerState;
-import jaco.mp3.player.MP3Player;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
-import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Screen;
 import javafx.util.Duration;
 
 public class MainController {
-	private GameMenuController mainApp;
-
 	private ArrayList<Ground> platforms = new ArrayList<Ground>();
 	private ArrayList<Obstacle> triangles = new ArrayList<Obstacle>();
 	private ArrayList<FinishBlock> finishBlocks = new ArrayList<FinishBlock>();
@@ -59,9 +48,6 @@ public class MainController {
 	int elementSize = 60;
 
 	// Vars ---------------
-	MP3Player gameMusic;
-	MP3Player gameSound1;
-
 	long oldTime;
 	long newTime;
 	double dt; //dt par sec
@@ -91,12 +77,19 @@ public class MainController {
 	
 	Shape[][] mapRender = null;
 	
-	// Pour changer la vitesse
-	int constV = 270; 
-	int constGrav = 700;
-	double jumpForce = 600;
+	MediaPlayer mediaPlayer = null;
+	MediaPlayer musicPlayer = null;
+	String nameMusic = "Projet64_2.wav";
 	
-	// taille de l'ï¿½cran
+	boolean newGround = false;
+	boolean oldGround = false;
+	
+	// Pour changer la vitesse
+	int constV = 430; 
+	int constGrav = 900;
+	double jumpForce = 1300;
+	
+	// taille de l'écran
 	private Rectangle2D screenBounds = Screen.getPrimary().getBounds();
 
 	boolean edit = false;
@@ -216,26 +209,21 @@ public class MainController {
             }
         });
 		
-        // Pause de 1s avant de lancer le jeu
- 		PauseTransition delay = new PauseTransition(Duration.seconds(1));
- 		delay.setOnFinished( event -> {
- 			
- 			loop(500); // Let's go into the GAME !
- 		});
- 		delay.play();
-        
-		
+        // Let's go into the GAME !
+		loop(500); 
+
+        // Joue la musique
+		playMusic();
+
+		// Charge le fichier des coins
 		loadCoin();
 		
 		// Crï¿½ation du cube d'anim de mort
 		ragdoll = new Rectangle();
 		ragdoll.setManaged(false);
 		
-		
 		// Opacitï¿½ de base
 		ragdoll.setOpacity(0.5);
-		
-		
 	}
 
 	/**
@@ -262,6 +250,7 @@ public class MainController {
 					
 					// Saut si oui
 					if(jump == true) {
+						playSound("Jump.wav", 1);
 						verticalVelocity = jumpForce;
 						jump = false; 
 					}
@@ -292,15 +281,20 @@ public class MainController {
 	
 	            	if (collisionDetected) {
 	            		running = false;
+	            		stopMusic();
 	            	}
 	            }
 	            
-				// meurt quand tombe dans le vide
-				if(player.getTranslateY() > screenBounds.getHeight() - toolBarHeight) {
-					player.death(spawnX, spawnY, rootLayout, Coin);
-				}
+				
 				
 				Coin.setText("Pieces : "+pieces);
+				
+				//Son landing
+				oldGround = newGround;
+				newGround = playerOnGround();
+				if(!oldGround && newGround) {
+					playSound("Land.wav", 0.5);
+				}
 				
 			} else if (!running && dead){
 				// Le joueur est mort
@@ -369,12 +363,9 @@ public class MainController {
 	 * Supprime les blocs qui ne sont plus dans le champ, et affiche ceux qui y arrivent
 	 */
 	private void renderMap() {
-		// Rï¿½cupï¿½re la position du joueur et affiche uniquement la map dont il a besoin
-		// Ajouter les blocs ï¿½ leurs liste
-		
 		// constante de marges gauches et droites
 		final int spaceLeft = 7;
-		final int spaceRight = 3;
+		final int spaceRight = 9;
 		
 		double init = player.getTranslateX() - (elementSize * spaceLeft);
 		double end = player.getTranslateX() + (screenBounds.getWidth() - (elementSize * spaceRight));
@@ -394,7 +385,6 @@ public class MainController {
 							
 						} else if(mapRender[y][x] instanceof Obstacle) {
 							triangles.remove((Obstacle) mapRender[y][x]);
-							System.out.println(((Obstacle) mapRender[y][x]));
 							
 						} else if(mapRender[y][x] instanceof Coin) {
 							coins.remove((Coin) mapRender[y][x]);
@@ -438,10 +428,13 @@ public class MainController {
 	 * Rï¿½re les collisions et la mort du joueur
 	 */
 	private void collisions() {
-		boolean death = false;
-		
 		if(platfollision() || triangleCollision()) {
-			player.death(spawnX,spawnY, rootLayout, Coin);
+			player.death(spawnX, spawnY, rootLayout, Coin);
+		}
+		// meurt quand tombe dans le vide
+		if(player.getTranslateY() > screenBounds.getHeight() - toolBarHeight) {
+			player.death(spawnX, spawnY, rootLayout, Coin);
+			playSound("Roblox-Death-Sound-cut.wav", 4);
 		}
 	}
 	
@@ -451,7 +444,6 @@ public class MainController {
 	 */
 	private boolean platfollision() {
 		boolean collisionDetected = false;
-		boolean ground = false;
 		onGround = false;
 		
 		// Collisions au sol
@@ -468,6 +460,7 @@ public class MainController {
 	        				verticalVelocity = 0;
 	        				collisionDetected = true;
 	        				System.out.println("Ca c le plafond -------------------------------------------------------------------------------------");
+	        				playSound("Minecraft-Death-Sound-cut.wav", 5);
 						} else {
 							// Sol
 	        				
@@ -491,6 +484,7 @@ public class MainController {
 						System.out.println("Ca c un bord -------------------------------------------------------------------------------------");
 						verticalVelocity = 0;
 						collisionDetected = true;
+						playSound("Minecraft-Death-Sound-cut.wav", 5);
         			}
         		}
         	}
@@ -511,6 +505,7 @@ public class MainController {
 				if (intersect.getBoundsInLocal().getWidth() != -1) {
 					collisionDetected = true;
 					System.out.println("Ca c un triangle -------------------------------------------------------------------------------------");
+					playSound("Roblox-Death-Sound-cut.wav", 4);
 				}
 			}
 		}
@@ -530,18 +525,27 @@ public class MainController {
 					Shape intersect = Shape.intersect(player.playerRectangle, coin);
 					if (intersect.getBoundsInLocal().getWidth() != -1) {
 						coin.getProperties().put("alive", false);
+						playSound("Coin.wav", 2);
 					}
 				}
 			}
 	
 			// On supprime les coins ramassï¿½s avec iterator car on ne peut pas delete quand on boucle sur la liste
 			for (Iterator<Coin> it = coins.iterator(); it.hasNext(); ) {
-				Node coin = it.next();
+				Shape coin = it.next();
 				if (!(Boolean)coin.getProperties().get("alive")) {
 					it.remove();
 					rootLayout.getChildren().remove(coin);
 					pieces ++;
-					saveCoin(pieces);
+					
+					// Supprime le coin du tableau de rendu de la map
+					if(coin instanceof Coin) {
+						Coin c = (Coin) coin;
+						int x = (int) Math.round(c.getLayoutX() / elementSize);
+						int y = (int) Math.round(c.getLayoutY() / elementSize);
+						
+						mapRender[y][x] = null;
+					}
 				}
 			}
 		}
@@ -599,7 +603,6 @@ public class MainController {
 	}
 
 	public void setMap(String string) {
-		// TODO Auto-generated method stub
 		this.level = string;
 	}
 	
@@ -613,7 +616,6 @@ public class MainController {
 			file =new FileWriter("./pieces.json");
 			file.write(obj.toJSONString());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
  
@@ -621,7 +623,6 @@ public class MainController {
                 file.flush();
                 file.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }	
@@ -664,6 +665,7 @@ public class MainController {
 			dead = !e.getState();
 			
 			rootLayout.getChildren().remove(ragdoll);
+			playMusic();
 			this.loadSpawn();
 		} else {
 			// Le joueur meurt
@@ -678,25 +680,45 @@ public class MainController {
 			ragdoll.setFill(player.getPlayerRectangle().getFill());
 			
 			ragdoll.setOpacity(0.5);
-//			System.out.println(rootLayout.getChildren().contains(ragdoll));
 			rootLayout.getChildren().add(ragdoll);
 			
-			// Son de mort
-//			String path = MainMenu.class.getResource("Minecraft-Death-Sound-Effect.mp3").getPath();
-//			System.out.println(path);
-			
-			File file = new File("resources/Minecraft-Death-Sound-Effect_mp3cut.net.wav");
-			System.out.println(file.exists());
-			
-			Media media = new Media(file.toURI().toString());
-			System.out.println(media.getTracks());
-			
-			mediaPlayer = new MediaPlayer(media);
-			System.out.println(mediaPlayer = new MediaPlayer(media));
-			
-			System.out.println(mediaPlayer.getStatus());
-			mediaPlayer.play();
+			saveCoin(pieces);
+			stopMusic();
 			
 		}
+	}
+	
+	
+	/**
+	 * Fais jouer un son se trouvant dans le dossier resources/audio/
+	 * @param name Le nom du fichier (avec l'extension)
+	 * @param volume Le volume de 0 à 10
+	 */
+	private void playSound(String name, double volume) {
+		File file = new File("resources/audio/" + name);
+		
+		Media media = new Media(file.toURI().toString());
+		
+		mediaPlayer = new MediaPlayer(media);
+		
+		mediaPlayer.setVolume(volume / 10);
+		mediaPlayer.play();
+	}
+	
+	private void playMusic() {
+		File file = new File("resources/audio/" + nameMusic);
+		
+		Media media = new Media(file.toURI().toString());
+		
+		musicPlayer = new MediaPlayer(media);
+		
+		musicPlayer.setVolume(1.5 / 10);
+		musicPlayer.play();
+	}
+	
+	private void stopMusic() {
+		
+		musicPlayer.stop();
+		
 	}
 }

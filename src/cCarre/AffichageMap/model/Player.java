@@ -29,9 +29,6 @@ public class Player extends Parent{
 	int constGrav;
 	
 	
-	private double n = 0;
-	
-	
 	public void SetColor(Color color) {
 		playerRectangle.setFill(color);
 	}
@@ -61,19 +58,19 @@ public class Player extends Parent{
 		
 		//init point
 		Point2D p1 = new Point2D.Double(centreX + constV, centreY);
-		Line vVitesse = new Line(centreX,centreY,p1.getX(),p1.getY());
+		Line vVitesse = new Line(centreX,centreY,p1.getX() / 4,p1.getY());
 		vVitesse.setStroke(Color.RED);
 		this.p1 = p1;
 		this.vVitesse = vVitesse;
 		
 		Point2D p2 = new Point2D.Double(centreX, centreY + constGrav);
-		Line vG = new Line(centreX,centreY,p2.getX(),p2.getY());
+		Line vG = new Line(centreX,centreY,p2.getX(),(p2.getY() / 4));
 		vG.setStroke(Color.PURPLE);
 		this.p2 = p2;
 		this.vG = vG;
 
 		Point2D p3 = new Point2D.Double(centreX, centreY);
-		Line vVert = new Line(centreX,centreY,p3.getX(),p3.getY());
+		Line vVert = new Line(centreX,centreY,p3.getX(),p3.getY()/4);
 		vVert.setStroke(Color.GREEN);
 
 		this.p3 = p3;
@@ -92,13 +89,13 @@ public class Player extends Parent{
 		this.setTranslateY(this.getTranslateY() - distanceY);
 		
 		vVitesse.setStartX(centreX);
-		vVitesse.setEndX(p1.getX());
+		vVitesse.setEndX(p1.getX()/4);
 		
 		vG.setStartY(centreY);
-		vG.setEndY(p2.getY());
+		vG.setEndY(p2.getY()/4);
 		
 		vVert.setStartY(centreY);
-		vVert.setEndY(p3.getY());
+		vVert.setEndY(p3.getY()/4);
 		
 		p1.setLocation(p1.getX(), centreY);
 		p2.setLocation(p2.getX(), centreY + constGrav);

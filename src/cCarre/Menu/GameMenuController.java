@@ -1,4 +1,5 @@
 package cCarre.Menu;
+import java.io.File;
 import java.io.IOException;
 
 import cCarre.MainMenu;
@@ -13,13 +14,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 public class GameMenuController {
 	@FXML 
 	public Button GoToBaseMenu;
 
+	MediaPlayer mediaPlayer;
+	
 	public void GoToBaseMenu(ActionEvent event) throws IOException {
+		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("BaseMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
@@ -32,7 +38,7 @@ public class GameMenuController {
 	
 	public void LaunchGame(ActionEvent event) throws IOException {
 		// Définis la map à utiliser, attend un JSONArray
-		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
+		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL2));
 		
 		// Load root layout from fxml file.
 		FXMLLoader loader = new FXMLLoader();
@@ -60,6 +66,7 @@ public class GameMenuController {
 		
 	}
 	public void GoToEditLevel(ActionEvent event) throws IOException {
+		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../genmap/view/genLayout.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
@@ -68,5 +75,21 @@ public class GameMenuController {
 		window.setScene(tableViewScene);
 		window.setMaximized(true);
 		window.show();
+	}
+	
+	/**
+	 * Fais jouer un son se trouvant dans le dossier resources/audio/
+	 * @param name Le nom du fichier (avec l'extension)
+	 * @param volume Le volume de 0 à 10
+	 */
+	private void playSound(String name) {
+		File file = new File("resources/audio/" + name);
+		
+		Media media = new Media(file.toURI().toString());
+		
+		mediaPlayer = new MediaPlayer(media);
+		
+		mediaPlayer.setVolume(5.0 / 10);
+		mediaPlayer.play();
 	}
 }

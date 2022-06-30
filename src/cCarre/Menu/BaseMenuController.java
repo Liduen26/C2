@@ -24,10 +24,13 @@ public class BaseMenuController {
 @FXML public Button GoToGameMenu;
 @FXML private ImageView imageView;
 
+MediaPlayer mediaPlayer;
+
 //Image img = new Image(getClass().getResource("@../../images/logoc².png").toExternalForm());
 
 
 	public void GoToGameMenu(ActionEvent event) throws IOException {
+		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("GameMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
@@ -42,6 +45,7 @@ public class BaseMenuController {
 	
 	
 	public void GoToShopMenu(ActionEvent event) throws IOException {
+		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("ShopMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
@@ -53,6 +57,7 @@ public class BaseMenuController {
 	}
 	
 	public void GoToOptionsMenu(ActionEvent event) throws IOException {
+		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("OptionsMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
@@ -67,4 +72,19 @@ public class BaseMenuController {
 		System.exit(0);
 	}
 	
+	/**
+	 * Fais jouer un son se trouvant dans le dossier resources/audio/
+	 * @param name Le nom du fichier (avec l'extension)
+	 * @param volume Le volume de 0 à 10
+	 */
+	private void playSound(String name) {
+		File file = new File("resources/audio/" + name);
+		
+		Media media = new Media(file.toURI().toString());
+		
+		mediaPlayer = new MediaPlayer(media);
+		
+		mediaPlayer.setVolume(5.0 / 10);
+		mediaPlayer.play();
+	}
 }
