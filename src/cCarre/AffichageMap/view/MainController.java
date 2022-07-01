@@ -668,7 +668,7 @@ public class MainController {
 	@Subscribe
 	public void setPlayerState(PlayerState e) {
 		
-		if(e.getState()) {
+		if(e.getState() && time1.getStatus() != Animation.Status.STOPPED) {
 			// Le joueur respawn
 			running = e.getState();
 			dead = !e.getState();

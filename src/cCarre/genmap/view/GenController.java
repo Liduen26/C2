@@ -643,7 +643,6 @@ public class GenController {
 			}
 			
 		} else if (inTesting && mainController == null) {
-			System.out.println("slt");
 			ToolBar.setItem("");
 			
 			// Active tout les btns de la toolbar et change le retour
@@ -655,11 +654,11 @@ public class GenController {
 			inTesting = false;
 			
 		} else if(inTesting && mainController != null){
-			System.out.println("ICI");
 			// En test, on sort du jeu
 			mainController.setStop();
 			root.getChildren().remove(root.getChildren().size() - 1);
 			mainController = null;
+			System.gc();
 			
 			// Active tout les btns de la toolbar et change le retour
 			toolBar.setDisable(false);
