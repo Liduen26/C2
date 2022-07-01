@@ -29,3 +29,6 @@ local.properties
 #Fichiers configs
 *.json
 *.json
+
+#Ressources
+!resources/*
