@@ -365,7 +365,7 @@ public class MainController {
 	private void renderMap() {
 		// constante de marges gauches et droites
 		final int spaceLeft = 7;
-		final int spaceRight = 9;
+		final int spaceRight = 4;
 		
 		double init = player.getTranslateX() - (elementSize * spaceLeft);
 		double end = player.getTranslateX() + (screenBounds.getWidth() - (elementSize * spaceRight));
