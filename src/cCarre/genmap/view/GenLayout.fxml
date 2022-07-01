@@ -19,7 +19,9 @@
             <HBox fx:id="toolBar" alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" spacing="10.0" styleClass="toolBar" HBox.hgrow="ALWAYS">
                <children>
                   <Button fx:id="groundBtn" mnemonicParsing="false" text="Sol" />
+                  <Button fx:id="groundSlabBtn" mnemonicParsing="false" text="Dalle" />
                   <Button fx:id="obstacleBtn" mnemonicParsing="false" text="Obstacle" />
+                  <Button fx:id="reverseObstacleBtn" mnemonicParsing="false" text="Reverse Obstacle" />
                   <Button fx:id="coinBtn" mnemonicParsing="false" text="Pièce" />
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
                   <MenuBar fx:id="menuBar">

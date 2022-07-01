@@ -78,6 +78,12 @@ public class GenController {
     private Button obstacleBtn;
     
     @FXML
+    private Button reverseObstacleBtn;
+    
+    @FXML
+    private Button groundSlabBtn;
+    
+    @FXML
     private ColorPicker backgroundColor;
     
     @FXML
@@ -424,6 +430,9 @@ public class GenController {
         					if(c.getCellId() == '1') {
         						c.erase(false);
         						c.paint("groundBtn");
+        					}else if(c.getCellId() == '5') {
+        						c.erase(false);
+        						c.paint("groundSlabBtn");
         					}
         				}
         			}
@@ -436,6 +445,9 @@ public class GenController {
         					if(c.getCellId() == '2') {
         						c.erase(false);
         						c.paint("obstacleBtn");
+        					}else if(c.getCellId() == '4') {
+        						c.erase(false);
+        						c.paint("reverseObstacleBtn");
         					}
         				}
         			}

@@ -154,9 +154,9 @@ public class Cell extends Region {
 			// Ajoute le triangle
 			Polygon triangle = new Polygon();
 			triangle.getPoints().addAll(new Double[]{
-	                (double) (width / 2), (double) 0, 
-	                (double) 0, (double) (width), 
-	                (double) (width), (double) (width), 
+	                (double) width / 2, (double) 0, 
+	                (double) 0, (double) width, 
+	                (double) width, (double) width, 
 	             });
 			triangle.setFill(stringToColor(mapObject, "obstacle"));
 			triangle.setMouseTransparent(true);
@@ -184,6 +184,39 @@ public class Cell extends Region {
 			coin.setMouseTransparent(true);
 
 			this.getChildren().add(coin);
+			break;
+			
+		case '4':
+			// Ajoute un carré vide avant de mettre le triangle
+			Rectangle vide4 = new Rectangle();
+			vide4.setWidth(width);
+			vide4.setHeight(width);
+			vide4.setFill(backgroundColor);
+			vide4.setMouseTransparent(true);
+
+			this.getChildren().add(vide4);
+			
+			// Ajoute le triangle
+			Polygon reverseTriangle = new Polygon();
+			reverseTriangle.getPoints().addAll(new Double[]{
+	                (double) (0), (double) 0,
+	                (double) width, (double) (0), 
+	                (double) (width/2), (double) (width), 
+	             });
+			reverseTriangle.setFill(stringToColor(mapObject, "obstacle"));
+			reverseTriangle.setMouseTransparent(true);
+
+			this.getChildren().add(reverseTriangle);
+			break;
+			
+		case '5': 
+			Rectangle groundSlab = new Rectangle();
+			groundSlab.setWidth(width);
+			groundSlab.setHeight(width/3);
+			groundSlab.setFill(stringToColor(mapObject, "ground"));
+			groundSlab.setMouseTransparent(true);
+
+			this.getChildren().add(groundSlab);
 			break;
 			
 		case '8':
@@ -304,9 +337,9 @@ public class Cell extends Region {
 		case "obstacleBtn":
 			Polygon triangle = new Polygon();
 			triangle.getPoints().addAll(new Double[]{
-	                (double) (width / 2), (double) 0, 
-	                (double) 0, (double) (width), 
-	                (double) (width), (double) (width), 
+	                (double) width / 2, (double) 0, 
+	                (double) 0, (double) width, 
+	                (double) width, (double) width, 
 	             });
 			triangle.setFill(ToolBar.getObstacleColor());
 			triangle.setMouseTransparent(true);
@@ -326,6 +359,33 @@ public class Cell extends Region {
 			cellId = '3';
 			//Coin coin = new Coin(x*elementSize + (elementSize / 4), y*elementSize + (elementSize / 4), elementSize / 2, elementSize / 2, Color.YELLOW, rootLayout);
 			this.getChildren().add(coin);
+			break;
+			
+		case "reverseObstacleBtn":
+			Polygon reverseTriangle = new Polygon();
+			reverseTriangle.getPoints().addAll(new Double[]{
+	                (double) (0), (double) 0,
+	                (double) width, (double) (0), 
+	                (double) (width/2), (double) (width), 
+	             });
+			reverseTriangle.setFill(ToolBar.getObstacleColor());
+			reverseTriangle.setMouseTransparent(true);
+			cellId = '4';
+			
+			this.getChildren().add(reverseTriangle);
+			break;
+			
+		case "groundSlabBtn": 
+            
+            //Crï¿½er le rectangle
+			Rectangle groundSlab = new Rectangle();
+			groundSlab.setWidth(width);
+			groundSlab.setHeight(width/3);
+			groundSlab.setFill(ToolBar.getGroundColor());
+			groundSlab.setMouseTransparent(true);
+			cellId = '5';
+			
+			this.getChildren().add(groundSlab);
 			break;
 			
 		case "departBtn":
