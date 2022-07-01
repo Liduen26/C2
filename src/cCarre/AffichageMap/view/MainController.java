@@ -653,6 +653,8 @@ public class MainController {
 
 	public void setStop() {
 		time1.stop();
+		stopMusic();
+		
 	}
 	
 	
