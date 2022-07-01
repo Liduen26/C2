@@ -18,9 +18,11 @@ import com.google.common.eventbus.Subscribe;
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
 import cCarre.AffichageMap.model.Ground;
+import cCarre.AffichageMap.model.GroundSlab;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Player;
+import cCarre.AffichageMap.model.ReverseObstacle;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PlayerState;
@@ -41,8 +43,8 @@ import javafx.stage.Screen;
 import javafx.util.Duration;
 
 public class MainController {
-	private ArrayList<Ground> platforms = new ArrayList<Ground>();
-	private ArrayList<Obstacle> triangles = new ArrayList<Obstacle>();
+	private ArrayList<Shape> platforms = new ArrayList<Shape>();
+	private ArrayList<Shape> triangles = new ArrayList<Shape>();
 	private ArrayList<FinishBlock> finishBlocks = new ArrayList<FinishBlock>();
 	private ArrayList<Coin> coins = new ArrayList<Coin>();
 
@@ -88,7 +90,7 @@ public class MainController {
 	// Pour changer la vitesse
 	int constV = 430; 
 	int constGrav = 900;
-	double jumpForce = 1300;
+	double jumpForce = 600;
 	
 	// taille de l'écran
 	private Rectangle2D screenBounds = Screen.getPrimary().getBounds();
@@ -174,6 +176,18 @@ public class MainController {
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = coin;
 					break;
+				case '4' :
+					ReverseObstacle reverseTriangle = new ReverseObstacle(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("obstacle")));
+
+					// Ajout au tableau de rendu de la map
+					mapRender[y][x] = reverseTriangle;
+					break;
+				case '5' :
+					GroundSlab platformSlab = new GroundSlab(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("ground")));
+					
+					// Ajout au tableau de rendu de la map
+					mapRender[y][x] = platformSlab;
+					break;
 				case '8' :
 					if(!newSpawn) {
 						spawnX = x * elementSize;
@@ -255,10 +269,7 @@ public class MainController {
 			
 			if(running) {
 				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
-				double jumpForce = 600;
 
-				
-				
 				// distanceX vect entre centre du joueur et le point (vitesse)
 				vitesse = player.p1.distance(player.centreX, player.centreY);
 				
@@ -348,8 +359,8 @@ public class MainController {
 		rootLayout.getChildren().removeAll(finishBlocks);
 		rootLayout.getChildren().removeAll(coins);
 		
-		platforms = new ArrayList<Ground>();
-		triangles = new ArrayList<Obstacle>();
+		platforms = new ArrayList<Shape>();
+		triangles = new ArrayList<Shape>();
 		finishBlocks = new ArrayList<FinishBlock>();
 		coins = new ArrayList<Coin>();
 		
@@ -361,8 +372,14 @@ public class MainController {
 					if(mapRender[y][x] instanceof Ground) {
 						platforms.add((Ground) mapRender[y][x]);
 						
+					} else if(mapRender[y][x] instanceof GroundSlab) {
+						platforms.add((GroundSlab) mapRender[y][x]);
+
 					} else if(mapRender[y][x] instanceof Obstacle) {
 						triangles.add((Obstacle) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof ReverseObstacle) {
+						triangles.add((ReverseObstacle) mapRender[y][x]);
 						
 					} else if(mapRender[y][x] instanceof Coin) {
 						coins.add((Coin) mapRender[y][x]);
@@ -401,8 +418,14 @@ public class MainController {
 						if(mapRender[y][x] instanceof Ground) {
 							platforms.remove((Ground) mapRender[y][x]);
 							
+						} else if(mapRender[y][x] instanceof GroundSlab) {
+							platforms.remove((GroundSlab) mapRender[y][x]);
+							
 						} else if(mapRender[y][x] instanceof Obstacle) {
 							triangles.remove((Obstacle) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof ReverseObstacle) {
+							triangles.add((ReverseObstacle) mapRender[y][x]);
 							
 						} else if(mapRender[y][x] instanceof Coin) {
 							coins.remove((Coin) mapRender[y][x]);
@@ -426,6 +449,9 @@ public class MainController {
 							
 						} else if(mapRender[y][x] instanceof Obstacle) {
 							triangles.add((Obstacle) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof ReverseObstacle) {
+							triangles.add((ReverseObstacle) mapRender[y][x]);
 							
 						} else if(mapRender[y][x] instanceof Coin) {
 							coins.add((Coin) mapRender[y][x]);
