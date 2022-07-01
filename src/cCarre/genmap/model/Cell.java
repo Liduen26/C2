@@ -354,10 +354,10 @@ public class Cell extends Region {
 			break;
 			
 		case "arriveeBtn":
-			if(!ToolBar.isEndPlaced()) {
+			if(!ToolBar.isEndPlaced() || ToolBar.getEndPlace() == this.x) {
 				// S'il n'y a pas encore d'arriv�e plac�e
 				
-				if(ToolBar.isStartPlaced() == false || ToolBar.getStartPlace() < this.x) {
+				if(ToolBar.getStartPlace() < this.x) {
 					// Si le start est bien a gauche de la fin, ou pas plac�e
 					Rectangle end = new Rectangle();
 					end.setWidth(width);
