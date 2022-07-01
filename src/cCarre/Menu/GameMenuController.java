@@ -1,6 +1,14 @@
 package cCarre.Menu;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import cCarre.MainMenu;
 import cCarre.AffichageMap.data.LevelData;
@@ -32,13 +40,13 @@ public class GameMenuController {
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.show();
 	}
 	
-	public void LaunchGame(ActionEvent event) throws IOException {
+	public void LaunchGame(ActionEvent event) throws IOException, ParseException {
 		// Définis la map à utiliser, attend un JSONArray
-		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL2));
+		Level.setJsonLevel(readJSON("test2"));
 		
 		// Load root layout from fxml file.
 		FXMLLoader loader = new FXMLLoader();
@@ -53,7 +61,7 @@ public class GameMenuController {
         
         MainController controller = loader.getController();
         
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.show();
 		
 		scene.setOnKeyPressed(e -> {
@@ -91,5 +99,23 @@ public class GameMenuController {
 		
 		mediaPlayer.setVolume(5.0 / 10);
 		mediaPlayer.play();
+	}
+	
+	/**
+	 * Renvoie une map se trouvant dans le dossier resources/maps en Objet JSON
+	 * @param name Le nom du fichier de la map, sans le .json
+	 * @return Le JSONObject de la map
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	private JSONObject readJSON(String name) throws IOException, ParseException {
+		JSONParser parser = new JSONParser();
+		
+		File fileJson = new File("resources/maps/" + name + ".json");
+		Reader reader = new FileReader(fileJson);
+		
+		JSONObject jsonObject = (JSONObject) parser.parse(reader); // parse
+    	
+    	return jsonObject; 
 	}
 }

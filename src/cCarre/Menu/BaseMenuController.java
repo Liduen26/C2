@@ -36,7 +36,7 @@ MediaPlayer mediaPlayer;
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		window.setScene(tableViewScene);
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.setHeight(1080);
 		window.setWidth(1920);
 		window.show();
@@ -52,7 +52,7 @@ MediaPlayer mediaPlayer;
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.show();
 	}
 	
@@ -64,7 +64,7 @@ MediaPlayer mediaPlayer;
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.show();
 	}
 	

@@ -59,10 +59,6 @@ public class SaveController implements Initializable {
     public void saveSystem(File file, String content) throws IOException{
         try {
         	PrintWriter printWriter = new PrintWriter(file);
-        	
-        	JSONArray tab2D = new JSONArray();
-        	
-        	JSONObject obj = levelObject;
 
         	levelObject.writeJSONString(printWriter);
 
@@ -76,6 +72,7 @@ public class SaveController implements Initializable {
 	public void setData(JSONObject customMapObject) throws IOException {
 		// R�cup�re la map
 		levelObject = customMapObject;
+		System.out.println(((JSONArray) ((JSONArray) customMapObject.get("map")).get(1)).get(1).getClass());
 		// Lance la save
 		save(null);
 	}

@@ -138,7 +138,18 @@ public class MainController {
 		
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
-				char text = (char) ((JSONArray) map.get(y)).get(x);
+				System.out.println(((JSONArray) map.get(y)).get(x).getClass());
+				char text = '0';
+				
+				if(((JSONArray) map.get(y)).get(x) instanceof java.lang.Long) {
+					int text1 = ((Long) ((JSONArray) map.get(y)).get(x)).intValue();
+					text = (char) (text1 + '0');
+					System.out.println(text);
+					
+				} else {
+					text = (char) ((JSONArray) map.get(y)).get(x);
+				}
+				
 
 				switch(text) {
 				case '0' :
@@ -460,17 +471,18 @@ public class MainController {
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
         			if (intersect.getBoundsInLocal().getHeight() - toolBarHeight <= intersect.getBoundsInLocal().getWidth()) {
         				if(intersect.getBoundsInLocal().getMinY() - toolBarHeight > platform.getLayoutY()) {
-        					System.out.println(toolBarHeight);
-        					System.out.println(intersect.getBoundsInLocal().getMinY()- toolBarHeight);
-        					System.out.println(platform.getLayoutY());
 							// plafond -> MORT
 	        				verticalVelocity = 0;
 	        				collisionDetected = true;
 	        				System.out.println("Ca c le plafond -------------------------------------------------------------------------------------");
 	        				playSound("Minecraft-Death-Sound-cut.wav", 5);
 						} else {
+							if(intersect.getBoundsInLocal().getMaxY() - toolBarHeight != platform.getLayoutY()) {
+//								System.out.println(intersect.getBoundsInLocal().getMaxY()- toolBarHeight);
+//								System.out.println(platform.getLayoutY() + "\n");
+								
+							}
 							// Sol
-	        				
 	        				player.setTranslateY(platform.getLayoutY() - (player.getHeight() - 0.0001));
 //							System.out.println("Sol");
 							verticalVelocity = 0;
@@ -668,14 +680,18 @@ public class MainController {
 	@Subscribe
 	public void setPlayerState(PlayerState e) {
 		
-		if(e.getState() && time1.getStatus() != Animation.Status.STOPPED) {
-			// Le joueur respawn
-			running = e.getState();
-			dead = !e.getState();
+		if(e.getState()) {
+			// Sauf si la timeline est stop,
+			if(time1.getStatus() != Animation.Status.STOPPED) {
+				// Le joueur respawn
+				running = e.getState();
+				dead = !e.getState();
+				
+				playMusic();
+				this.loadSpawn();
+			}
 			
 			rootLayout.getChildren().remove(ragdoll);
-			playMusic();
-			this.loadSpawn();
 		} else {
 			// Le joueur meurt
 			running = e.getState();

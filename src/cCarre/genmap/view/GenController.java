@@ -670,7 +670,6 @@ public class GenController {
 			
 			// Replace la cam
 			grille.setLayoutX(coTest);
-			
 		} 
 	}
 	
@@ -749,11 +748,11 @@ public class GenController {
         File file = fileChooser.showOpenDialog(new Stage());
     	Reader reader = new FileReader(file);
       	
-        JSONObject jsonObject = (JSONObject) parser.parse(reader);
+        JSONObject jsonObject = (JSONObject) parser.parse(reader); // parse
             	    	
-    	JSONArray element1 = (JSONArray) jsonObject.get("map"); // parse
+    	JSONArray element1 = (JSONArray) jsonObject.get("map"); // element1 recupere la map  
     	
-        JSONArray element2 = (JSONArray) element1.get(0); // element1 recupere la map        
+        JSONArray element2 = (JSONArray) element1.get(0);      
         
         // Agrandi la grille en fonction de la map charg�e
 		Ebus.get().post(new AddLengthGrilleEvent(element2.size()));
@@ -854,6 +853,7 @@ public class GenController {
             mapJsonArray.add(lineJSON);
             for (int x = 0; x < line.length; x++) {
             	lineJSON.add(line[x]);
+            	lineJSON.get(x);
             }
         }
   		

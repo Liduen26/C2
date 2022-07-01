@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 public class OptionsMenuController {
 	@FXML public Button GoToBaseMenu;
 	
-	// L'objet qui joue la musique, à importer
+	// L'objet qui joue la musique, Ã  importer
 	MediaPlayer mediaPlayer;
 	
 	public void GoToBaseMenu(ActionEvent event) throws IOException {
@@ -28,24 +28,24 @@ public class OptionsMenuController {
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.show();
 	}
 	
 
 	
 	/**
-	 * ©️ C² | Fais jouer un son se trouvant dans le dossier resources/audio/ 
+	 * Fais jouer un son se trouvant dans le dossier resources/audio/ 
 	 * @param name Le nom du fichier (avec l'extension)
-	 * @param volume Le volume de 0 à 10
+	 * @param volume Le volume de 0 Ã  10
 	 */
 	private void playSound(String name) {
-		// Fichier à mettre dans le dossier indiqué en dessous, à partir de la raçine du projet
+		// Fichier Ã  mettre dans le dossier indiquÃ© en dessous, Ã  partir de la raÃ§ine du projet
 		File file = new File("resources/audio/" + name);
 		Media media = new Media(file.toURI().toString());
 		mediaPlayer = new MediaPlayer(media);
 		
-		// Volume à régler en double !! 
+		// Volume Ã  rÃ©gler en double !! 
 		mediaPlayer.setVolume(7.0 / 10);
 		
 		// Joue le son

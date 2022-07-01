@@ -119,7 +119,6 @@ public class Player extends Parent{
 	public void death(double spawnX, double spawnY, AnchorPane rootLayout, Label Coin){
 		// Pause du jeu et lancement de l'anim de mort
 		Ebus.get().post(new PlayerState(false));
-		System.out.println("mort");
 		
 		// Disparition du player
 		this.setOpacity(0);
