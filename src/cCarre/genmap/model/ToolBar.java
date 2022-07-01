@@ -9,6 +9,7 @@ public final class ToolBar {
 	private static int mostX;
 	private static int startPlaced = 0;
 	private static int endPlaced = 0;
+	private static Color backgroundColor = null;
 	private static Color groundColor = null;
 	private static Color obstacleColor = null;
 	private static Color coinColor = null;
@@ -77,6 +78,14 @@ public final class ToolBar {
 	}
 	
 	// Couleurs
+	
+	public static Color getBackgroundColor() {
+		return groundColor;
+	}
+
+	public static void setBackgroundColor(Color backgroundColor) {
+		ToolBar.backgroundColor = backgroundColor;
+	}
 	
 	public static Color getGroundColor() {
 		return groundColor;

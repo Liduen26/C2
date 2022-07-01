@@ -109,6 +109,10 @@ public class Cell extends Region {
 		});
 	}
 	
+	public void setBack(Color color) {
+		this.back.setFill(color);
+	}
+	
 	private void onPaint() {
 		if(!occuped || (occuped && ToolBar.getItem().equals("test") && this.getCellId() == '8')) {
 			paint(null);
@@ -116,10 +120,11 @@ public class Cell extends Region {
 	}
 	
 	public void loadMapPaint(JSONObject mapObject) {
-		Color customColor;
-		String color;
-		String hexColor;
 		occuped = true;
+		
+		// Met le background color
+		Color backgroundColor = stringToColor(mapObject, "background");
+		ToolBar.setBackgroundColor(backgroundColor);
 		
 		switch (cellId) {
 		case '0':
@@ -137,11 +142,11 @@ public class Cell extends Region {
 			break;
 			
 		case '2':
-			// Ajoute un carre blanc avant de mettre le triangle
+			// Ajoute un carré vide avant de mettre le triangle
 			Rectangle vide2 = new Rectangle();
 			vide2.setWidth(width);
 			vide2.setHeight(width);
-			vide2.setFill(Color.WHITE);
+			vide2.setFill(backgroundColor);
 			vide2.setMouseTransparent(true);
 
 			this.getChildren().add(vide2);
@@ -160,11 +165,11 @@ public class Cell extends Region {
 			break;
 			
 		case '3': 
-			// Ajoute un carre blanc avant de mettre le coin
+			// Ajoute un carre vide avant de mettre le coin
 			Rectangle vide3 = new Rectangle();
 			vide3.setWidth(width);
 			vide3.setHeight(width);
-			vide3.setFill(Color.WHITE);
+			vide3.setFill(backgroundColor);
 			vide3.setMouseTransparent(true);
 
 			this.getChildren().add(vide3);

@@ -78,6 +78,9 @@ public class GenController {
     private Button obstacleBtn;
     
     @FXML
+    private ColorPicker backgroundColor;
+    
+    @FXML
     private ColorPicker coinColor;
     
     @FXML
@@ -131,6 +134,7 @@ public class GenController {
         ToolBar.setGroundColor(groundColor.getValue());
         ToolBar.setObstacleColor(obstacleColor.getValue());
         ToolBar.setCoinColor(coinColor.getValue());
+        ToolBar.setBackgroundColor(backgroundColor.getValue());
         //Set les variables de la Toolbar par defaut
         ToolBar.setStartPlaced(-1);
         ToolBar.setEndPlaced(-1);
@@ -447,7 +451,17 @@ public class GenController {
         					}
         				}
         			}
+        		}else if(e.getSource() == backgroundColor){
+        			ToolBar.setBackgroundColor(backgroundColor.getValue());
+        			for(Node cell : grille.getChildren()) {
+        				Cell c = new Cell(cell);
+        				if(cell instanceof Cell) {
+        					c = (Cell) cell;
+        					c.setBack(backgroundColor.getValue());
+        				}
+        			}
         		}
+        		
         	}
         };
   
@@ -455,6 +469,7 @@ public class GenController {
         groundColor.setOnAction(changeColorEvent);
         obstacleColor.setOnAction(changeColorEvent);
         coinColor.setOnAction(changeColorEvent);
+        backgroundColor.setOnAction(changeColorEvent);
 	}
 	
 	/**
@@ -509,6 +524,16 @@ public class GenController {
 			for(int i = 0; i <= nRow ;i++) {
 				Cell cells = new Cell(widthCell, nCol + 1, i);
 				grille.addColumn(nCol + 1, cells);			
+			}
+		}
+		
+		// Change la couleur des nouvelles cellules
+		ToolBar.setBackgroundColor(backgroundColor.getValue());
+		for(Node cell : grille.getChildren()) {
+			Cell c = new Cell(cell);
+			if(cell instanceof Cell) {
+				c = (Cell) cell;
+				c.setBack(backgroundColor.getValue());
 			}
 		}
 	}
@@ -726,7 +751,7 @@ public class GenController {
     	Reader reader = new FileReader(file);
       	
         JSONObject jsonObject = (JSONObject) parser.parse(reader);
-    	    	
+            	    	
     	JSONArray element1 = (JSONArray) jsonObject.get("map"); // parse
     	
         JSONArray element2 = (JSONArray) element1.get(0); // element1 recupere la map        
@@ -748,7 +773,7 @@ public class GenController {
                 tabMap[i][j] = cO;
                 //tabMap[i][j] = (char) ((Long) element2.get(j)).intValue();
             }
-            System.out.println(""); // saute une ligne
+            System.out.println(); // saute une ligne
         }
         
 		// Remplit la grille avec la map charg�e
@@ -757,6 +782,7 @@ public class GenController {
 			Cell c = new Cell(cell);
 			if(cell instanceof Cell) {
 				c = (Cell) cell;
+				c.setBack(stringToColor(jsonObject, "background"));
 			}
 			if(c.getY() == element1.size()-1 && c.getX() == element2.size()-1){
 				break;
@@ -766,16 +792,20 @@ public class GenController {
 			lastX = c.getX();
 		}
 		
-		// Supprime les cases vides en trop
-		Ebus.get().post(new RemovePartGrilleEvent(lastX));
+		// Supprime les cases vides en trop (Casse l'editeur de map !!)
+		//Ebus.get().post(new RemovePartGrilleEvent(lastX));
 		
 		// Set les colors pickers sur la couleur de la map chargee pour pas que le joueur ait � re-pick sa couleur
     	groundColor.setValue(stringToColor(jsonObject, "ground"));
     	obstacleColor.setValue(stringToColor(jsonObject, "obstacle"));
     	coinColor.setValue(stringToColor(jsonObject, "coin"));
+    	backgroundColor.setValue(stringToColor(jsonObject, "background"));
+    	
 		ToolBar.setGroundColor(groundColor.getValue());
 		ToolBar.setObstacleColor(obstacleColor.getValue());
 		ToolBar.setCoinColor(coinColor.getValue());
+		ToolBar.setBackgroundColor(backgroundColor.getValue());
+
     }
 
 	// Passe une couleur de String � Color
@@ -832,7 +862,9 @@ public class GenController {
     	colorArray.put("ground",""+groundColor.getValue());
     	colorArray.put("obstacle",""+obstacleColor.getValue());
     	colorArray.put("coin",""+coinColor.getValue());
+    	colorArray.put("background",""+backgroundColor.getValue());
 
+		customMapObject.put("music", "musique1");
 		customMapObject.put("color", colorArray);
 		customMapObject.put("map", mapJsonArray);
 
@@ -844,6 +876,7 @@ public class GenController {
     	colors.put("ground",""+groundColor.getValue());
     	colors.put("obstacle",""+obstacleColor.getValue());
     	colors.put("coin",""+coinColor.getValue());
+    	colors.put("background",""+backgroundColor.getValue());
 		return colors;
 	}
 	
