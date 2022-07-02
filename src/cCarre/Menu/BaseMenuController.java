@@ -20,15 +20,14 @@ import javafx.stage.Stage;
 
 
 public class BaseMenuController {
-
-@FXML public Button GoToGameMenu;
-@FXML private ImageView imageView;
-
-MediaPlayer mediaPlayer;
-
-//Image img = new Image(getClass().getResource("@../../images/logoc².png").toExternalForm());
-
-
+	
+	@FXML public Button GoToGameMenu;
+	@FXML private ImageView imageView;
+	
+	MediaPlayer mediaPlayer;
+	
+	//Image img = new Image(getClass().getResource("@../../images/logoc².png").toExternalForm());
+	
 	public void GoToGameMenu(ActionEvent event) throws IOException {
 		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("GameMenu.fxml"));

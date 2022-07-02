@@ -102,7 +102,7 @@ public class GameMenuController {
 	}
 	
 	/**
-	 * Renvoie une map se trouvant dans le dossier resources/maps en Objet JSON
+	 * Renvoie une map se trouvant dans le dossier resources/maps/ en Objet JSON
 	 * @param name Le nom du fichier de la map, sans le .json
 	 * @return Le JSONObject de la map
 	 * @throws IOException

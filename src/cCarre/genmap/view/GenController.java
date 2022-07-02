@@ -135,6 +135,7 @@ public class GenController {
 	
 	@FXML
 	private void initialize() {
+		ToolBar.init();
 		
 		// Set les couleurs par défaut des différents elements
         ToolBar.setGroundColor(groundColor.getValue());
@@ -142,8 +143,6 @@ public class GenController {
         ToolBar.setCoinColor(coinColor.getValue());
         ToolBar.setBackgroundColor(backgroundColor.getValue());
         //Set les variables de la Toolbar par defaut
-        ToolBar.setStartPlaced(-1);
-        ToolBar.setEndPlaced(-1);
         ToolBar.setItem("groundBtn");
 
 		screenBounds = Screen.getPrimary().getBounds();
@@ -161,6 +160,7 @@ public class GenController {
 		grille.setVgap(1);
 		grille.setGridLinesVisible(true);
 		
+		
 		// Remplissage de la grille
 		for(int y = 0; y < rHeight - 1; y++) {
 			for(int x = 0; x < rWidth - 1; x++) {
@@ -169,6 +169,7 @@ public class GenController {
 			}
 		}
 		root.getChildren().add(grille);
+		
 		
 		// G�re le depl de la grille ac le clic molette
 		handleMouseEvents();
@@ -321,7 +322,7 @@ public class GenController {
 //				System.out.println(-mostRight +" / " + grille.getLayoutX());
 //				System.out.println(grille.getLayoutX());
 				
-				// D�place uniqument si c'est pas < � 0
+				// D�place uniqument si c'est pas < � 0 et Sup au MostX
 				if((grille.getLayoutX() + delta) <= 0 && (grille.getLayoutX() + delta) > -((widthCell + 1) * ToolBar.getMostX()) + (widthCell / 2)) {
 					grille.setLayoutX(grille.getLayoutX() + delta);
 				}
@@ -530,7 +531,6 @@ public class GenController {
 			
 			nCol = c.getX();
 			nRow = c.getY();
-//			System.out.println(nCol + " / " + nRow);
 			
 			// Ajout de colonnes --------------------------------------------------
 			for(int i = 0; i <= nRow ;i++) {
@@ -643,6 +643,8 @@ public class GenController {
 	public void btnReturn(ActionEvent event) throws IOException {
 		if(!inTesting) {
 			if(showConfirmation("Confirm", "Want to leave ?", "Are you sure you want to leave? It won't save your job.")) {
+				Ebus.get().unregister(this);
+				
 				// Pas en test, on revient au menu
 				Parent tableViewParent = FXMLLoader.load(getClass().getResource("../../Menu/BaseMenu.fxml"));
 				Scene tableViewScene = new Scene(tableViewParent);
@@ -651,7 +653,8 @@ public class GenController {
 				
 				window.setScene(tableViewScene);
 				window.setMaximized(true);
-				window.show();				
+				window.show();	
+				System.gc();
 			}
 			
 		} else if (inTesting && mainController == null) {
