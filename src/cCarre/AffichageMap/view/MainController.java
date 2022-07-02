@@ -140,13 +140,12 @@ public class MainController {
 		
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
-				System.out.println(((JSONArray) map.get(y)).get(x).getClass());
 				char text = '0';
 				
-				if(((JSONArray) map.get(y)).get(x) instanceof java.lang.Long) {
+				// Vérifie la provenance de la map
+				if(((JSONArray) map.get(y)).get(x) instanceof Long) {
 					int text1 = ((Long) ((JSONArray) map.get(y)).get(x)).intValue();
 					text = (char) (text1 + '0');
-					System.out.println(text);
 					
 				} else {
 					text = (char) ((JSONArray) map.get(y)).get(x);
@@ -266,6 +265,7 @@ public class MainController {
 		time1 = new Timeline(new KeyFrame(Duration.millis(1000 / (fps - 2)), e -> {
 			dt = affFPS();
 			temps = dt / 1000000000; //dt par sec
+//			temps /= 8; // ralentit le jeu pour les tests
 			
 			if(running) {
 				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
@@ -495,7 +495,7 @@ public class MainController {
         	if (platform != player.playerRectangle) {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
-        			if (intersect.getBoundsInLocal().getHeight() - toolBarHeight <= intersect.getBoundsInLocal().getWidth()) {
+        			if (intersect.getBoundsInLocal().getHeight() <= intersect.getBoundsInLocal().getWidth()) {
         				if(intersect.getBoundsInLocal().getMinY() - toolBarHeight > platform.getLayoutY()) {
 							// plafond -> MORT
 	        				verticalVelocity = 0;
@@ -503,14 +503,8 @@ public class MainController {
 	        				System.out.println("Ca c le plafond -------------------------------------------------------------------------------------");
 	        				playSound("Minecraft-Death-Sound-cut.wav", 5);
 						} else {
-							if(intersect.getBoundsInLocal().getMaxY() - toolBarHeight != platform.getLayoutY()) {
-//								System.out.println(intersect.getBoundsInLocal().getMaxY()- toolBarHeight);
-//								System.out.println(platform.getLayoutY() + "\n");
-								
-							}
 							// Sol
 	        				player.setTranslateY(platform.getLayoutY() - (player.getHeight() - 0.0001));
-//							System.out.println("Sol");
 							verticalVelocity = 0;
 							onGround = true;
 						}
@@ -524,7 +518,7 @@ public class MainController {
         	if (platform != player.playerRectangle) {
         		Shape intersect = Shape.intersect(player.playerRectangle, platform);
         		if (intersect.getBoundsInLocal().getHeight() != -1) {
-        			if (intersect.getBoundsInLocal().getHeight() - toolBarHeight > intersect.getBoundsInLocal().getWidth()) {
+        			if (intersect.getBoundsInLocal().getHeight() > intersect.getBoundsInLocal().getWidth()) {
 						// Cotï¿½ -> MORT
 						System.out.println("Ca c un bord -------------------------------------------------------------------------------------");
 						verticalVelocity = 0;
