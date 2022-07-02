@@ -27,8 +27,10 @@ import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PlayerState;
 import cCarre.genmap.model.ToolBar;
+import cCarre.genmap.events.PopupEvent;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
@@ -36,6 +38,12 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -71,6 +79,9 @@ public class MainController {
 	boolean jump = false;
 	boolean onGround = true;
 	
+	boolean running = true;
+	boolean recc = true; 
+
 	String level = "";
 	boolean running = true;
 	boolean newSpawn = false;
@@ -92,7 +103,7 @@ public class MainController {
 	int constGrav = 900;
 	double jumpForce = 600;
 	
-	// taille de l'écran
+	// taille de l'ï¿½cran
 	private Rectangle2D screenBounds = Screen.getPrimary().getBounds();
 
 	boolean edit = false;
@@ -105,13 +116,16 @@ public class MainController {
 	
 	@FXML
 	private Label Coin;
+	
+	@FXML
+	private Label popup;
 
 	@FXML
 	private AnchorPane rootLayout;
 	
 	@FXML
 	private void initialize() {
-		// Met la couleur sur le début du niveau
+		// Met la couleur sur le dï¿½but du niveau
 	    rootLayout.setStyle("-fx-background-color: "+ToolBar.getBackgroundColor());
 		// Adapte la vitesse et la gravitï¿½ et les ï¿½lï¿½ments ï¿½ la taille de l'ï¿½cran
 		float varVit = (float)1920/constV;		
@@ -142,7 +156,7 @@ public class MainController {
 			for(int x = 0; x < levelLength; x++) {
 				char text = '0';
 				
-				// Vérifie la provenance de la map
+				// Vï¿½rifie la provenance de la map
 				if(((JSONArray) map.get(y)).get(x) instanceof Long) {
 					int text1 = ((Long) ((JSONArray) map.get(y)).get(x)).intValue();
 					text = (char) (text1 + '0');
@@ -221,8 +235,9 @@ public class MainController {
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
                 Coin.setLayoutX(+(offset - 300));
+
                 
-        		// Adapte la taille de l'achor pane au niveau joué, puis change la background color
+        		// Adapte la taille de l'achor pane au niveau jouï¿½, puis change la background color
                 rootLayout.resize((levelLength+25)*elementSize, (levelHeight+6)*elementSize);
         	    rootLayout.setStyle("-fx-background-color: "+ToolBar.getBackgroundColor());
 
@@ -309,8 +324,10 @@ public class MainController {
 	            	}
 	
 	            	if (collisionDetected) {
+            			collisionDetected = false;
 	            		running = false;
 	            		stopMusic();
+	            		fin(recc);
 	            	}
 	            }
 	            
@@ -689,6 +706,77 @@ public class MainController {
             e.printStackTrace();
         }
 	}
+	
+	private void fin(boolean recc) {
+		if (recc == true) {
+			
+			popup();
+			
+			recc = false;
+			System.out.println("fin");
+		}
+	}
+	
+	@Subscribe
+	public void popup() {
+		// Tailles max
+		int width = 400;
+		int height = 200;
+		
+		// Crï¿½ation de la vBox, et set de set propriï¿½tï¿½s et css
+		VBox popup = new VBox();
+		popup.setPrefWidth(width);
+		popup.setMaxHeight(height);
+		popup.setLayoutX((screenBounds.getWidth() / 2) - (popup.getPrefWidth()/ 2) + 400);
+		popup.setLayoutY((screenBounds.getHeight() / 2)  - 250);
+		popup.setAlignment(Pos.CENTER);
+		popup.setStyle("-fx-background-color: #121212; -fx-background-radius: 10 10 10 10; -fx-padding: 10; -fx-border-color: #c50808; -fx-border-width: 5;");
+		
+//		popup.getStyleClass().add(".popup");
+//        popup.getStylesheets().add("src/cCarre/genmap/view/viewpopup.css");
+        
+		
+		Label text = new Label();
+		text.setText("gagnÃ©");
+		text.setStyle("-fx-background-color: #121212; -fx-text-fill: yellow; -fx-font-size: 40px");
+		
+		popup.getChildren().add(text);
+		rootLayout.getChildren().add(popup);
+		
+		// Pause de 2s, puis fait disparaitre la popup
+		PauseTransition delay = new PauseTransition(Duration.seconds(2));
+		delay.setOnFinished( event -> rootLayout.getChildren().remove(popup));
+		delay.play();
+	}
+	
+//	 private static int TIMEOUT = 2400;
+//	 
+//     public static void show(final String message, final AnchorPane rootLayout) {
+//         Stage stage = (Stage) rootLayout.getScene().getWindow();
+//         final Popup popup = createPopup(message);
+//         popup.setOnShown(e -> {
+//             popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2);
+//             popup.setY(stage.getY() + stage.getHeight() / 1.2 - popup.getHeight() / 2);
+//         });
+//         popup.show(stage);
+//
+//         new Timeline(new KeyFrame(
+//                 Duration.millis(TIMEOUT),
+//                 ae -> popup.hide())).play();
+//     }
+//
+//     private static Popup createPopup(final String message) {
+//         final Popup popup = new Popup();
+//         popup.setAutoFix(true);
+//         Label label = new Label(message);
+//       //  label.getStylesheets().add("./popup.css");
+//         label.getStyleClass().add("popup");
+//         popup.getContent().add(label);
+//         System.out.println(label.getStylesheets());
+//         return popup;
+//     }
+
+
 
 	public void setStop() {
 		time1.stop();
@@ -737,7 +825,7 @@ public class MainController {
 	/**
 	 * Fais jouer un son se trouvant dans le dossier resources/audio/
 	 * @param name Le nom du fichier (avec l'extension)
-	 * @param volume Le volume de 0 à 10
+	 * @param volume Le volume de 0 ï¿½ 10
 	 */
 	private void playSound(String name, double volume) {
 		File file = new File("resources/audio/" + name);
