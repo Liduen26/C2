@@ -20,6 +20,7 @@
                <children>
                   <Button fx:id="groundBtn" mnemonicParsing="false" text="Sol" />
                   <Button fx:id="groundSlabBtn" mnemonicParsing="false" text="Dalle" />
+                  <Button fx:id="pillarBtn" mnemonicParsing="false" text="Pillier" />
                   <Button fx:id="obstacleBtn" mnemonicParsing="false" text="Obstacle" />
                   <Button fx:id="reverseObstacleBtn" mnemonicParsing="false" text="Reverse Obstacle" />
                   <Button fx:id="coinBtn" mnemonicParsing="false" text="Pièce" />

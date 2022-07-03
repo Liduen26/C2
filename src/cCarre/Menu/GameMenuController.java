@@ -46,7 +46,7 @@ public class GameMenuController {
 	
 	public void LaunchGame(ActionEvent event) throws IOException, ParseException {
 		// Définis la map à utiliser, attend un JSONArray
-		Level.setJsonLevel(readJSON("test2"));
+		Level.setJsonLevel(readJSON("TestPilliers"));
 		
 		// Load root layout from fxml file.
 		FXMLLoader loader = new FXMLLoader();

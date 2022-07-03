@@ -67,6 +67,9 @@ public class GenController {
 	
 	@FXML
     private HBox toolBar;
+	
+    @FXML
+    private Button pillarBtn;
 
     @FXML
     private Button groundBtn;
@@ -434,6 +437,9 @@ public class GenController {
         					}else if(c.getCellId() == '5') {
         						c.erase(false);
         						c.paint("groundSlabBtn");
+        					}else if(c.getCellId() == '6') {
+        						c.erase(false);
+        						c.paint("pillarBtn");
         					}
         				}
         			}

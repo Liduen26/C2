@@ -219,6 +219,17 @@ public class Cell extends Region {
 			this.getChildren().add(groundSlab);
 			break;
 			
+		case '6': 
+			Rectangle pillar = new Rectangle();
+			pillar.setX(width/3);
+			pillar.setWidth(width/3);
+			pillar.setHeight(width);
+			pillar.setFill(stringToColor(mapObject, "ground"));
+			pillar.setMouseTransparent(true);
+
+			this.getChildren().add(pillar);
+			break;
+			
 		case '8':
 			if(!ToolBar.isStartPlaced()) {
 				// S'il n'y a pas encore de d�part plac�
@@ -386,6 +397,19 @@ public class Cell extends Region {
 			cellId = '5';
 			
 			this.getChildren().add(groundSlab);
+			break;
+		case "pillarBtn": 
+            
+            //Cr�er le rectangle
+			Rectangle pillar = new Rectangle();
+			pillar.setX(width/3);
+			pillar.setWidth(width/3);
+			pillar.setHeight(width);
+			pillar.setFill(ToolBar.getGroundColor());
+			pillar.setMouseTransparent(true);
+			cellId = '6';
+			
+			this.getChildren().add(pillar);
 			break;
 			
 		case "departBtn":

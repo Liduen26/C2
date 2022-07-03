@@ -21,6 +21,7 @@ import cCarre.AffichageMap.model.Ground;
 import cCarre.AffichageMap.model.GroundSlab;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
+import cCarre.AffichageMap.model.Pillar;
 import cCarre.AffichageMap.model.Player;
 import cCarre.AffichageMap.model.ReverseObstacle;
 import cCarre.genmap.events.Ebus;
@@ -186,6 +187,12 @@ public class MainController {
 					
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = platformSlab;
+					break;
+				case '6' :
+					Pillar pillar = new Pillar(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("ground")));
+					
+					// Ajout au tableau de rendu de la map
+					mapRender[y][x] = pillar;
 					break;
 				case '8' :
 					if(!newSpawn) {
@@ -375,6 +382,9 @@ public class MainController {
 					} else if(mapRender[y][x] instanceof GroundSlab) {
 						platforms.add((GroundSlab) mapRender[y][x]);
 
+					} else if(mapRender[y][x] instanceof Pillar) {
+						platforms.add((Pillar) mapRender[y][x]);
+
 					} else if(mapRender[y][x] instanceof Obstacle) {
 						triangles.add((Obstacle) mapRender[y][x]);
 						
@@ -421,11 +431,14 @@ public class MainController {
 						} else if(mapRender[y][x] instanceof GroundSlab) {
 							platforms.remove((GroundSlab) mapRender[y][x]);
 							
+						} else if(mapRender[y][x] instanceof Pillar) {
+							platforms.remove((Pillar) mapRender[y][x]);
+							
 						} else if(mapRender[y][x] instanceof Obstacle) {
 							triangles.remove((Obstacle) mapRender[y][x]);
 							
 						} else if(mapRender[y][x] instanceof ReverseObstacle) {
-							triangles.add((ReverseObstacle) mapRender[y][x]);
+							triangles.remove((ReverseObstacle) mapRender[y][x]);
 							
 						} else if(mapRender[y][x] instanceof Coin) {
 							coins.remove((Coin) mapRender[y][x]);
@@ -446,6 +459,12 @@ public class MainController {
 						// Suppr des listes de collisions
 						if(mapRender[y][x] instanceof Ground) {
 							platforms.add((Ground) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof GroundSlab) {
+							platforms.add((GroundSlab) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof Pillar) {
+							platforms.add((Pillar) mapRender[y][x]);
 							
 						} else if(mapRender[y][x] instanceof Obstacle) {
 							triangles.add((Obstacle) mapRender[y][x]);
