@@ -2,9 +2,13 @@ package cCarre.AffichageMap.model;
 
 import java.awt.geom.Point2D;
 
+import com.google.common.eventbus.Subscribe;
+
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
+import cCarre.genmap.events.PauseEvent;
 import cCarre.genmap.events.PlayerState;
+import javafx.animation.Animation.Status;
 import javafx.animation.PauseTransition;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -28,6 +32,7 @@ public class Player extends Parent{
 	
 	int constGrav;
 	
+	PauseTransition delay = new PauseTransition(Duration.seconds(1));;
 	
 	public void SetColor(Color color) {
 		playerRectangle.setFill(color);
@@ -82,6 +87,8 @@ public class Player extends Parent{
 		this.getChildren().add(vVert);
         
         rootLayout.getChildren().add(this);
+        
+        Ebus.get().register(this);
 	}
 	
 	public void depl(double distanceX, double distanceY, double jumpForce, double verticalVelocity) {
@@ -124,7 +131,7 @@ public class Player extends Parent{
 		this.setOpacity(0);
 		
 		// Pause de 1s, puis fait disparaitre la popup
-		PauseTransition delay = new PauseTransition(Duration.seconds(1));
+		delay = new PauseTransition(Duration.seconds(1));
 		delay.setOnFinished( event -> {
 			// Set le player au départ
 			respawn(spawnX, spawnY);
@@ -143,6 +150,15 @@ public class Player extends Parent{
 		});
 		delay.play();
 		
+	}
+	
+	@Subscribe
+	public void pause(PauseEvent e) {
+		if(delay.getStatus() == Status.PAUSED) {
+			delay.play();
+		} else {
+			delay.pause();
+		}
 	}
 
 	public int getHeight() {
