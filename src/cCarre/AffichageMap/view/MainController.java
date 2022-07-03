@@ -27,6 +27,7 @@ import cCarre.AffichageMap.model.Player;
 import cCarre.AffichageMap.model.ReverseObstacle;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
+import cCarre.genmap.events.PauseEvent;
 import cCarre.genmap.events.PlayerState;
 import cCarre.genmap.events.RestartGameEvent;
 import cCarre.genmap.model.ToolBar;
@@ -80,6 +81,8 @@ public class MainController {
 	Pane game = null;
 
 	boolean running = true;
+	boolean pause = false;
+	boolean finish = false;
 	boolean newSpawn = false;
 	
 	boolean dead = false;
@@ -326,10 +329,8 @@ public class MainController {
 			temps = dt / 1000000000; //dt par sec
 //			temps /= 8; // ralentit le jeu pour les tests
 			
-			dt = affFPS();
-			temps = dt / 1000000000; //dt par sec
 			
-			if(running) {
+			if(running && !pause && !finish) {
 				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
 				
 				// distanceX vect entre centre du joueur et le point (vitesse)
@@ -371,7 +372,7 @@ public class MainController {
 	            	}
 	
 	            	if (collisionDetected) {
-	            		running = false;
+	            		finish = true;
 	            		stopMusic();
 	            	}
 	            }
@@ -701,19 +702,23 @@ public class MainController {
 		jump = false;
 	}
 	public void pause() throws IOException {
-		System.out.println("menu pause");
-		if (running) {
-			running = false;
+		if (!pause && !finish) {
+			pause = true;
+			Ebus.get().post(new PauseEvent());
 			
 			FXMLLoader gameLoader = new FXMLLoader();
-			gameLoader.setLocation(MainMenu.class.getResource("../AffichageMap/view/PauseMenu.fxml"));
+			gameLoader.setLocation(MainMenu.class.getResource("./AffichageMap/view/PauseMenu.fxml"));
 			game = (Pane) gameLoader.load();
 			game.setLayoutX(-rootLayout.getLayoutX());
 			// Met le jeu par dessus la grille
 			rootLayout.getChildren().add(game);
-		}else {
-			running = true;
+			
+			musicPlayer.pause();
+		}else if (pause && !finish){
+			pause = false;
 			rootLayout.getChildren().remove(game);
+			Ebus.get().post(new PauseEvent());
+			musicPlayer.play();
 		}
 		
 	}
@@ -721,6 +726,8 @@ public class MainController {
 	public void restart(RestartGameEvent e) {
 		running = true;
 		rootLayout.getChildren().remove(game);
+		Ebus.get().post(new PauseEvent());
+		musicPlayer.play();
 	}
 	public double getSpeedPlayer() {
 		return player.getSpeed();
