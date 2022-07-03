@@ -1,17 +1,14 @@
 package cCarre.Menu;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import cCarre.MainMenu;
-import cCarre.AffichageMap.data.LevelData;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
 import javafx.event.ActionEvent;
@@ -22,6 +19,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
@@ -67,7 +65,7 @@ public class GameMenuController {
 		window.show();
 		
 		scene.setOnKeyReleased(e -> {
-			if(e.getCode()) {
+			if(e.getCode() == KeyCode.SPACE) {
 				controller.stopJump();
 			}
 		});
@@ -88,7 +86,7 @@ public class GameMenuController {
 					
 					break;
 				case SPACE:
-					controller.jump();
+					controller.startJump();
 					break;
 				default:
 					break;
