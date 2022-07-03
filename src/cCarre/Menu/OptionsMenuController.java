@@ -28,7 +28,7 @@ public class OptionsMenuController {
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
-		window.setFullScreen(true);
+		window.setMaximized(true);
 		window.show();
 	}
 	

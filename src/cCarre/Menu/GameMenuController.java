@@ -40,7 +40,7 @@ public class GameMenuController {
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
-		window.setFullScreen(true);
+		window.setMaximized(true);
 		window.show();
 	}
 	
@@ -61,7 +61,7 @@ public class GameMenuController {
         
         MainController controller = loader.getController();
         
-		window.setFullScreen(true);
+        window.setMaximized(true);
 		window.show();
 		
 		scene.setOnKeyReleased(e -> {

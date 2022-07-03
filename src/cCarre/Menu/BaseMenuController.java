@@ -35,11 +35,11 @@ public class BaseMenuController {
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		window.setScene(tableViewScene);
-		window.setFullScreen(true);
+		window.setMaximized(true);
 		window.setHeight(1080);
 		window.setWidth(1920);
 		window.show();
-		System.out.print("test1");
+
 	}
 	
 	
