@@ -142,7 +142,7 @@ public class MainController {
 		//JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
          
-        try (FileReader reader = new FileReader("C:\\Users\\amaur\\eclipse-workspace\\c²/Color.json"))
+        try (FileReader reader = new FileReader("./Color.json"))
         {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
