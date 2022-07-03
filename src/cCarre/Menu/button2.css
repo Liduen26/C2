@@ -15,7 +15,7 @@
             -fx-background: #050801;
         }
  
-        .a {
+        .button {
             -fx-position: relative;
             -fx-display: inline-block;
            /* -fx-padding: 25px 30px;
@@ -28,15 +28,15 @@
             -fx-webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
         }
  
-        .a:nth-child(1) {
+        .button:nth-child(1) {
             -fx-filter: hue-rotate(290deg);
         }
  
-        .a:nth-child(3) {
+        .button:nth-child(3) {
             -fx-filter: hue-rotate(110deg);
         }
  
-        .a:hover {
+        .button:hover {
             -fx-background: #03e9f4;
             -fx-color: #050801;
             -fx-box-shadow: 0 0 5px #03e9f4,
@@ -45,12 +45,12 @@
                 0 0 200px #03e9f4;
         }
  
-        .a span {
+        .button:span {
             -fx-position: absolute;
             -fx-display: block;
         }
  
-        .a span:nth-child(1) {
+        .button:span:nth-child(1) {
             -fx-top: 0;
             -fx-left: -100%;
             -fx-width: 100%;
@@ -70,7 +70,7 @@
             }
         }
  
-        .a span:nth-child(2) {
+        .button span:nth-child(2) {
             -fx-top: 0;
             -fx-right: 0;
             -fx-height: 100%;
@@ -91,7 +91,7 @@
             }
         }
  
-        .a span:nth-child(3) {
+        .button span:nth-child(3) {
             -fx-bottom: 0;
             -fx-right: -100%;
             -fx-height: 2px;
@@ -112,7 +112,7 @@
             }
         }
  
-        .a span:nth-child(4) {
+        .button:span:nth-child(4) {
             -fx-bottom: -100%;
             -fx-left: 0;
             -fx-width: 2px;
@@ -124,11 +124,11 @@
  
         @keyframes animate4 {
             0% {
-                -fx-bottom: -100%;
+                bottom: -100%;
             }
  
             50%,
             100% {
-                -fx-bottom: 100%;
+                bottom: 100%;
             }
         }

@@ -12,6 +12,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.common.eventbus.Subscribe;
+
 import cCarre.AffichageMap.model.Coin;
 import cCarre.AffichageMap.model.FinishBlock;
 import cCarre.AffichageMap.model.Ground;
@@ -19,15 +21,19 @@ import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Player;
 import cCarre.Menu.GameMenuController;
+import cCarre.Menu.MainMenu;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
+import cCarre.genmap.events.RestartGameEvent;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
@@ -64,6 +70,8 @@ public class MainController {
 	int spawnX, spawnY;
 	boolean running = true;
 	String level = "";
+	Pane game = null;
+
 	
 	// Pour changer la vitsse
 	int constV = 270; 
@@ -79,6 +87,8 @@ public class MainController {
 
 	@FXML
 	private AnchorPane rootLayout;
+	
+
 	
 	@FXML
 	private void initialize() {
@@ -128,8 +138,30 @@ public class MainController {
 				}
 			}
 		}
+		Color color = Color.BLUE;
+		//JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+         
+        try (FileReader reader = new FileReader("C:\\Users\\amaur\\eclipse-workspace\\c²/Color.json"))
+        {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+ 
+            JSONObject ColorList = (JSONObject) obj;
+            ColorList.get("variable");
+            color = parseColor((String) ColorList.get("variable"));
+            System.out.println(color);
 
-		player = new Player(spawnX, spawnY, elementSize, elementSize, Color.BLUE, rootLayout, constGrav, constV);
+            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+		player = new Player(spawnX, spawnY, elementSize, elementSize, color, rootLayout, constGrav, constV);
 		
 		// La camï¿½ra suit le joueur
         player.translateXProperty().addListener((obs, old, newValue) -> {
@@ -145,6 +177,30 @@ public class MainController {
 		
 		loop(500); // Let's go into the GAME !
 		loadCoin();
+		Ebus.get().register(this);
+	}
+	
+	private Color parseColor(String colors)
+	{
+		Color color = Color.BLUE; 
+		switch (colors) {
+			case "blue":
+				color = Color.BLUE;
+				break;
+				
+			case "red":
+				color = Color.RED;
+				break;
+				
+			case "green":
+				color = Color.GREEN;
+				break;
+				
+			case "yellow":
+				color = Color.YELLOW;
+				break;
+		}
+	return color;
 	}
 
 	/**
@@ -154,12 +210,15 @@ public class MainController {
 	private void loop(int fps) {
 		Timeline time1 = new Timeline(new KeyFrame(Duration.millis(1000 / (fps - 2)), e -> {
 			
+			dt = affFPS();
+			temps = dt / 1000000000; //dt par sec
+			
 			if(running) {
 				double gravity = player.p2.distance(player.centreX, player.centreY) * 2;
 				double jumpForce = 600;
 	
-				dt = affFPS();
-				temps = dt / 1000000000; //dt par sec
+				//dt = affFPS();
+				//temps = dt / 1000000000; //dt par sec
 	
 				// distanceX vect entre centre du joueur et le point (vitesse)
 				vitesse = player.p1.distance(player.centreX, player.centreY);
@@ -334,7 +393,28 @@ public class MainController {
 		}
 		 
 	}
-	
+	public void pause() throws IOException {
+		System.out.println("menu pause");
+		if (running) {
+			running = false;
+			
+			FXMLLoader gameLoader = new FXMLLoader();
+			gameLoader.setLocation(MainMenu.class.getResource("../AffichageMap/view/PauseMenu.fxml"));
+			game = (Pane) gameLoader.load();
+			game.setLayoutX(-rootLayout.getLayoutX());
+			// Met le jeu par dessus la grille
+			rootLayout.getChildren().add(game);
+		}else {
+			running = true;
+			rootLayout.getChildren().remove(game);
+		}
+		
+	}
+	@Subscribe
+	public void restart(RestartGameEvent e) {
+		running = true;
+		rootLayout.getChildren().remove(game);
+	}
 	public double getSpeedPlayer() {
 		return player.getSpeed();
 	}

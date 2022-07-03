@@ -4,7 +4,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
@@ -17,7 +16,7 @@
                   <Font size="96.0" />
                </font>
             </Label>
-            <Button layoutX="850.0" layoutY="842.0" mnemonicParsing="false" onAction="#GoToBaseMenu" styleClass="a" stylesheets="@button2.css" text="Retour">
+            <Button layoutX="850.0" layoutY="842.0" mnemonicParsing="false" onAction="#GoToBaseMenu" stylesheets="@button2.css" text="Retour">
                <font>
                   <Font size="48.0" />
                </font>
@@ -26,22 +25,22 @@
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ff1f2d" height="100.0" layoutX="625.0" layoutY="300.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="GREEN" height="100.0" layoutX="1055.0" layoutY="300.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="YELLOW" height="100.0" layoutX="1478.0" layoutY="300.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-            <Button layoutX="238.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToBlue" styleClass="a" stylesheets="@button2.css" text="Select">
+            <Button layoutX="238.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToBlue" stylesheets="@button2.css" text="Select">
                <font>
                   <Font size="48.0" />
                </font>
             </Button>
-            <Button layoutX="579.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToRed" styleClass="a" stylesheets="@button2.css" text="Select">
+            <Button layoutX="579.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToRed" stylesheets="@button2.css" text="Select">
                <font>
                   <Font size="48.0" />
                </font>
             </Button>
-            <Button layoutX="1008.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToGreen" styleClass="a" stylesheets="@button2.css" text="Select">
+            <Button layoutX="1008.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToGreen" stylesheets="@button2.css" text="Select">
                <font>
                   <Font size="48.0" />
                </font>
             </Button>
-            <Button layoutX="1429.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToYellow" styleClass="a" stylesheets="@button2.css" text="Select">
+            <Button layoutX="1429.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToYellow" stylesheets="@button2.css" text="Select">
                <font>
                   <Font size="48.0" />
                </font>
