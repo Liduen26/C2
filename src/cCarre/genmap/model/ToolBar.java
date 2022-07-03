@@ -1,24 +1,32 @@
 package cCarre.genmap.model;
 
-import cCarre.genmap.events.Ebus;
-import cCarre.genmap.events.AddLengthGrilleEvent;
+import javafx.scene.paint.Color;
 
-public class ToolBar {
+public final class ToolBar {
 	private static String item;
 	private static boolean test = false;
-	private static boolean click;
-	private static int mostX;
-	private static int startPlaced = 0;
-	private static int endPlaced = 0;
+	private static int mostX = 0;
+	private static int startPlaced = -1;
+	private static int endPlaced = -1;
+	private static Color backgroundColor = null;
+	private static Color groundColor = null;
+	private static Color obstacleColor = null;
+	private static Color coinColor = null;
+
 	public ToolBar() {}
 	
-	// Paserelle d'infos --------------------------------------------------------------------------
-	
-	
-
-	// Objet servant � r�cup�rer les �tat des btns ------------------------------------------------
-	
-	
+	public static void init() {
+		item = "";
+		test = false;
+//		click;
+		mostX = 0;
+		startPlaced = -1;
+		endPlaced = -1;
+		backgroundColor = null;
+		groundColor = null;
+		obstacleColor = null;
+		coinColor = null;
+	}
 	
 	
 	// Getter - Setters ---------------------------------------------------------------------------
@@ -32,14 +40,6 @@ public class ToolBar {
 		} 
 		return item;			
 	}
-	
-	public static boolean isClick() {
-		return click;
-	}
-
-	public static void setClick(boolean click) {
-		ToolBar.click = click;
-	}
 
 	public static int getMostX() {
 		return mostX;
@@ -50,7 +50,7 @@ public class ToolBar {
 	}
 	
 	public static boolean isStartPlaced() {
-		return (startPlaced == 0) ? false : true;
+		return (startPlaced == -1) ? false : true;
 	}
 
 	public static void setStartPlaced(int startPlaced) {
@@ -62,7 +62,7 @@ public class ToolBar {
 	}
 
 	public static boolean isEndPlaced() {
-		return (endPlaced == 0) ? false : true;
+		return (endPlaced == -1) ? false : true;
 	}
 
 	public static void setEndPlaced(int endPlaced) {
@@ -71,5 +71,39 @@ public class ToolBar {
 	
 	public static int getEndPlace() {
 		return endPlaced;
+	}
+	
+	// Couleurs
+	
+	public static Color getBackgroundColor() {
+		return groundColor;
+	}
+
+	public static void setBackgroundColor(Color backgroundColor) {
+		ToolBar.backgroundColor = backgroundColor;
+	}
+	
+	public static Color getGroundColor() {
+		return groundColor;
+	}
+
+	public static void setGroundColor(Color groundColor) {
+		ToolBar.groundColor = groundColor;
+	}
+
+	public static Color getObstacleColor() {
+		return obstacleColor;
+	}
+
+	public static void setObstacleColor(Color obstacleColor) {
+		ToolBar.obstacleColor = obstacleColor;
+	}
+
+	public static Color getCoinColor() {
+		return coinColor;
+	}
+
+	public static void setCoinColor(Color coinColor) {
+		ToolBar.coinColor = coinColor;
 	}
 }

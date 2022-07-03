@@ -2,6 +2,7 @@ package cCarre.Menu;
 
 
 
+import java.io.File;
 import java.io.IOException;
 
 import javafx.event.ActionEvent;
@@ -15,25 +16,30 @@ import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import java.util.Scanner;
 
 
-public class BaseMenuController{
 
-@FXML public Button GoToGameMenu;
-@FXML private ImageView imageView;
-
-//Image img = new Image(getClass().getResource("@../../images/logoc².png").toExternalForm());
-
-
+public class BaseMenuController {
+	
+	@FXML public Button GoToGameMenu;
+	@FXML private ImageView imageView;
+	
+	MediaPlayer mediaPlayer;
+	
+	//Image img = new Image(getClass().getResource("@../../images/logocï¿½.png").toExternalForm());
+	
 	public void GoToGameMenu(ActionEvent event) throws IOException {
+		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("GameMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		window.setScene(tableViewScene);
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.setHeight(1080);
 		window.setWidth(1920);
 		window.show();
@@ -42,24 +48,26 @@ public class BaseMenuController{
 	
 	
 	public void GoToShopMenu(ActionEvent event) throws IOException {
+		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("ShopMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.show();
 	}
 	
 	public void GoToOptionsMenu(ActionEvent event) throws IOException {
+		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("OptionsMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.show();
 	}
 	
@@ -77,48 +85,20 @@ public class BaseMenuController{
 	public void GoToVoid(ActionEvent event) throws IOException {
 		System.exit(0);
 	}
-
-/*    private class KeyHandler implements EventHandler<KeyEvent> {
-        @Override
-        public void handle(KeyEvent e) {
-            KeyCode keyPressed = e.getCode();
-
-            switch (keyPressed) {
-
-            case W:
-                System.out.print("W");
-                break;
-            case A:
-            	System.out.print("A");		
-                break;
-            case S:
-            	System.out.print("S");
-                break;
-            case D:
-            	System.out.print("D");
-                break;
-            default:
-                break;
-            }
-        }*/
 	
-/*	String key;
-	Scanner input = new Scanner(System.in);
-    for(int x = 0; x < Integer.MAX_VALUE; x++)
-    {
-        key = input.next();
-        if(key.equals("w"))
-        {
-        	System.out.print("W");
-        }
-    }
+	/**
+	 * Fais jouer un son se trouvant dans le dossier resources/audio/
+	 * @param name Le nom du fichier (avec l'extension)
+	 * @param volume Le volume de 0 ï¿½ 10
+	 */
+	private void playSound(String name) {
+		File file = new File("resources/audio/" + name);
+		
+		Media media = new Media(file.toURI().toString());
+		
+		mediaPlayer = new MediaPlayer(media);
+		
+		mediaPlayer.setVolume(5.0 / 10);
+		mediaPlayer.play();
+	}
 }
-*/
-
-}
-
-
-
-
-	
-

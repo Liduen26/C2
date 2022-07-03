@@ -4,12 +4,15 @@ import java.awt.geom.Point2D;
 
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
+import cCarre.genmap.events.PlayerState;
+import javafx.animation.PauseTransition;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 public class Player extends Parent{
 	
@@ -24,7 +27,6 @@ public class Player extends Parent{
 	int height,width;
 	
 	int constGrav;
-
 	
 	
 	public void SetColor(Color color) {
@@ -56,19 +58,19 @@ public class Player extends Parent{
 		
 		//init point
 		Point2D p1 = new Point2D.Double(centreX + constV, centreY);
-		Line vVitesse = new Line(centreX,centreY,p1.getX(),p1.getY());
+		Line vVitesse = new Line(centreX,centreY,p1.getX() / 4,p1.getY());
 		vVitesse.setStroke(Color.RED);
 		this.p1 = p1;
 		this.vVitesse = vVitesse;
 		
 		Point2D p2 = new Point2D.Double(centreX, centreY + constGrav);
-		Line vG = new Line(centreX,centreY,p2.getX(),p2.getY());
+		Line vG = new Line(centreX,centreY,p2.getX(),(p2.getY() / 4));
 		vG.setStroke(Color.PURPLE);
 		this.p2 = p2;
 		this.vG = vG;
 
 		Point2D p3 = new Point2D.Double(centreX, centreY);
-		Line vVert = new Line(centreX,centreY,p3.getX(),p3.getY());
+		Line vVert = new Line(centreX,centreY,p3.getX(),p3.getY()/4);
 		vVert.setStroke(Color.GREEN);
 
 		this.p3 = p3;
@@ -87,20 +89,20 @@ public class Player extends Parent{
 		this.setTranslateY(this.getTranslateY() - distanceY);
 		
 		vVitesse.setStartX(centreX);
-		vVitesse.setEndX(p1.getX());
+		vVitesse.setEndX(p1.getX()/4);
 		
 		vG.setStartY(centreY);
-		vG.setEndY(p2.getY());
+		vG.setEndY(p2.getY()/4);
 		
 		vVert.setStartY(centreY);
-		vVert.setEndY(p3.getY());
+		vVert.setEndY(p3.getY()/4);
 		
 		p1.setLocation(p1.getX(), centreY);
 		p2.setLocation(p2.getX(), centreY + constGrav);
 		p3.setLocation(p3.getX(), centreY - verticalVelocity);
 	}
 	
-	public void tp(double X, double Y){
+	public void respawn(double X, double Y){
 		this.setTranslateX(X);
 		this.setTranslateY(Y);
 		
@@ -115,10 +117,32 @@ public class Player extends Parent{
 	}
 	
 	public void death(double spawnX, double spawnY, AnchorPane rootLayout, Label Coin){
-		tp(spawnX, spawnY);
-    	rootLayout.setLayoutX(0); // TP la camï¿½ra au dï¿½but du jeu
-		Coin.setLayoutX(0);
-    	Ebus.get().post(new MoveGridEvent(0));
+		// Pause du jeu et lancement de l'anim de mort
+		Ebus.get().post(new PlayerState(false));
+		
+		// Disparition du player
+		this.setOpacity(0);
+		
+		// Pause de 1s, puis fait disparaitre la popup
+		PauseTransition delay = new PauseTransition(Duration.seconds(1));
+		delay.setOnFinished( event -> {
+			// Set le player au départ
+			respawn(spawnX, spawnY);
+			
+			// Reset de la cam
+	    	rootLayout.setLayoutX(0); // TP la camï¿½ra au dï¿½but du jeu
+			Coin.setLayoutX(0);
+	    	Ebus.get().post(new MoveGridEvent(0));
+	    	
+	    	// Arrete l'anim de mort
+	    	Ebus.get().post(new PlayerState(true));
+	    	
+	    	// Réapparition du player
+	    	this.setOpacity(1);
+	    	
+		});
+		delay.play();
+		
 	}
 
 	public int getHeight() {
@@ -137,10 +161,12 @@ public class Player extends Parent{
 		return width;
 	}
 
-
-
 	public void setWidth(int width) {
 		this.width = width;
+	}
+	
+	public Rectangle getPlayerRectangle() {
+		return playerRectangle;
 	}
 	
 	public double getSpeed() {

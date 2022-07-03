@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,7 +20,7 @@ import javafx.stage.Stage;
 public class SaveController implements Initializable {
 
     FileChooser fileChooser = new FileChooser();
-    char[][] tabLevel;
+    JSONObject levelObject;
 
     private String contenu = "";
         
@@ -51,27 +52,15 @@ public class SaveController implements Initializable {
     void save(MouseEvent event) throws IOException {
         File file = fileChooser.showSaveDialog(new Stage());
         if(file != null){
-            saveSystem(file, contenu);
+        	saveSystem(file, contenu);
         }
     }
-
     
     public void saveSystem(File file, String content) throws IOException{
         try {
         	PrintWriter printWriter = new PrintWriter(file);
-        	
-        	JSONArray tab2D = new JSONArray();
-        	
-        	for (int y = 0; y < tabLevel.length; y++) {
-                char[] line = tabLevel[y];
-                JSONArray lineJSON = new JSONArray();
-                tab2D.add(lineJSON);
-                for (int x = 0; x < line.length; x++) {
-                	lineJSON.add(line[x]);
-                }
-            }
-        	content += tab2D.toString();
-            tab2D.writeJSONString(printWriter);
+
+        	levelObject.writeJSONString(printWriter);
 
             printWriter.close();
             
@@ -80,9 +69,10 @@ public class SaveController implements Initializable {
         }
     }
     
-	public void setData(char[][] customMap) throws IOException {
+	public void setData(JSONObject customMapObject) throws IOException {
 		// R�cup�re la map
-		tabLevel = customMap;
+		levelObject = customMapObject;
+		System.out.println(((JSONArray) ((JSONArray) customMapObject.get("map")).get(1)).get(1).getClass());
 		// Lance la save
 		save(null);
 	}

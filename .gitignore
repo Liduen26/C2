@@ -1,6 +1,5 @@
 ### Java template
 *target*
-*.jar
 *.war
 *.ear
 *.class
@@ -29,3 +28,7 @@ local.properties
 
 #Fichiers configs
 *.json
+*.json
+
+#Ressources
+!resources/maps/*

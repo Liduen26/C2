@@ -1,6 +1,16 @@
 package cCarre.Menu;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import cCarre.MainMenu;
 import cCarre.AffichageMap.data.LevelData;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
@@ -8,38 +18,41 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
-import javafx.stage.Screen;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 public class GameMenuController {
 	@FXML 
 	public Button GoToBaseMenu;
 
+	MediaPlayer mediaPlayer;
+	
 	public void GoToBaseMenu(ActionEvent event) throws IOException {
+		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("BaseMenu.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
 		window.setScene(tableViewScene);
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.show();
 	}
 	
-	public void LaunchGame(ActionEvent event) throws IOException {
-		// Définis la map à utiliser, attend un JSONArray
-		Level.setJsonLevel(LevelData.getLevelInJSON(LevelData.LEVEL1));
+	public void LaunchGame(ActionEvent event) throws IOException, ParseException {
+		// Dï¿½finis la map ï¿½ utiliser, attend un JSONArray
+		Level.setJsonLevel(readJSON("TestPilliers"));
 		
 		// Load root layout from fxml file.
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(MainMenu.class.getResource("../AffichageMap/view/mainLayout.fxml"));
+		loader.setLocation(MainMenu.class.getResource("./AffichageMap/view/mainLayout.fxml"));
 		Pane BaseMenu = (Pane) loader.load();
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
@@ -49,15 +62,16 @@ public class GameMenuController {
         window.setScene(scene);
         
         MainController controller = loader.getController();
-       
-        // Chemin du fichier json (à faire)
         
-		window.setMaximized(true);
+		window.setFullScreen(true);
 		window.show();
 		
-		scene.setOnKeyPressed(e ->{
-			controller.jump();
+		scene.setOnKeyReleased(e -> {
+			if(e.getCode()) {
+				controller.stopJump();
+			}
 		});
+
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			
 			public void handle(KeyEvent event) {
@@ -82,8 +96,11 @@ public class GameMenuController {
 			}
 			
 		});
+		
+		
 	}
 	public void GoToEditLevel(ActionEvent event) throws IOException {
+		playSound("Click_Menus.wav");
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../genmap/view/genLayout.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
@@ -93,14 +110,38 @@ public class GameMenuController {
 		window.setMaximized(true);
 		window.show();
 	}
-	public void GoToPauseMenu(ActionEvent event) throws IOException {
-		Parent tableViewParent = FXMLLoader.load(getClass().getResource("PauseMenu.fxml"));
-		Scene tableViewScene = new Scene(tableViewParent);
+
+	/**
+	 * Fais jouer un son se trouvant dans le dossier resources/audio/
+	 * @param name Le nom du fichier (avec l'extension)
+	 * @param volume Le volume de 0 ï¿½ 10
+	 */
+	private void playSound(String name) {
+		File file = new File("resources/audio/" + name);
 		
-		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
+		Media media = new Media(file.toURI().toString());
 		
-		window.setScene(tableViewScene);
-		window.setMaximized(true);
-		window.show();
+		mediaPlayer = new MediaPlayer(media);
+		
+		mediaPlayer.setVolume(5.0 / 10);
+		mediaPlayer.play();
+	}
+	
+	/**
+	 * Renvoie une map se trouvant dans le dossier resources/maps/ en Objet JSON
+	 * @param name Le nom du fichier de la map, sans le .json
+	 * @return Le JSONObject de la map
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	private JSONObject readJSON(String name) throws IOException, ParseException {
+		JSONParser parser = new JSONParser();
+		
+		File fileJson = new File("resources/maps/" + name + ".json");
+		Reader reader = new FileReader(fileJson);
+		
+		JSONObject jsonObject = (JSONObject) parser.parse(reader); // parse
+    	
+    	return jsonObject; 
 	}
 }
