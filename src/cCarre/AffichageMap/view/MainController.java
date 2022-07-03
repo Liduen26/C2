@@ -744,9 +744,6 @@ public class MainController {
 		popup.setStyle("-fx-background-color: #121212; -fx-background-radius: 10 10 10 10; -fx-padding: 10; -fx-border-color: #c50808; -fx-border-width: 5;");
 		popup.toFront();
 		
-//		popup.getStyleClass().add(".popup");
-//        popup.getStylesheets().add("src/cCarre/genmap/view/viewpopup.css");
-        
 		
 		Label text = new Label();
 		text.setText("Bravo !");

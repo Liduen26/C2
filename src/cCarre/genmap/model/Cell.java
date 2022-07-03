@@ -449,13 +449,15 @@ public class Cell extends Region {
 			break;
 			
 		case "test": 
+			char oldId = cellId;
 			cellId = 's';
 			ToolBar.setItem("");
 			hover.setOpacity(0);
 
 			Ebus.get().post(new LaunchGameEvent());
-			cellId = '0';
-			occuped = false;
+			cellId = oldId;
+			occuped = (cellId == '8') ? true : false; 
+			System.out.println(cellId);
 			break;
 			
 		default:
