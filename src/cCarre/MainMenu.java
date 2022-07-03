@@ -39,7 +39,7 @@ public class MainMenu extends Application {
 			BaseMenu = (Pane) loader.load();
 			Scene scene = new Scene(BaseMenu);
 			primaryStage.setScene(scene);
-			primaryStage.setFullScreen(true);
+			primaryStage.setMaximized(true);
 			primaryStage.setFullScreenExitHint("");
 			primaryStage.show();
 			

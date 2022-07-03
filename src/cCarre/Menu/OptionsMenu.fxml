@@ -6,9 +6,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.Menu.OptionsMenuController">
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@Button.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.Menu.OptionsMenuController">
    <children>
-      <Pane layoutX="-6.0" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@button2.css">
+      <Pane layoutX="-6.0" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@Button.css">
          <children>
             <Label layoutX="793.0" layoutY="135.0" text="OPTIONS" textFill="WHITE">
                <font>

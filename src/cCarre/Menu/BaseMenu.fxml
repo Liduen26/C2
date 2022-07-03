@@ -5,17 +5,13 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@button2.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.Menu.BaseMenuController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@Button.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cCarre.Menu.BaseMenuController">
    <children>
-      <Button layoutX="822.0" layoutY="430.0" mnemonicParsing="false" onAction="#GoToGameMenu" stylesheets="@button2.css" text="JOUER">
+      <Button layoutX="784.0" layoutY="412.0" mnemonicParsing="false" onAction="#GoToGameMenu" stylesheets="@Button.css" text="JOUER">
          <font>
             <Font size="96.0" />
          </font></Button>
-      <Button layoutX="226.0" layoutY="845.0" mnemonicParsing="false" onAction="#GoToShopMenu" stylesheets="@button2.css" text="BOUTIQUE">
-         <font>
-            <Font size="48.0" />
-         </font></Button>
-      <Button layoutX="1473.0" layoutY="849.0" mnemonicParsing="false" onAction="#GoToOptionsMenu" stylesheets="@button2.css" text="OPTIONS">
+      <Button layoutX="226.0" layoutY="845.0" mnemonicParsing="false" onAction="#GoToShopMenu" stylesheets="@Button.css" text="BOUTIQUE">
          <font>
             <Font size="48.0" />
          </font></Button>
@@ -24,7 +20,7 @@
             <Font name="Lucida Bright Demibold" size="150.0" />
          </font>
       </Label>
-      <Button layoutX="866.0" layoutY="835.0" mnemonicParsing="false" onAction="#GoToVoid" stylesheets="@button2.css" text="QUITTER">
+      <Button layoutX="866.0" layoutY="835.0" mnemonicParsing="false" onAction="#GoToVoid" stylesheets="@Button.css" text="QUITTER">
          <font>
             <Font size="48.0" />
          </font>
