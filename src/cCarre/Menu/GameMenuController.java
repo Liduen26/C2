@@ -24,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class GameMenuController {
@@ -31,6 +32,8 @@ public class GameMenuController {
 	public Button GoToBaseMenu;
 
 	MediaPlayer mediaPlayer;
+	
+	FileChooser fileChooser = new FileChooser();
 	
 	public void GoToBaseMenu(ActionEvent event) throws IOException {
 		playSound("Click_Menus.wav");
@@ -84,6 +87,44 @@ public class GameMenuController {
 		window.setMaximized(true);
 		window.show();
 	}
+	
+	@FXML
+    void ImportGame(ActionEvent event) throws IOException, ParseException {
+		JSONParser parser = new JSONParser();
+
+    	// Demande ï¿½ l'utilisateur de choisir un fichier
+        File file = fileChooser.showOpenDialog(new Stage());
+    	Reader reader = new FileReader(file);
+      	
+        JSONObject jsonObject = (JSONObject) parser.parse(reader); // parse
+        
+        // Définis la map à utiliser, attend un JSONArray
+ 		Level.setJsonLevel(jsonObject);
+ 		
+ 		// Load root layout from fxml file.
+ 		FXMLLoader loader = new FXMLLoader();
+ 		loader.setLocation(MainMenu.class.getResource("./AffichageMap/view/mainLayout.fxml"));
+ 		Pane BaseMenu = (Pane) loader.load();
+ 		
+ 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
+
+ 		// Show the scene containing the root layout.
+         Scene scene = new Scene(BaseMenu);
+         window.setScene(scene);
+         
+         MainController controller = loader.getController();
+         
+ 		window.setFullScreen(true);
+ 		window.show();
+ 		
+ 		scene.setOnKeyPressed(e -> {
+ 			controller.startJump();
+ 		});
+ 		scene.setOnKeyReleased(e -> {
+ 			controller.stopJump();
+ 		});
+    }
+	
 	
 	/**
 	 * Fais jouer un son se trouvant dans le dossier resources/audio/

@@ -27,27 +27,27 @@ import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PlayerState;
 import cCarre.genmap.model.ToolBar;
-import cCarre.genmap.events.PopupEvent;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MainController {
@@ -83,7 +83,6 @@ public class MainController {
 	boolean recc = true; 
 
 	String level = "";
-	boolean running = true;
 	boolean newSpawn = false;
 	
 	boolean dead = false;
@@ -138,9 +137,7 @@ public class MainController {
 		jumpForce = (int) (screenBounds.getWidth()/(1920/jumpForce));
 		elementSize = (int) (screenBounds.getWidth()/(1920/elementSize));
 
-		//init temps
-		newTime = System.nanoTime();
-		time = System.currentTimeMillis();
+		
 		
 		Ebus.get().register(this);
 
@@ -255,11 +252,9 @@ public class MainController {
             }
         });
 		
-        // Let's go into the GAME !
-		loop(500); 
+       
 
-        // Joue la musique
-		playMusic();
+        
 
 		// Charge le fichier des coins
 		loadCoin();
@@ -270,6 +265,20 @@ public class MainController {
 		
 		// Opacit� de base
 		ragdoll.setOpacity(0.5);
+		
+		PauseTransition delay = new PauseTransition(Duration.seconds(1));
+		delay.setOnFinished( event -> {
+			//init temps
+			newTime = System.nanoTime();
+			time = System.currentTimeMillis();
+			
+			// Let's go into the GAME !
+			loop(500); 
+			
+			// Joue la musique
+			playMusic();
+		});
+		delay.play();
 	}
 
 	/**
@@ -277,6 +286,7 @@ public class MainController {
 	 * @param fps Le nombre d'update, et donc d'images par seconde
 	 */
 	private void loop(int fps) {
+		System.out.println();
 		time1 = new Timeline(new KeyFrame(Duration.millis(1000 / (fps - 2)), e -> {
 			dt = affFPS();
 			temps = dt / 1000000000; //dt par sec
@@ -333,9 +343,9 @@ public class MainController {
 	            
 				
 				
-				Coin.setText("Pieces : "+pieces);
+				Coin.setText("Coins : "+pieces);
 				
-				//Son landing
+				//Sound landing
 				oldGround = newGround;
 				newGround = playerOnGround();
 				if(!oldGround && newGround) {
@@ -562,6 +572,7 @@ public class MainController {
 					collisionDetected = true;
 					System.out.println("Ca c un triangle -------------------------------------------------------------------------------------");
 					playSound("Roblox-Death-Sound-cut.wav", 4);
+					verticalVelocity = 0;
 				}
 			}
 		}
@@ -717,7 +728,7 @@ public class MainController {
 		}
 	}
 	
-	@Subscribe
+//	@Subscribe
 	public void popup() {
 		// Tailles max
 		int width = 400;
@@ -727,17 +738,18 @@ public class MainController {
 		VBox popup = new VBox();
 		popup.setPrefWidth(width);
 		popup.setMaxHeight(height);
-		popup.setLayoutX((screenBounds.getWidth() / 2) - (popup.getPrefWidth()/ 2) + 400);
+		popup.setLayoutX((screenBounds.getWidth() / 2) - (popup.getPrefWidth()/ 2) - rootLayout.getLayoutX());
 		popup.setLayoutY((screenBounds.getHeight() / 2)  - 250);
 		popup.setAlignment(Pos.CENTER);
 		popup.setStyle("-fx-background-color: #121212; -fx-background-radius: 10 10 10 10; -fx-padding: 10; -fx-border-color: #c50808; -fx-border-width: 5;");
+		popup.toFront();
 		
 //		popup.getStyleClass().add(".popup");
 //        popup.getStylesheets().add("src/cCarre/genmap/view/viewpopup.css");
         
 		
 		Label text = new Label();
-		text.setText("gagné");
+		text.setText("Bravo !");
 		text.setStyle("-fx-background-color: #121212; -fx-text-fill: yellow; -fx-font-size: 40px");
 		
 		popup.getChildren().add(text);
@@ -745,37 +757,26 @@ public class MainController {
 		
 		// Pause de 2s, puis fait disparaitre la popup
 		PauseTransition delay = new PauseTransition(Duration.seconds(2));
-		delay.setOnFinished( event -> rootLayout.getChildren().remove(popup));
+		delay.setOnFinished( event -> {
+			rootLayout.getChildren().remove(popup);
+			Parent menu = null;
+			try {
+				menu = FXMLLoader.load(getClass().getResource("../../Menu/GameMenu.fxml"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Scene GameMenu = new Scene(menu);
+			
+			Stage window = (Stage) rootLayout.getScene().getWindow();
+			window.setScene(GameMenu);
+			window.setFullScreen(true);
+			window.setHeight(1080);
+			window.setWidth(1920);
+			window.show();
+		});
 		delay.play();
 	}
-	
-//	 private static int TIMEOUT = 2400;
-//	 
-//     public static void show(final String message, final AnchorPane rootLayout) {
-//         Stage stage = (Stage) rootLayout.getScene().getWindow();
-//         final Popup popup = createPopup(message);
-//         popup.setOnShown(e -> {
-//             popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2);
-//             popup.setY(stage.getY() + stage.getHeight() / 1.2 - popup.getHeight() / 2);
-//         });
-//         popup.show(stage);
-//
-//         new Timeline(new KeyFrame(
-//                 Duration.millis(TIMEOUT),
-//                 ae -> popup.hide())).play();
-//     }
-//
-//     private static Popup createPopup(final String message) {
-//         final Popup popup = new Popup();
-//         popup.setAutoFix(true);
-//         Label label = new Label(message);
-//       //  label.getStylesheets().add("./popup.css");
-//         label.getStyleClass().add("popup");
-//         popup.getContent().add(label);
-//         System.out.println(label.getStylesheets());
-//         return popup;
-//     }
-
 
 
 	public void setStop() {
