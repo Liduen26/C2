@@ -12,14 +12,21 @@
             <Font size="96.0" />
          </font>
       </Text>
-      <Button layoutX="875.0" layoutY="887.0" mnemonicParsing="false" onAction="#GoToBaseMenu" stylesheets="@Button.css" text="Retour">
+      <Button layoutX="181.0" layoutY="885.0" mnemonicParsing="false" onAction="#ImportGame" styleClass="a" stylesheets="@@Button.css" text="Importer">
          <font>
             <Font size="48.0" />
-         </font></Button>
-      <Button layoutX="1370.0" layoutY="885.0" mnemonicParsing="false" onAction="#GoToEditLevel" stylesheets="@Button.css" text="Editeur de niveau">
+         </font>
+      </Button>
+      <Button layoutX="875.0" layoutY="887.0" mnemonicParsing="false" onAction="#GoToBaseMenu" styleClass="a" stylesheets="@@Button.css" text="Retour">
          <font>
             <Font size="48.0" />
-         </font></Button>
+         </font>
+      </Button>
+      <Button layoutX="1370.0" layoutY="885.0" mnemonicParsing="false" onAction="#GoToEditLevel" styleClass="a" stylesheets="@@Button.css" text="Editeur de niveau">
+         <font>
+            <Font size="48.0" />
+         </font>
+      </Button>
       <Button layoutX="431.0" layoutY="238.0" mnemonicParsing="false" onAction="#LaunchGame" prefHeight="534.0" prefWidth="1169.0" stylesheets="@Button.css" text="Jouer">
          <font>
             <Font size="70.0" />

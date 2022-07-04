@@ -33,19 +33,26 @@ import cCarre.genmap.events.RestartGameEvent;
 import cCarre.genmap.model.ToolBar;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MainController {
@@ -83,6 +90,8 @@ public class MainController {
 	boolean running = true;
 	boolean pause = false;
 	boolean finish = false;
+	boolean recc = true; 
+
 	boolean newSpawn = false;
 	
 	boolean dead = false;
@@ -115,6 +124,9 @@ public class MainController {
 	
 	@FXML
 	private Label Coin;
+	
+	@FXML
+	private Label popup;
 
 	@FXML
 	private AnchorPane rootLayout;
@@ -136,9 +148,7 @@ public class MainController {
 		jumpForce = (int) (screenBounds.getWidth()/(1920/jumpForce));
 		elementSize = (int) (screenBounds.getWidth()/(1920/elementSize));
 
-		//init temps
-		newTime = System.nanoTime();
-		time = System.currentTimeMillis();
+		
 		
 		Ebus.get().register(this);
 
@@ -261,6 +271,7 @@ public class MainController {
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
                 Coin.setLayoutX(+(offset - 300));
+
                 
         		// Adapte la taille de l'achor pane au niveau jou�, puis change la background color
                 rootLayout.resize((levelLength+25)*elementSize, (levelHeight+6)*elementSize);
@@ -280,11 +291,9 @@ public class MainController {
             }
         });
 		
-        // Let's go into the GAME !
-		loop(500); 
+       
 
-        // Joue la musique
-		playMusic();
+        
 
 		// Charge le fichier des coins
 		loadCoin();
@@ -295,6 +304,20 @@ public class MainController {
 		
 		// Opacit� de base
 		ragdoll.setOpacity(0.5);
+		
+		PauseTransition delay = new PauseTransition(Duration.seconds(1));
+		delay.setOnFinished( event -> {
+			//init temps
+			newTime = System.nanoTime();
+			time = System.currentTimeMillis();
+			
+			// Let's go into the GAME !
+			loop(500); 
+			
+			// Joue la musique
+			playMusic();
+		});
+		delay.play();
 	}
 	
 	private Color parseColor(String colors) {
@@ -324,6 +347,7 @@ public class MainController {
 	 * @param fps Le nombre d'update, et donc d'images par seconde
 	 */
 	private void loop(int fps) {
+		System.out.println();
 		time1 = new Timeline(new KeyFrame(Duration.millis(1000 / (fps - 2)), e -> {
 			dt = affFPS();
 			temps = dt / 1000000000; //dt par sec
@@ -374,14 +398,15 @@ public class MainController {
 	            	if (collisionDetected) {
 	            		finish = true;
 	            		stopMusic();
+	            		fin(recc);
 	            	}
 	            }
 	            
 				
 				
-				Coin.setText("Pieces : "+pieces);
+				Coin.setText("Coins : "+pieces);
 				
-				//Son landing
+				//Sound landing
 				oldGround = newGround;
 				newGround = playerOnGround();
 				if(!oldGround && newGround) {
@@ -620,6 +645,7 @@ public class MainController {
 					collisionDetected = true;
 					System.out.println("Ca c un triangle -------------------------------------------------------------------------------------");
 					playSound("Roblox-Death-Sound-cut.wav", 4);
+					verticalVelocity = 0;
 				}
 			}
 		}
@@ -791,6 +817,64 @@ public class MainController {
             e.printStackTrace();
         }
 	}
+	
+	private void fin(boolean recc) {
+		if (recc == true) {
+			
+			popup();
+			
+			recc = false;
+			System.out.println("fin");
+		}
+	}
+	
+//	@Subscribe
+	public void popup() {
+		// Tailles max
+		int width = 400;
+		int height = 200;
+		
+		// Cr�ation de la vBox, et set de set propri�t�s et css
+		VBox popup = new VBox();
+		popup.setPrefWidth(width);
+		popup.setMaxHeight(height);
+		popup.setLayoutX((screenBounds.getWidth() / 2) - (popup.getPrefWidth()/ 2) - rootLayout.getLayoutX());
+		popup.setLayoutY((screenBounds.getHeight() / 2)  - 250);
+		popup.setAlignment(Pos.CENTER);
+		popup.setStyle("-fx-background-color: #121212; -fx-background-radius: 10 10 10 10; -fx-padding: 10; -fx-border-color: #c50808; -fx-border-width: 5;");
+		popup.toFront();
+		
+		
+		Label text = new Label();
+		text.setText("Bravo !");
+		text.setStyle("-fx-background-color: #121212; -fx-text-fill: yellow; -fx-font-size: 40px");
+		
+		popup.getChildren().add(text);
+		rootLayout.getChildren().add(popup);
+		
+		// Pause de 2s, puis fait disparaitre la popup
+		PauseTransition delay = new PauseTransition(Duration.seconds(2));
+		delay.setOnFinished( event -> {
+			rootLayout.getChildren().remove(popup);
+			Parent menu = null;
+			try {
+				menu = FXMLLoader.load(getClass().getResource("../../Menu/GameMenu.fxml"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Scene GameMenu = new Scene(menu);
+			
+			Stage window = (Stage) rootLayout.getScene().getWindow();
+			window.setScene(GameMenu);
+			window.setFullScreen(true);
+			window.setHeight(1080);
+			window.setWidth(1920);
+			window.show();
+		});
+		delay.play();
+	}
+
 
 	public void setStop() {
 		time1.stop();
