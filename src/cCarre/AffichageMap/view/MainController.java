@@ -35,9 +35,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -739,9 +739,10 @@ public class MainController {
 		popup.setPrefWidth(width);
 		popup.setMaxHeight(height);
 		popup.setLayoutX((screenBounds.getWidth() / 2) - (popup.getPrefWidth()/ 2) - rootLayout.getLayoutX());
-		popup.setLayoutY((screenBounds.getHeight() / 2)  - 250);
+		popup.setLayoutY((screenBounds.getHeight() / 2)  - 150);
 		popup.setAlignment(Pos.CENTER);
 		popup.setStyle("-fx-background-color: #121212; -fx-background-radius: 10 10 10 10; -fx-padding: 10; -fx-border-color: #c50808; -fx-border-width: 5;");
+		popup.setSpacing(50);
 		popup.toFront();
 		
 		
@@ -749,12 +750,10 @@ public class MainController {
 		text.setText("Bravo !");
 		text.setStyle("-fx-background-color: #121212; -fx-text-fill: yellow; -fx-font-size: 40px");
 		
-		popup.getChildren().add(text);
-		rootLayout.getChildren().add(popup);
-		
-		// Pause de 2s, puis fait disparaitre la popup
-		PauseTransition delay = new PauseTransition(Duration.seconds(2));
-		delay.setOnFinished( event -> {
+		Button retour = new Button();
+		retour.setText("Menu");
+		retour.setStyle("-fx-font-size: 30px; -fx-padding: 10 30 10 30");
+		retour.setOnAction(evt -> {
 			rootLayout.getChildren().remove(popup);
 			Parent menu = null;
 			try {
@@ -772,7 +771,10 @@ public class MainController {
 			window.setWidth(1920);
 			window.show();
 		});
-		delay.play();
+		
+		popup.getChildren().add(text);
+		popup.getChildren().add(retour);
+		rootLayout.getChildren().add(popup);
 	}
 
 
