@@ -312,7 +312,7 @@ public class MainController {
 			time = System.currentTimeMillis();
 			
 			// Let's go into the GAME !
-			loop(500); 
+			loop(120); 
 			
 			// Joue la musique
 			playMusic();
