@@ -754,16 +754,20 @@ public class MainController {
 			pause = false;
 			rootLayout.getChildren().remove(game);
 			Ebus.get().post(new PauseEvent());
-			musicPlayer.play();
+			if(!dead) {
+				musicPlayer.play();
+			}
 		}
 		
 	}
 	@Subscribe
 	public void restart(RestartGameEvent e) {
-		running = true;
+		pause = false;
 		rootLayout.getChildren().remove(game);
 		Ebus.get().post(new PauseEvent());
-		musicPlayer.play();
+		if(!dead) {
+			musicPlayer.play();
+		}
 	}
 	public double getSpeedPlayer() {
 		return player.getSpeed();
