@@ -135,8 +135,6 @@ public class MainController {
 	
 	@FXML
 	private void initialize() {
-		// Met la couleur sur le d�but du niveau
-	    rootLayout.setStyle("-fx-background-color: "+ToolBar.getBackgroundColor());
 		// Adapte la vitesse et la gravit� et les �l�ments � la taille de l'�cran
 		float varVit = (float)1920/constV;		
 		constV = (int) ((int) screenBounds.getWidth()/varVit);
@@ -157,6 +155,11 @@ public class MainController {
 		int levelHeight = level.getLevelHeight();
 		JSONObject Level = level.getLevel();
 		JSONArray map = (JSONArray) Level.get("map");
+		
+		String backgroundColor = getHexColor(Level, "background");
+		// Met la couleur sur le debut du niveau
+	    rootLayout.setStyle("-fx-background-color: "+backgroundColor);
+
 
 		mapRender = new Shape[levelHeight][levelLength];
 		
@@ -275,7 +278,7 @@ public class MainController {
                 
         		// Adapte la taille de l'achor pane au niveau jou�, puis change la background color
                 rootLayout.resize((levelLength+25)*elementSize, (levelHeight+6)*elementSize);
-        	    rootLayout.setStyle("-fx-background-color: "+ToolBar.getBackgroundColor());
+        	    rootLayout.setStyle("-fx-background-color: "+backgroundColor);
 
                 // Si le jeu vient de l'�diteur, transmet les coo � la grille
 				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
@@ -319,6 +322,17 @@ public class MainController {
 		});
 		delay.play();
 	}
+	
+	// Passe une couleur de String � Color
+    String getHexColor(JSONObject jsonObject, String mapElement){
+		String color;
+		String hexColor;
+		
+		color = (String) ((JSONObject) jsonObject.get("color")).get(mapElement);
+
+		hexColor = "#"+color.substring(2,8);
+		return hexColor;
+    }
 	
 	private Color parseColor(String colors) {
 		Color color = Color.BLUE; 
