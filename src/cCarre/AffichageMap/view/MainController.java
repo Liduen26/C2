@@ -117,6 +117,8 @@ public class MainController {
 	double toolBarHeight = 0;
 	
 	double vAnimDeath = 1000;
+	
+	private boolean preview = false;
 
 	@FXML
 	private Player player;
@@ -150,6 +152,7 @@ public class MainController {
 		Ebus.get().register(this);
 
 		Level level = new Level();
+		preview = level.isPreview();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
 		JSONObject Level = level.getLevel();
@@ -293,35 +296,36 @@ public class MainController {
 		
        
 
-        
+        if(!preview) {
+        	// Charge le fichier des coins
+        	loadCoin();
+        	
+        	// Cr�ation du cube d'anim de mort
+        	ragdoll = new Rectangle();
+        	ragdoll.setManaged(false);
+        	
+        	// Opacit� de base
+        	ragdoll.setOpacity(0.5);
+        	
+        	PauseTransition delay = new PauseTransition(Duration.seconds(1));
+        	delay.setOnFinished( event -> {
+        		//init temps
+        		newTime = System.nanoTime();
+        		time = System.currentTimeMillis();
+        		
+        		// Let's go into the GAME !
+        		loop(120); 
+        		
+        		// Joue la musique
+        		playMusic();
+        	});
+        	delay.play();
+        }
 
-		// Charge le fichier des coins
-		loadCoin();
-
-		// Cr�ation du cube d'anim de mort
-		ragdoll = new Rectangle();
-		ragdoll.setManaged(false);
-		
-		// Opacit� de base
-		ragdoll.setOpacity(0.5);
-		
-		PauseTransition delay = new PauseTransition(Duration.seconds(1));
-		delay.setOnFinished( event -> {
-			//init temps
-			newTime = System.nanoTime();
-			time = System.currentTimeMillis();
-			
-			// Let's go into the GAME !
-			loop(120); 
-			
-			// Joue la musique
-			playMusic();
-		});
-		delay.play();
 	}
 	
 	// Passe une couleur de String � Color
-    String getHexColor(JSONObject jsonObject, String mapElement){
+    private String getHexColor(JSONObject jsonObject, String mapElement){
 		String color;
 		String hexColor;
 		

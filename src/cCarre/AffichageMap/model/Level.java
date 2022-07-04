@@ -12,12 +12,22 @@ public class Level {
 	
 	private static JSONObject jsonMap;
 	
+	private static boolean preview = false;
+
 	public Level() {
 		this.idLevel = 0;
 		this.levelLength = ((JSONArray) ((JSONArray) jsonMap.get("map")).get(0)).size();
 		this.levelWidth = this.levelLength * 60;
 		this.totalCoin = 0;
 		this.levelHeight = ((JSONArray) jsonMap.get("map")).size();
+	}
+	
+	public static boolean isPreview() {
+		return preview;
+	}
+
+	public static void setPreview(boolean preview) {
+		Level.preview = preview;
 	}
 	
 	public int getLevelWidth(){

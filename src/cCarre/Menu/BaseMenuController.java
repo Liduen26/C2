@@ -39,7 +39,7 @@ public class BaseMenuController {
 	
 	public void GoToGameMenu(ActionEvent event) throws IOException {
 		playSound("Click_Menus.wav");
-		Parent tableViewParent = FXMLLoader.load(getClass().getResource("GameMenu.fxml"));
+		Parent tableViewParent = FXMLLoader.load(getClass().getResource("GameMenu2.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
