@@ -30,7 +30,6 @@ import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PauseEvent;
 import cCarre.genmap.events.PlayerState;
 import cCarre.genmap.events.RestartGameEvent;
-import cCarre.genmap.model.ToolBar;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
@@ -251,8 +250,6 @@ public class MainController {
             JSONObject ColorList = (JSONObject) obj;
             ColorList.get("variable");
             color = parseColor((String) ColorList.get("variable"));
-            System.out.println(color);
-
             
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -361,7 +358,6 @@ public class MainController {
 	 * @param fps Le nombre d'update, et donc d'images par seconde
 	 */
 	private void loop(int fps) {
-		System.out.println();
 		time1 = new Timeline(new KeyFrame(Duration.millis(1000 / (fps - 2)), e -> {
 			dt = affFPS();
 			temps = dt / 1000000000; //dt par sec
@@ -880,7 +876,7 @@ public class MainController {
 			
 			Stage window = (Stage) rootLayout.getScene().getWindow();
 			window.setScene(GameMenu);
-			window.setFullScreen(true);
+			window.setMaximized(true);
 			window.setHeight(1080);
 			window.setWidth(1920);
 			window.show();
