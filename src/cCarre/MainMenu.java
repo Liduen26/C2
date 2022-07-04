@@ -1,5 +1,6 @@
 package cCarre;
 
+import java.io.File;
 import java.io.IOException;
 
 import javafx.application.Application;
@@ -23,10 +24,10 @@ public class MainMenu extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("C�");
+		this.primaryStage.setTitle("C²");
 		
 		// Set the application icon.
-        this.primaryStage.getIcons().add(new Image("file:///C:/Users/amaur/eclipse-workspace/c/c�/c�/ressources/images/clogo.png"));
+        this.primaryStage.getIcons().add(new Image(new File("resources/images/logo.png").toURI().toString()));
 
 		initBaseMenu();
 	}

@@ -82,9 +82,9 @@ public class Player extends Parent{
 		this.vVert = vVert;
 
 		// Ajout des vecteurs au joueur
-		this.getChildren().add(vVitesse);
-		this.getChildren().add(vG);
-		this.getChildren().add(vVert);
+//		this.getChildren().add(vVitesse);
+//		this.getChildren().add(vG);
+//		this.getChildren().add(vVert);
         
         rootLayout.getChildren().add(this);
         
@@ -133,7 +133,7 @@ public class Player extends Parent{
 		// Pause de 1s, puis fait disparaitre la popup
 		delay = new PauseTransition(Duration.seconds(1));
 		delay.setOnFinished( event -> {
-			// Set le player au départ
+			// Set le player au dï¿½part
 			respawn(spawnX, spawnY);
 			
 			// Reset de la cam
@@ -144,7 +144,7 @@ public class Player extends Parent{
 	    	// Arrete l'anim de mort
 	    	Ebus.get().post(new PlayerState(true));
 	    	
-	    	// Réapparition du player
+	    	// Rï¿½apparition du player
 	    	this.setOpacity(1);
 	    	
 		});
