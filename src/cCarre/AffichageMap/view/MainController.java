@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,6 +27,7 @@ import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Pillar;
 import cCarre.AffichageMap.model.Player;
 import cCarre.AffichageMap.model.ReverseObstacle;
+import cCarre.genmap.events.ChangeHeightEvent;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PauseEvent;
@@ -34,10 +37,13 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -119,6 +125,8 @@ public class MainController {
 	double vAnimDeath = 1000;
 	
 	private boolean preview = false;
+	
+	IntegerProperty elementProperty = new SimpleIntegerProperty(elementSize);
 
 	@FXML
 	private Player player;
@@ -153,6 +161,9 @@ public class MainController {
 
 		Level level = new Level();
 		preview = level.isPreview();
+//		if(preview) {
+//			elementSize /= 2;
+//		}
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
 		JSONObject Level = level.getLevel();
@@ -186,6 +197,7 @@ public class MainController {
 					break;
 				case '1' :
 					Ground platform = new Ground(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("ground")));
+					platform.heightProperty().bind(elementProperty);
 					
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = platform;
@@ -265,6 +277,7 @@ public class MainController {
 		// Charge le player
 		player = new Player(spawnX, spawnY, elementSize, elementSize, color, rootLayout, constGrav, constV);
 
+		System.out.println("heyy");
 		// pr�charge le spawn
 		loadSpawn();
 		
@@ -322,6 +335,15 @@ public class MainController {
         	delay.play();
         }
 
+	}
+	
+	@Subscribe
+	public void changeElemSizeByHeight(ChangeHeightEvent e) {
+		elementSize = e.getHeight()/(1080/elementSize);
+		System.out.println("cocuocu");
+		
+		elementProperty = new SimpleIntegerProperty(elementSize);
+		System.out.println(elementProperty);
 	}
 	
 	// Passe une couleur de String � Color
@@ -453,7 +475,7 @@ public class MainController {
 		// Chargement du spawn de la map
 		
 		double init = spawnX - elementSize * 6;
-		double end = spawnX + screenBounds.getWidth();
+		double end = spawnX + screenBounds.getWidth() / 2;
 		
 		// Reset des listes
 		rootLayout.getChildren().removeAll(platforms);

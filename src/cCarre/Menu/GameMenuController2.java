@@ -12,6 +12,9 @@ import org.json.simple.parser.ParseException;
 import cCarre.MainMenu;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
+import cCarre.genmap.events.ChangeHeightEvent;
+import cCarre.genmap.events.Ebus;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -56,12 +59,21 @@ public class GameMenuController2 {
 	@FXML
 	private void initialize() throws IOException, ParseException {
 		
-//		gamePreview.setStyle("-fx-background-color: red");
-		System.out.println(gamePreview.getBoundsInLocal());
-		elementSize = (int) (screenBounds.getWidth()/(1920/elementSize));
+		gamePreview.setStyle("-fx-background-color: red");
 		
 		mapList.add("Map2.0");
-	
+		
+		
+		ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> 
+    	System.out.println("Height: " + gamePreview.getHeight() + " Width: " + gamePreview.getWidth());
+
+		gamePreview.widthProperty().addListener((observable, oldValue, newValue) -> {
+			
+		});
+		gamePreview.heightProperty().addListener((observable, oldValue, newValue) -> {
+			Ebus.get().post(new ChangeHeightEvent(newValue.intValue()));
+			System.out.println("heyy");
+		}); 
 		handlePreview();
 	}
 	
@@ -72,8 +84,13 @@ public class GameMenuController2 {
 		// Load root layout from fxml file.
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainMenu.class.getResource("./AffichageMap/view/mainLayout.fxml"));
-		Pane game = (Pane) loader.load();
+		AnchorPane game = (AnchorPane) loader.load();
 		
+		
+		
+//		game.prefHeightProperty().bind(gamePreview.prefHeightProperty());
+//		game.setPrefWidth(600);
+//		game.setPrefHeight(400);
 		gamePreview.getChildren().add(game);
 	}
 	
