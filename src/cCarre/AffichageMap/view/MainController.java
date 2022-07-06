@@ -294,7 +294,7 @@ public class MainController {
         	    rootLayout.setStyle("-fx-background-color: "+backgroundColor);
 
                 // Si le jeu vient de l'�diteur, transmet les coo � la grille
-				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
+//				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
 				
 				
 				// Update de l'affichage de la map
