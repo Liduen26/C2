@@ -12,9 +12,6 @@ import org.json.simple.parser.ParseException;
 import cCarre.MainMenu;
 import cCarre.AffichageMap.model.Level;
 import cCarre.AffichageMap.view.MainController;
-import cCarre.genmap.events.ChangeHeightEvent;
-import cCarre.genmap.events.Ebus;
-import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -28,6 +25,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
@@ -39,7 +37,7 @@ public class GameMenuController2 {
 	public Button GoToBaseMenu;
 	
 	@FXML
-    private AnchorPane gamePreview;
+    private StackPane gamePreview;
 
 	MediaPlayer mediaPlayer;
 	
@@ -59,14 +57,13 @@ public class GameMenuController2 {
 	@FXML
 	private void initialize() throws IOException, ParseException {
 		
-		gamePreview.setStyle("-fx-background-color: red");
-		
 		mapList.add("Map2.0");
 		
 		handlePreview();
 	}
 	
 	public void handlePreview() throws IOException, ParseException {
+		// Settings de la preview
 		Level.setJsonLevel(readJSON(mapList.get(indexMap)));
 		Level.setPreview(true);
 		Level.setElemHeight((int) ((screenBounds.getHeight()/(1080/elementSize)) / 8) * 6);
@@ -76,12 +73,24 @@ public class GameMenuController2 {
 		loader.setLocation(MainMenu.class.getResource("./AffichageMap/view/mainLayout.fxml"));
 		AnchorPane game = (AnchorPane) loader.load();
 		
-		
-		
-//		game.prefHeightProperty().bind(gamePreview.prefHeightProperty());
-//		game.setPrefWidth(600);
-//		game.setPrefHeight(400);
+		// Place le FXML sur la HBox
 		gamePreview.getChildren().add(game);
+		
+		// Button play
+		Button play = new Button();
+		play.setText("Play");
+		play.setPrefWidth(160);
+		play.setPrefHeight(60);
+		play.setOnAction(e -> {
+			try {
+				LaunchGame(e);
+			} catch (IOException | ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		
+		gamePreview.getChildren().add(play);
 	}
 	
 	
@@ -174,6 +183,7 @@ public class GameMenuController2 {
         	
         	// D�finis la map � utiliser, attend un JSONArray
         	Level.setJsonLevel(jsonObject);
+        	Level.setPreview(false);
         	
         	// Load root layout from fxml file.
         	FXMLLoader loader = new FXMLLoader();
@@ -188,15 +198,38 @@ public class GameMenuController2 {
         	
         	MainController controller = loader.getController();
         	
-        	window.setFullScreen(true);
+        	window.setMaximized(true);
         	window.show();
         	
-        	scene.setOnKeyPressed(e -> {
-        		controller.startJump();
-        	});
         	scene.setOnKeyReleased(e -> {
-        		controller.stopJump();
-        	});
+    			if(e.getCode() == KeyCode.SPACE) {
+    				controller.stopJump();
+    			}
+    		});
+
+    		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+    			
+    			public void handle(KeyEvent event) {
+    				switch(event.getCode()) {
+    				
+    				case ESCAPE:
+    					try {
+    						controller.pause();
+    						
+    					} catch (IOException e) {
+    						// TODO Auto-generated catch block
+    						e.printStackTrace();
+    					}
+    					
+    					break;
+    				case SPACE:
+    					controller.startJump();
+    					break;
+    				default:
+    					break;
+    				}
+    			}
+    		});
         	
         }
     }

@@ -160,12 +160,13 @@ public class MainController {
 		Ebus.get().register(this);
 
 		Level level = new Level();
+		int levelLength = level.getLevelLength();
+		int levelHeight = level.getLevelHeight();
 		preview = level.isPreview();
 		if(preview) {
 			elementSize = level.getElemHeight();
+			levelLength = 30;
 		}
-		int levelLength = level.getLevelLength();
-		int levelHeight = level.getLevelHeight();
 		JSONObject Level = level.getLevel();
 		JSONArray map = (JSONArray) Level.get("map");
 		
@@ -280,6 +281,7 @@ public class MainController {
 		// pr�charge le spawn
 		loadSpawn();
 		
+		final int fLevelLength = levelLength;
 		// La cam�ra suit le joueur
         player.translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
@@ -289,7 +291,7 @@ public class MainController {
 
                 
         		// Adapte la taille de l'achor pane au niveau jou�, puis change la background color
-                rootLayout.resize((levelLength+25)*elementSize, (levelHeight+6)*elementSize);
+                rootLayout.resize((fLevelLength+25)*elementSize, (levelHeight+6)*elementSize);
         	    rootLayout.setStyle("-fx-background-color: "+backgroundColor);
 
                 // Si le jeu vient de l'�diteur, transmet les coo � la grille
@@ -465,7 +467,7 @@ public class MainController {
 		// Chargement du spawn de la map
 		
 		double init = spawnX - elementSize * 6;
-		double end = spawnX + screenBounds.getWidth() / 2;
+		double end = spawnX + screenBounds.getWidth();
 		
 		// Reset des listes
 		rootLayout.getChildren().removeAll(platforms);
