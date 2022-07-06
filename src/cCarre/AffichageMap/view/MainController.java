@@ -277,7 +277,6 @@ public class MainController {
 		// Charge le player
 		player = new Player(spawnX, spawnY, elementSize, elementSize, color, rootLayout, constGrav, constV);
 
-		System.out.println("heyy");
 		// pr�charge le spawn
 		loadSpawn();
 		
