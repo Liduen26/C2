@@ -26,7 +26,6 @@ import cCarre.AffichageMap.model.Pillar;
 import cCarre.AffichageMap.model.Player;
 import cCarre.AffichageMap.model.ReverseObstacle;
 import cCarre.genmap.events.Ebus;
-import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PauseEvent;
 import cCarre.genmap.events.PlayerState;
 import cCarre.genmap.events.RestartGameEvent;
@@ -86,6 +85,8 @@ public class MainController {
 	int spawnX, spawnY;
 	
 	int pieces = 0;
+	
+	int oldDiv = 0;
 	
 	boolean jump = false;
 	boolean onGround = true;
@@ -183,7 +184,7 @@ public class MainController {
 
 	    // Création du tableau dans lequel seront stockées toutes les formes de la map
 		mapRender = new Shape[levelHeight][levelLength];
-		int xFinish = 0;
+		int xFinish = 500;
 		
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
@@ -311,16 +312,17 @@ public class MainController {
 //				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
 				
 				
-				// Update de l'affichage de la map
-				double div = player.getTranslateX() / elementSize;
-				double oldDiv = 0;
-				if(div > oldDiv) {
-					oldDiv = div;
-					// Pourcentage, divisé par 100 car on attend qqchose entre 0 et 1
-					progressProperty.set((div * 100 / fxFinish) / 100) ;
-					score = (div * 100 / fxFinish);
-					this.renderMap();
-				}
+            }
+
+            // Update de l'affichage de la map
+            int div = (int) (player.getTranslateX() / elementSize);
+            
+            if(div > oldDiv) {
+            	oldDiv = div;
+            	// Pourcentage, divisé par 100 car on attend qqchose entre 0 et 1
+            	score = (div * 100 / fxFinish);
+            	progressProperty.set(score / 100) ;
+            	this.renderMap();
             }
         });
 		
@@ -374,7 +376,7 @@ public class MainController {
         		time = System.currentTimeMillis();
         		
         		// Let's go into the GAME !
-        		loop(120); 
+        		loop(150); 
         		
         		// Joue la musique
         		playMusic();
@@ -384,38 +386,6 @@ public class MainController {
 
 	}
 	
-	// Passe une couleur de String � Color
-    private String getHexColor(JSONObject jsonObject, String mapElement){
-		String color;
-		String hexColor;
-		
-		color = (String) ((JSONObject) jsonObject.get("color")).get(mapElement);
-
-		hexColor = "#"+color.substring(2,8);
-		return hexColor;
-    }
-	
-	private Color parseColor(String colors) {
-		Color color = Color.BLUE; 
-		switch (colors) {
-			case "blue":
-				color = Color.BLUE;
-				break;
-				
-			case "red":
-				color = Color.RED;
-				break;
-				
-			case "green":
-				color = Color.GREEN;
-				break;
-				
-			case "yellow":
-				color = Color.YELLOW;
-				break;
-		}
-		return color;
-	}
 
 	/**
 	 * Chef d'orchestre du jeu, c'est un boucle qui update @fps fois par seconde
@@ -531,87 +501,9 @@ public class MainController {
 			for(int x = (int) Math.max(0, init); x < (int) Math.min(mapRender[0].length, end); x++) {
 				
 				if(mapRender[y][x] != null && ((x * elementSize) > init && (x * elementSize) < end)) {
-					if(mapRender[y][x] instanceof Ground) {
-						platforms.add((Ground) mapRender[y][x]);
-						
-					} else if(mapRender[y][x] instanceof GroundSlab) {
-						platforms.add((GroundSlab) mapRender[y][x]);
-
-					} else if(mapRender[y][x] instanceof Pillar) {
-						platforms.add((Pillar) mapRender[y][x]);
-
-					} else if(mapRender[y][x] instanceof Obstacle) {
-						triangles.add((Obstacle) mapRender[y][x]);
-						
-					} else if(mapRender[y][x] instanceof ReverseObstacle) {
-						triangles.add((ReverseObstacle) mapRender[y][x]);
-						
-					} else if(mapRender[y][x] instanceof Coin) {
-						coins.add((Coin) mapRender[y][x]);
-						
-					} else if(mapRender[y][x] instanceof FinishBlock) {
-						finishBlocks.add((FinishBlock) mapRender[y][x]);
-					}
 					
-					rootLayout.getChildren().add(mapRender[y][x]);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Supprime les blocs qui ne sont plus dans le champ, et affiche ceux qui y arrivent
-	 */
-	private void renderMap() {
-		// constante de marges gauches et droites
-		final int spaceLeft = 7;
-		final int spaceRight = 4;
-		
-		double init = player.getTranslateX() - (elementSize * spaceLeft);
-		double end = player.getTranslateX() + (screenBounds.getWidth() - (elementSize * spaceRight));
-		
-		
-		// lis la map de haut en bas, seulement les x dont il a besoin
-		for(int y = 0; y < mapRender.length; y++) {
-			
-			for(int x = Math.max(0, (int) (init / elementSize) - 4); x < Math.min(mapRender[0].length, end / elementSize); x++) {
-				// Supprime ce qui est derriere
-				if(rootLayout.getChildren().contains(mapRender[y][x])) {
-					if(mapRender[y][x].getLayoutX() < init ) {
+					if(y > (player.getTranslateY() / elementSize) - 3) {
 						
-						// Suppr des listes de collisions
-						if(mapRender[y][x] instanceof Ground) {
-							platforms.remove((Ground) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof GroundSlab) {
-							platforms.remove((GroundSlab) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof Pillar) {
-							platforms.remove((Pillar) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof Obstacle) {
-							triangles.remove((Obstacle) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof ReverseObstacle) {
-							triangles.remove((ReverseObstacle) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof Coin) {
-							coins.remove((Coin) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof FinishBlock) {
-							finishBlocks.remove((FinishBlock) mapRender[y][x]);
-						}
-						
-						// Suppr le visible
-						rootLayout.getChildren().remove(mapRender[y][x]);
-					}
-				}
-				
-				// Ajoute les cases si besoin
-				if(mapRender[y][x] != null && (mapRender[y][x].getLayoutX() > init) && (mapRender[y][x].getLayoutX() < player.getTranslateX() + end)) {
-					if(!rootLayout.getChildren().contains(mapRender[y][x])) {
-						
-						// Suppr des listes de collisions
 						if(mapRender[y][x] instanceof Ground) {
 							platforms.add((Ground) mapRender[y][x]);
 							
@@ -634,7 +526,103 @@ public class MainController {
 							finishBlocks.add((FinishBlock) mapRender[y][x]);
 						}
 						
+					}
+					if(!rootLayout.getChildren().contains(mapRender[y][x])) {
+						rootLayout.getChildren().add(mapRender[y][x]);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Supprime les blocs qui ne sont plus dans le champ, et affiche ceux qui y arrivent
+	 */
+	private void renderMap() {
+		// constante de marges gauches et droites
+		final int spaceLeft = 6;
+		final int spaceRight = 4;
+		
+		double init = player.getTranslateX() - (elementSize * spaceLeft);
+		double end = player.getTranslateX() + (screenBounds.getWidth() - (elementSize * spaceRight));
+		
+		
+		// lis la map de haut en bas, seulement les x dont il a besoin
+		for(int y = 0; y < mapRender.length; y++) {
+			
+			for(int x = Math.max(0, (int) (init / elementSize) - 4); x < Math.min(mapRender[0].length, end / elementSize); x++) {
+				
+				// Suppr ce qui est derri�re le player
+				if(mapRender[y][x] != null && x < (player.getTranslateX() / elementSize) - 1) {
+//					System.out.println(x);
+					
+					// Suppr des listes de collisions
+					if(mapRender[y][x] instanceof Ground && platforms.contains(mapRender[y][x])) {
+						platforms.remove((Ground) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof GroundSlab && platforms.contains(mapRender[y][x])) {
+						platforms.remove((GroundSlab) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof Pillar && platforms.contains(mapRender[y][x])) {
+						platforms.remove((Pillar) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof Obstacle && triangles.contains(mapRender[y][x])) {
+						triangles.remove((Obstacle) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof ReverseObstacle && triangles.contains(mapRender[y][x])) {
+						triangles.remove((ReverseObstacle) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof Coin && coins.contains(mapRender[y][x])) {
+						coins.remove((Coin) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof FinishBlock && finishBlocks.contains(mapRender[y][x])) {
+						finishBlocks.remove((FinishBlock) mapRender[y][x]);
+					}
+					
+				}
+				
+				// Supprime ce qui sort de l'�cran (visuel)
+				if(mapRender[y][x] != null && mapRender[y][x].getLayoutX() < init) {
+					if(rootLayout.getChildren().contains(mapRender[y][x])) {
 						// Suppr le visible
+						rootLayout.getChildren().remove(mapRender[y][x]);
+					}
+				}
+				
+				
+				
+				// Ajoute les cases si besoin | Grand IF (visuel)
+				if(mapRender[y][x] != null && (mapRender[y][x].getLayoutX() > init) && (mapRender[y][x].getLayoutX() < player.getTranslateX() + end)) {
+					
+					// Petit if (collisions)
+					if(y > (player.getTranslateY() / elementSize) - 3 && x < (player.getTranslateX() / elementSize) + 3 && x > (player.getTranslateX() / elementSize)) {
+						
+						// Ajout aux listes de collisions
+						if(mapRender[y][x] instanceof Ground && !platforms.contains(mapRender[y][x])) {
+							platforms.add((Ground) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof GroundSlab && !platforms.contains(mapRender[y][x])) {
+							platforms.add((GroundSlab) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof Pillar && !platforms.contains(mapRender[y][x])) {
+							platforms.add((Pillar) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof Obstacle && !triangles.contains(mapRender[y][x])) {
+							triangles.add((Obstacle) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof ReverseObstacle && !triangles.contains(mapRender[y][x])) {
+							triangles.add((ReverseObstacle) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof Coin && !coins.contains(mapRender[y][x])) {
+							coins.add((Coin) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof FinishBlock && !finishBlocks.contains(mapRender[y][x])) {
+							finishBlocks.add((FinishBlock) mapRender[y][x]);
+						}
+					}
+
+					if(!rootLayout.getChildren().contains(mapRender[y][x]) && x > (player.getTranslateX() / elementSize)) {
+						// ajoute le visible
 						rootLayout.getChildren().add(mapRender[y][x]);
 					}
 				}
@@ -969,6 +957,8 @@ public class MainController {
 			// Sauf si la timeline est stop,
 			if(time1.getStatus() != Animation.Status.STOPPED) {
 				// Le joueur respawn
+				oldDiv = 0;
+				
 				// Reset de la cam
 		    	rootLayout.setLayoutX(0); // TP la cam�ra au d�but du jeu
 		    	Coin.setLayoutX(0);
@@ -1037,4 +1027,37 @@ public class MainController {
 		musicPlayer.setVolume(1.5 / 10);
 		musicPlayer.play();
 	}
+	
+	private Color parseColor(String colors) {
+		Color color = Color.BLUE; 
+		switch (colors) {
+			case "blue":
+				color = Color.BLUE;
+				break;
+				
+			case "red":
+				color = Color.RED;
+				break;
+				
+			case "green":
+				color = Color.GREEN;
+				break;
+				
+			case "yellow":
+				color = Color.YELLOW;
+				break;
+		}
+		return color;
+	}
+	// Passe une couleur de String � Color
+    private String getHexColor(JSONObject jsonObject, String mapElement){
+		String color;
+		String hexColor;
+		
+		color = (String) ((JSONObject) jsonObject.get("color")).get(mapElement);
+
+		hexColor = "#"+color.substring(2,8);
+		return hexColor;
+    }
+	
 }
