@@ -12,12 +12,23 @@ public class Level {
 	
 	private static JSONObject jsonMap;
 	
+	private static boolean preview = false;
+	private static int elemHeight;
+
 	public Level() {
 		this.idLevel = 0;
 		this.levelLength = ((JSONArray) ((JSONArray) jsonMap.get("map")).get(0)).size();
 		this.levelWidth = this.levelLength * 60;
 		this.totalCoin = 0;
 		this.levelHeight = ((JSONArray) jsonMap.get("map")).size();
+	}
+	
+	public static boolean isPreview() {
+		return preview;
+	}
+
+	public static void setPreview(boolean preview) {
+		Level.preview = preview;
 	}
 	
 	public int getLevelWidth(){
@@ -62,5 +73,13 @@ public class Level {
 	 */
 	public static void setJsonLevel(JSONObject json) {
 		Level.jsonMap = json;
+	}
+
+	public static void setElemHeight(int elemHeight) {
+		Level.elemHeight = elemHeight;
+	}
+	
+	public static int getElemHeight() {
+		return Level.elemHeight;
 	}
 }

@@ -18,7 +18,7 @@ public class PauseMenuController {
 	@FXML public Button GoToGameMenu;
 
 	public void GoToBaseMenu(ActionEvent event) throws IOException {
-		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../../Menu/GameMenu.fxml"));
+		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../../Menu/GameMenu2.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());

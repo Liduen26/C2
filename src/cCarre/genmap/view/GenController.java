@@ -240,6 +240,7 @@ public class GenController {
 		
 		// D�finis la map � utiliser, attend un JSONArray
 		Level.setJsonLevel(mapGen);
+		Level.setPreview(false);
 		
 		// Set the x coordinate of the start of the game
 		coTest = grille.getLayoutX();

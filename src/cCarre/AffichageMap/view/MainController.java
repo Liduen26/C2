@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,6 +27,7 @@ import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Pillar;
 import cCarre.AffichageMap.model.Player;
 import cCarre.AffichageMap.model.ReverseObstacle;
+import cCarre.genmap.events.ChangeHeightEvent;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PauseEvent;
@@ -34,10 +37,13 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -117,6 +123,10 @@ public class MainController {
 	double toolBarHeight = 0;
 	
 	double vAnimDeath = 1000;
+	
+	private boolean preview = false;
+	
+	IntegerProperty elementProperty = new SimpleIntegerProperty(elementSize);
 
 	@FXML
 	private Player player;
@@ -152,6 +162,11 @@ public class MainController {
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
+		preview = level.isPreview();
+		if(preview) {
+			elementSize = level.getElemHeight();
+			levelLength = 30;
+		}
 		JSONObject Level = level.getLevel();
 		JSONArray map = (JSONArray) Level.get("map");
 		
@@ -183,7 +198,7 @@ public class MainController {
 					break;
 				case '1' :
 					Ground platform = new Ground(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("ground")));
-					
+										
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = platform;
 					break;
@@ -265,6 +280,7 @@ public class MainController {
 		// pr�charge le spawn
 		loadSpawn();
 		
+		final int fLevelLength = levelLength;
 		// La cam�ra suit le joueur
         player.translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
@@ -274,7 +290,7 @@ public class MainController {
 
                 
         		// Adapte la taille de l'achor pane au niveau jou�, puis change la background color
-                rootLayout.resize((levelLength+25)*elementSize, (levelHeight+6)*elementSize);
+                rootLayout.resize((fLevelLength+25)*elementSize, (levelHeight+6)*elementSize);
         	    rootLayout.setStyle("-fx-background-color: "+backgroundColor);
 
                 // Si le jeu vient de l'�diteur, transmet les coo � la grille
@@ -293,35 +309,36 @@ public class MainController {
 		
        
 
-        
+        if(!preview) {
+        	// Charge le fichier des coins
+        	loadCoin();
+        	
+        	// Cr�ation du cube d'anim de mort
+        	ragdoll = new Rectangle();
+        	ragdoll.setManaged(false);
+        	
+        	// Opacit� de base
+        	ragdoll.setOpacity(0.5);
+        	
+        	PauseTransition delay = new PauseTransition(Duration.seconds(1));
+        	delay.setOnFinished( event -> {
+        		//init temps
+        		newTime = System.nanoTime();
+        		time = System.currentTimeMillis();
+        		
+        		// Let's go into the GAME !
+        		loop(120); 
+        		
+        		// Joue la musique
+        		playMusic();
+        	});
+        	delay.play();
+        }
 
-		// Charge le fichier des coins
-		loadCoin();
-
-		// Cr�ation du cube d'anim de mort
-		ragdoll = new Rectangle();
-		ragdoll.setManaged(false);
-		
-		// Opacit� de base
-		ragdoll.setOpacity(0.5);
-		
-		PauseTransition delay = new PauseTransition(Duration.seconds(1));
-		delay.setOnFinished( event -> {
-			//init temps
-			newTime = System.nanoTime();
-			time = System.currentTimeMillis();
-			
-			// Let's go into the GAME !
-			loop(120); 
-			
-			// Joue la musique
-			playMusic();
-		});
-		delay.play();
 	}
 	
 	// Passe une couleur de String � Color
-    String getHexColor(JSONObject jsonObject, String mapElement){
+    private String getHexColor(JSONObject jsonObject, String mapElement){
 		String color;
 		String hexColor;
 		
