@@ -13,12 +13,12 @@
          <children>
             <Label layoutX="745.0" layoutY="70.0" text="BOUTIQUE" textFill="WHITE">
                <font>
-                  <Font size="96.0" />
+                  <Font name="Courier New Bold" size="96.0" />
                </font>
             </Label>
             <Button layoutX="850.0" layoutY="842.0" mnemonicParsing="false" onAction="#GoToBaseMenu" stylesheets="@button2.css" text="Retour">
                <font>
-                  <Font size="48.0" />
+                  <Font name="Courier New Bold" size="48.0" />
                </font>
             </Button>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="BLUE" height="100.0" layoutX="278.0" layoutY="300.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
@@ -27,22 +27,22 @@
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="YELLOW" height="100.0" layoutX="1478.0" layoutY="300.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
             <Button layoutX="238.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToBlue" stylesheets="@button2.css" text="Select">
                <font>
-                  <Font size="48.0" />
+                  <Font name="Courier New Bold" size="48.0" />
                </font>
             </Button>
             <Button layoutX="579.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToRed" stylesheets="@button2.css" text="Select">
                <font>
-                  <Font size="48.0" />
+                  <Font name="Courier New Bold" size="48.0" />
                </font>
             </Button>
             <Button layoutX="1008.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToGreen" stylesheets="@button2.css" text="Select">
                <font>
-                  <Font size="48.0" />
+                  <Font name="Courier New Bold" size="48.0" />
                </font>
             </Button>
             <Button layoutX="1429.0" layoutY="480.0" mnemonicParsing="false" onAction="#ChangeColorToYellow" stylesheets="@button2.css" text="Select">
                <font>
-                  <Font size="48.0" />
+                  <Font name="Courier New Bold" size="48.0" />
                </font>
             </Button>
          </children>

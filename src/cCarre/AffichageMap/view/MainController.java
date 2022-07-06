@@ -56,6 +56,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -106,6 +107,7 @@ public class MainController {
 	
 	MediaPlayer mediaPlayer = null;
 	MediaPlayer musicPlayer = null;
+	Media mediaSound = null;
 	String nameMusic = "Projet64_2.wav";
 	
 	boolean newGround = false;
@@ -131,7 +133,8 @@ public class MainController {
 	double score = 0;
 	DoubleProperty progressProperty = new SimpleDoubleProperty(score);
 	double bestScore = 0;
-	StringProperty bestProperty = new SimpleStringProperty("Best : " + score);
+	StringProperty bestProperty = new SimpleStringProperty("Best : 0.0%");
+	HBox boxScore = null;
 
 	@FXML
 	private Player player;
@@ -286,8 +289,10 @@ public class MainController {
 		// pr�charge le spawn
 		loadSpawn();
 		
+		
 		final int fLevelLength = levelLength;
 		final int fxFinish = xFinish;
+		
 		// La cam�ra suit le joueur
         player.translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
@@ -295,8 +300,8 @@ public class MainController {
                 rootLayout.setLayoutX(-(offset - 300));
                 Coin.setLayoutX(+(offset - 300));
                 Coin.toFront();
-                pBar.setLayoutX((+(offset - 300) + screenBounds.getWidth() / 2) - (pBar.getPrefWidth() / 2));
-                pBar.toFront();
+                boxScore.setLayoutX((+(offset - 300) + screenBounds.getWidth() / 2) - (pBar.getPrefWidth() / 2));
+                boxScore.toFront();
                 
         		// Adapte la taille de l'achor pane au niveau jou�, puis change la background color
                 rootLayout.resize((fLevelLength+25)*elementSize, (levelHeight+6)*elementSize);
@@ -322,25 +327,35 @@ public class MainController {
        
 
         if(!preview) {
+        	Coin.setTextFill(Color.DARKGRAY);
+        	
         	Ebus.get().register(this);
         	
-        	
-        	HBox box = new HBox();
-        	box.setLayoutX((screenBounds.getWidth() / 2) - (box.getPrefWidth() / 2));
-        	box.setLayoutY(15);
-        	rootLayout.getChildren().add(box);
+        	// Hbox du score
+        	boxScore = new HBox();
+        	boxScore.setLayoutY(15);
+        	boxScore.setAlignment(Pos.CENTER);
+        	boxScore.setSpacing(20);
         	
         	// ProgressBar
         	pBar = new ProgressBar();
         	pBar.setPrefWidth(800);
         	pBar.setProgress(0);
         	pBar.progressProperty().bind(progressProperty);
-        	pBar.setStyle("-fx-accent: " + this.getHexColor((JSONObject) Level, "ground"));
-        	box.getChildren().add(pBar);
+        	pBar.setStyle("-fx-accent: " + this.getHexColor(Level, "ground"));
+        	boxScore.getChildren().add(pBar);
         	
         	// Score
         	Label lScore = new Label();
         	lScore.textProperty().bind(bestProperty);
+        	lScore.setTextFill(Color.DARKGRAY);
+        	lScore.setFont(Font.font ("Courier new", 20));
+        	lScore.setStyle("-fx-font-weight: bold");
+        	boxScore.getChildren().add(lScore);
+        	
+        	boxScore.setLayoutX((screenBounds.getWidth() / 2) - (pBar.getPrefWidth() / 2));
+        	rootLayout.getChildren().add(boxScore);
+        	
         	
         	// Charge le fichier des coins
         	loadCoin();
@@ -456,7 +471,7 @@ public class MainController {
 	
 	            	if (collisionDetected) {
 	            		finish = true;
-	            		stopMusic();
+	            		musicPlayer.stop();
 	            		fin(recc);
 	            	}
 	            }
@@ -942,7 +957,7 @@ public class MainController {
 
 	public void setStop() {
 		time1.stop();
-		stopMusic();
+		musicPlayer.stop();
 		
 	}
 	
@@ -957,16 +972,16 @@ public class MainController {
 				// Reset de la cam
 		    	rootLayout.setLayoutX(0); // TP la cam�ra au d�but du jeu
 		    	Coin.setLayoutX(0);
-				pBar.setLayoutX((screenBounds.getWidth() / 2) - (pBar.getPrefWidth() / 2));
+				boxScore.setLayoutX((screenBounds.getWidth() / 2) - (pBar.getPrefWidth() / 2));
 				progressProperty.set(0);
 				
 				running = e.getState();
 				dead = !e.getState();
 				
-				playMusic();
+				musicPlayer.play();
 				this.loadSpawn();
 				Coin.toFront();
-				pBar.toFront();
+				boxScore.toFront();
 			}
 			
 			rootLayout.getChildren().remove(ragdoll);
@@ -986,9 +1001,12 @@ public class MainController {
 			rootLayout.getChildren().add(ragdoll);
 			
 			saveCoin(pieces);
-			stopMusic();
+			musicPlayer.stop();
 			
-			bestProperty.set("Best : " + score);
+			if(bestScore < score) {
+				bestScore = Math.floor(score);
+				bestProperty.set("Best : " + bestScore + "%");				
+			}
 		}
 	}
 	
@@ -1001,9 +1019,9 @@ public class MainController {
 	private void playSound(String name, double volume) {
 		File file = new File("resources/audio/" + name);
 		
-		Media media = new Media(file.toURI().toString());
+		mediaSound = new Media(file.toURI().toString());
 		
-		mediaPlayer = new MediaPlayer(media);
+		mediaPlayer = new MediaPlayer(mediaSound);
 		
 		mediaPlayer.setVolume(volume / 10);
 		mediaPlayer.play();
@@ -1018,11 +1036,5 @@ public class MainController {
 		
 		musicPlayer.setVolume(1.5 / 10);
 		musicPlayer.play();
-	}
-	
-	private void stopMusic() {
-		
-		musicPlayer.stop();
-		
 	}
 }
