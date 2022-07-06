@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -27,7 +25,6 @@ import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Pillar;
 import cCarre.AffichageMap.model.Player;
 import cCarre.AffichageMap.model.ReverseObstacle;
-import cCarre.genmap.events.ChangeHeightEvent;
 import cCarre.genmap.events.Ebus;
 import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PauseEvent;
@@ -37,18 +34,21 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -111,6 +111,8 @@ public class MainController {
 	boolean newGround = false;
 	boolean oldGround = false;
 	
+	ProgressBar pBar = null;
+	
 	// Pour changer la vitesse
 	int constV = 430; 
 	int constGrav = 900;
@@ -126,7 +128,10 @@ public class MainController {
 	
 	private boolean preview = false;
 	
-	IntegerProperty elementProperty = new SimpleIntegerProperty(elementSize);
+	double score = 0;
+	DoubleProperty progressProperty = new SimpleDoubleProperty(score);
+	double bestScore = 0;
+	StringProperty bestProperty = new SimpleStringProperty("Best : " + score);
 
 	@FXML
 	private Player player;
@@ -142,6 +147,7 @@ public class MainController {
 	
 
 	
+	@SuppressWarnings("static-access")
 	@FXML
 	private void initialize() {
 		// Adapte la vitesse et la gravit� et les �l�ments � la taille de l'�cran
@@ -155,17 +161,15 @@ public class MainController {
 		jumpForce = (int) (screenBounds.getWidth()/(1920/jumpForce));
 		elementSize = (int) (screenBounds.getWidth()/(1920/elementSize));
 
-		
-		
-		Ebus.get().register(this);
 
+		// Init du Level
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
 		preview = level.isPreview();
 		if(preview) {
 			elementSize = level.getElemHeight();
-			levelLength = 30;
+			levelLength = Math.min(levelLength, 30);
 		}
 		JSONObject Level = level.getLevel();
 		JSONArray map = (JSONArray) Level.get("map");
@@ -174,8 +178,9 @@ public class MainController {
 		// Met la couleur sur le debut du niveau
 	    rootLayout.setStyle("-fx-background-color: "+backgroundColor);
 
-
+	    // Création du tableau dans lequel seront stockées toutes les formes de la map
 		mapRender = new Shape[levelHeight][levelLength];
+		int xFinish = 0;
 		
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
@@ -243,6 +248,7 @@ public class MainController {
 
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = finishBlock;
+					xFinish = x;
 					break;
 				case 's' :
 					// Test rapide de l'�diteur
@@ -281,13 +287,16 @@ public class MainController {
 		loadSpawn();
 		
 		final int fLevelLength = levelLength;
+		final int fxFinish = xFinish;
 		// La cam�ra suit le joueur
         player.translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
                 Coin.setLayoutX(+(offset - 300));
-
+                Coin.toFront();
+                pBar.setLayoutX((+(offset - 300) + screenBounds.getWidth() / 2) - (pBar.getPrefWidth() / 2));
+                pBar.toFront();
                 
         		// Adapte la taille de l'achor pane au niveau jou�, puis change la background color
                 rootLayout.resize((fLevelLength+25)*elementSize, (levelHeight+6)*elementSize);
@@ -302,6 +311,9 @@ public class MainController {
 				double oldDiv = 0;
 				if(div > oldDiv) {
 					oldDiv = div;
+					// Pourcentage, divisé par 100 car on attend qqchose entre 0 et 1
+					progressProperty.set((div * 100 / fxFinish) / 100) ;
+					score = (div * 100 / fxFinish);
 					this.renderMap();
 				}
             }
@@ -310,6 +322,26 @@ public class MainController {
        
 
         if(!preview) {
+        	Ebus.get().register(this);
+        	
+        	
+        	HBox box = new HBox();
+        	box.setLayoutX((screenBounds.getWidth() / 2) - (box.getPrefWidth() / 2));
+        	box.setLayoutY(15);
+        	rootLayout.getChildren().add(box);
+        	
+        	// ProgressBar
+        	pBar = new ProgressBar();
+        	pBar.setPrefWidth(800);
+        	pBar.setProgress(0);
+        	pBar.progressProperty().bind(progressProperty);
+        	pBar.setStyle("-fx-accent: " + this.getHexColor((JSONObject) Level, "ground"));
+        	box.getChildren().add(pBar);
+        	
+        	// Score
+        	Label lScore = new Label();
+        	lScore.textProperty().bind(bestProperty);
+        	
         	// Charge le fichier des coins
         	loadCoin();
         	
@@ -603,7 +635,7 @@ public class MainController {
 			player.death(spawnX, spawnY, rootLayout, Coin);
 		}
 		// meurt quand tombe dans le vide
-		if(player.getTranslateY() > screenBounds.getHeight() - toolBarHeight) {
+		if(player.getTranslateY() > screenBounds.getHeight() - toolBarHeight || player.getTranslateY() < 0) {
 			player.death(spawnX, spawnY, rootLayout, Coin);
 			playSound("Roblox-Death-Sound-cut.wav", 4);
 		}
@@ -628,7 +660,7 @@ public class MainController {
 	        				verticalVelocity = 0;
 	        				collisionDetected = true;
 	        				System.out.println("Ca c le plafond -------------------------------------------------------------------------------------");
-	        				playSound("Minecraft-Death-Sound-cut.wav", 5);
+	        				playSound("Minecraft-Death-Sound-cut.wav", 4);
 						} else {
 							// Sol
 	        				player.setTranslateY(platform.getLayoutY() - (player.getHeight() - 0.0001));
@@ -650,7 +682,7 @@ public class MainController {
 						System.out.println("Ca c un bord -------------------------------------------------------------------------------------");
 						verticalVelocity = 0;
 						collisionDetected = true;
-						playSound("Minecraft-Death-Sound-cut.wav", 5);
+						playSound("Minecraft-Death-Sound-cut.wav", 4);
         			}
         		}
         	}
@@ -671,7 +703,7 @@ public class MainController {
 				if (intersect.getBoundsInLocal().getWidth() != -1) {
 					collisionDetected = true;
 					System.out.println("Ca c un triangle -------------------------------------------------------------------------------------");
-					playSound("Roblox-Death-Sound-cut.wav", 4);
+					playSound("Roblox-Death-Sound-cut.wav", 3);
 					verticalVelocity = 0;
 				}
 			}
@@ -855,7 +887,6 @@ public class MainController {
 			popup();
 			
 			recc = false;
-			System.out.println("fin");
 		}
 	}
 	
@@ -923,11 +954,19 @@ public class MainController {
 			// Sauf si la timeline est stop,
 			if(time1.getStatus() != Animation.Status.STOPPED) {
 				// Le joueur respawn
+				// Reset de la cam
+		    	rootLayout.setLayoutX(0); // TP la cam�ra au d�but du jeu
+		    	Coin.setLayoutX(0);
+				pBar.setLayoutX((screenBounds.getWidth() / 2) - (pBar.getPrefWidth() / 2));
+				progressProperty.set(0);
+				
 				running = e.getState();
 				dead = !e.getState();
 				
 				playMusic();
 				this.loadSpawn();
+				Coin.toFront();
+				pBar.toFront();
 			}
 			
 			rootLayout.getChildren().remove(ragdoll);
@@ -949,6 +988,7 @@ public class MainController {
 			saveCoin(pieces);
 			stopMusic();
 			
+			bestProperty.set("Best : " + score);
 		}
 	}
 	
