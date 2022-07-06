@@ -161,9 +161,9 @@ public class MainController {
 
 		Level level = new Level();
 		preview = level.isPreview();
-//		if(preview) {
-//			elementSize /= 2;
-//		}
+		if(preview) {
+			elementSize = level.getElemHeight();
+		}
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
 		JSONObject Level = level.getLevel();
@@ -197,8 +197,7 @@ public class MainController {
 					break;
 				case '1' :
 					Ground platform = new Ground(x*elementSize, y*elementSize, elementSize, elementSize, Color.valueOf((String) ((JSONObject) Level.get("color")).get("ground")));
-					platform.heightProperty().bind(elementProperty);
-					
+										
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = platform;
 					break;
@@ -335,15 +334,6 @@ public class MainController {
         	delay.play();
         }
 
-	}
-	
-	@Subscribe
-	public void changeElemSizeByHeight(ChangeHeightEvent e) {
-		elementSize = e.getHeight()/(1080/elementSize);
-		System.out.println("cocuocu");
-		
-		elementProperty = new SimpleIntegerProperty(elementSize);
-		System.out.println(elementProperty);
 	}
 	
 	// Passe une couleur de String � Color

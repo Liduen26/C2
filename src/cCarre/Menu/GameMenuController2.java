@@ -63,23 +63,13 @@ public class GameMenuController2 {
 		
 		mapList.add("Map2.0");
 		
-		
-		ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> 
-    	System.out.println("Height: " + gamePreview.getHeight() + " Width: " + gamePreview.getWidth());
-
-		gamePreview.widthProperty().addListener((observable, oldValue, newValue) -> {
-			
-		});
-		gamePreview.heightProperty().addListener((observable, oldValue, newValue) -> {
-			Ebus.get().post(new ChangeHeightEvent(newValue.intValue()));
-			System.out.println("heyy");
-		}); 
 		handlePreview();
 	}
 	
 	public void handlePreview() throws IOException, ParseException {
 		Level.setJsonLevel(readJSON(mapList.get(indexMap)));
 		Level.setPreview(true);
+		Level.setElemHeight((int) ((screenBounds.getHeight()/(1080/elementSize)) / 8) * 6);
 		
 		// Load root layout from fxml file.
 		FXMLLoader loader = new FXMLLoader();
@@ -156,10 +146,7 @@ public class GameMenuController2 {
 					break;
 				}
 			}
-			
 		});
-		
-		
 	}
 	public void GoToEditLevel(ActionEvent event) throws IOException {
 		playSound("Click_Menus.wav");

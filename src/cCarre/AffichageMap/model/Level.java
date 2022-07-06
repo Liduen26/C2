@@ -13,6 +13,7 @@ public class Level {
 	private static JSONObject jsonMap;
 	
 	private static boolean preview = false;
+	private static int elemHeight;
 
 	public Level() {
 		this.idLevel = 0;
@@ -72,5 +73,13 @@ public class Level {
 	 */
 	public static void setJsonLevel(JSONObject json) {
 		Level.jsonMap = json;
+	}
+
+	public static void setElemHeight(int elemHeight) {
+		Level.elemHeight = elemHeight;
+	}
+	
+	public static int getElemHeight() {
+		return Level.elemHeight;
 	}
 }
