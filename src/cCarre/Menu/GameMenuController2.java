@@ -28,6 +28,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -79,8 +80,10 @@ public class GameMenuController2 {
 		// Button play
 		Button play = new Button();
 		play.setText("Play");
-		play.setPrefWidth(160);
-		play.setPrefHeight(60);
+		play.setPrefWidth(200);
+		play.setFont(Font.font ("Courier new", 48));
+		play.setPrefHeight(100);
+		play.setStyle("-fx-font-weight: bold");
 		play.setOnAction(e -> {
 			try {
 				LaunchGame(e);
