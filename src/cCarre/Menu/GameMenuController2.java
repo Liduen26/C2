@@ -58,24 +58,26 @@ public class GameMenuController2 {
 	@FXML
 	private void initialize() throws IOException, ParseException {
 		
+		mapList.add("Intro");
 		mapList.add("Map2.6");
-		
 		handlePreview();
 	}
-	public void nextLevel() {
+	public void nextLevel() throws IOException, ParseException {
 		indexMap += 1;
-
-		if (indexMap > 1) {
+		if (indexMap > mapList.size() -1) {
 			indexMap = 0;
 
 		}
+		handlePreview();
 	}
 	
-	public void prevLevel() {
+	public void prevLevel() throws IOException, ParseException {
 		indexMap -= 1;
+		
 		if (indexMap < 0) {
-			indexMap = 1;
+			indexMap = mapList.size() -1;
 		}
+		handlePreview();
 	}
 	
 	
@@ -109,7 +111,21 @@ public class GameMenuController2 {
 				e1.printStackTrace();
 			}
 		});
+		play.setOnMouseMoved(e -> {
+			play.setText("Play");
+			play.setPrefWidth(200);
+			play.setFont(Font.font ("Courier new", 48));
+			play.setPrefHeight(100);
+			play.setStyle("-fx-font-weight: bold");
+		});
 		
+		play.setOnMousePressed(e -> {
+			play.setText("Play");
+			play.setPrefWidth(200);
+			play.setFont(Font.font ("Courier new", 48));
+			play.setPrefHeight(100);
+			play.setStyle("-fx-font-weight: bold");
+		});
 		gamePreview.getChildren().add(play);
 	}
 	
