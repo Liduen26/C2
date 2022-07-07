@@ -52,6 +52,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -789,12 +790,12 @@ public class MainController {
 		jump = false;
 	}
 	public void pause() throws IOException {
-		if (!pause && !finish) {
+		if (!pause && !finish && musicPlayer != null) {
 			pause = true;
 			Ebus.get().post(new PauseEvent());
 			
 			FXMLLoader gameLoader = new FXMLLoader();
-			gameLoader.setLocation(MainMenu.class.getResource("./AffichageMap/view/PauseMenu2.fxml"));
+			gameLoader.setLocation(MainMenu.class.getResource("./AffichageMap/view/PauseMenu.fxml"));
 			game = (Pane) gameLoader.load();
 			game.setLayoutX(-rootLayout.getLayoutX());
 			// Met le jeu par dessus la grille
@@ -923,7 +924,7 @@ public class MainController {
 			if(!edit) {
 				Parent menu = null;
 				try {
-					menu = FXMLLoader.load(getClass().getResource("../../Menu/GameMenu.fxml"));
+					menu = FXMLLoader.load(getClass().getResource("../../Menu/GameMenu2.fxml"));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
