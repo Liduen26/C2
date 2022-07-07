@@ -252,7 +252,7 @@ public class MainController {
 
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = finishBlock;
-					xFinish = x;
+					xFinish = x - 1;
 					break;
 				case 's' :
 					// Test rapide de l'�diteur
@@ -794,7 +794,7 @@ public class MainController {
 			Ebus.get().post(new PauseEvent());
 			
 			FXMLLoader gameLoader = new FXMLLoader();
-			gameLoader.setLocation(MainMenu.class.getResource("./AffichageMap/view/PauseMenu.fxml"));
+			gameLoader.setLocation(MainMenu.class.getResource("./AffichageMap/view/PauseMenu2.fxml"));
 			game = (Pane) gameLoader.load();
 			game.setLayoutX(-rootLayout.getLayoutX());
 			// Met le jeu par dessus la grille
