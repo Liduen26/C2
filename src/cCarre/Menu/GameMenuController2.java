@@ -58,7 +58,7 @@ public class GameMenuController2 {
 	@FXML
 	private void initialize() throws IOException, ParseException {
 		
-		mapList.add("Map2.0");
+		mapList.add("Map2.5");
 		
 		handlePreview();
 	}
@@ -76,6 +76,7 @@ public class GameMenuController2 {
 		
 		// Place le FXML sur la HBox
 		gamePreview.getChildren().add(game);
+		gamePreview.setStyle("-fx-border-color: gray; -fx-border-width: 3;");
 		
 		// Button play
 		Button play = new Button();

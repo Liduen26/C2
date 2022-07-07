@@ -136,9 +136,6 @@ public class Player extends Parent{
 			// Set le player au d�part
 			respawn(spawnX, spawnY);
 			
-			// Reset de la cam
-	    	rootLayout.setLayoutX(0); // TP la cam�ra au d�but du jeu
-			Coin.setLayoutX(0);
 	    	Ebus.get().post(new MoveGridEvent(0));
 	    	
 	    	// Arrete l'anim de mort

@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -27,9 +25,7 @@ import cCarre.AffichageMap.model.Obstacle;
 import cCarre.AffichageMap.model.Pillar;
 import cCarre.AffichageMap.model.Player;
 import cCarre.AffichageMap.model.ReverseObstacle;
-import cCarre.genmap.events.ChangeHeightEvent;
 import cCarre.genmap.events.Ebus;
-import cCarre.genmap.events.MoveGridEvent;
 import cCarre.genmap.events.PauseEvent;
 import cCarre.genmap.events.PlayerState;
 import cCarre.genmap.events.RestartGameEvent;
@@ -37,18 +33,21 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -56,6 +55,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -86,6 +86,8 @@ public class MainController {
 	
 	int pieces = 0;
 	
+	int oldDiv = 0;
+	
 	boolean jump = false;
 	boolean onGround = true;
 	
@@ -106,10 +108,13 @@ public class MainController {
 	
 	MediaPlayer mediaPlayer = null;
 	MediaPlayer musicPlayer = null;
+	Media mediaSound = null;
 	String nameMusic = "Projet64_2.wav";
 	
 	boolean newGround = false;
 	boolean oldGround = false;
+	
+	ProgressBar pBar = null;
 	
 	// Pour changer la vitesse
 	int constV = 430; 
@@ -126,7 +131,11 @@ public class MainController {
 	
 	private boolean preview = false;
 	
-	IntegerProperty elementProperty = new SimpleIntegerProperty(elementSize);
+	double score = 0;
+	DoubleProperty progressProperty = new SimpleDoubleProperty(score);
+	double bestScore = 0;
+	StringProperty bestProperty = new SimpleStringProperty("Best : 0.0%");
+	HBox boxScore = null;
 
 	@FXML
 	private Player player;
@@ -142,6 +151,7 @@ public class MainController {
 	
 
 	
+	@SuppressWarnings("static-access")
 	@FXML
 	private void initialize() {
 		// Adapte la vitesse et la gravitï¿½ et les ï¿½lï¿½ments ï¿½ la taille de l'ï¿½cran
@@ -155,17 +165,15 @@ public class MainController {
 		jumpForce = (int) (screenBounds.getWidth()/(1920/jumpForce));
 		elementSize = (int) (screenBounds.getWidth()/(1920/elementSize));
 
-		
-		
-		Ebus.get().register(this);
 
+		// Init du Level
 		Level level = new Level();
 		int levelLength = level.getLevelLength();
 		int levelHeight = level.getLevelHeight();
 		preview = level.isPreview();
 		if(preview) {
 			elementSize = level.getElemHeight();
-			levelLength = 30;
+			levelLength = Math.min(levelLength, 30);
 		}
 		JSONObject Level = level.getLevel();
 		JSONArray map = (JSONArray) Level.get("map");
@@ -174,8 +182,9 @@ public class MainController {
 		// Met la couleur sur le debut du niveau
 	    rootLayout.setStyle("-fx-background-color: "+backgroundColor);
 
-
+	    // CrÃ©ation du tableau dans lequel seront stockÃ©es toutes les formes de la map
 		mapRender = new Shape[levelHeight][levelLength];
+		int xFinish = 500;
 		
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
@@ -243,6 +252,7 @@ public class MainController {
 
 					// Ajout au tableau de rendu de la map
 					mapRender[y][x] = finishBlock;
+					xFinish = x;
 					break;
 				case 's' :
 					// Test rapide de l'ï¿½diteur
@@ -280,36 +290,75 @@ public class MainController {
 		// prï¿½charge le spawn
 		loadSpawn();
 		
+		
 		final int fLevelLength = levelLength;
+		final int fxFinish = xFinish;
+		
 		// La camï¿½ra suit le joueur
         player.translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
             if (offset > 300 && offset < level.getLevelWidth() - 300) {
                 rootLayout.setLayoutX(-(offset - 300));
                 Coin.setLayoutX(+(offset - 300));
-
+                Coin.toFront();
+                boxScore.setLayoutX((+(offset - 300) + screenBounds.getWidth() / 2) - (pBar.getPrefWidth() / 2));
+                boxScore.toFront();
                 
         		// Adapte la taille de l'achor pane au niveau jouï¿½, puis change la background color
                 rootLayout.resize((fLevelLength+25)*elementSize, (levelHeight+6)*elementSize);
         	    rootLayout.setStyle("-fx-background-color: "+backgroundColor);
 
                 // Si le jeu vient de l'ï¿½diteur, transmet les coo ï¿½ la grille
-				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
+//				Ebus.get().post(new MoveGridEvent(-(offset - 300)));
 				
 				
-				// Update de l'affichage de la map
-				double div = player.getTranslateX() / elementSize;
-				double oldDiv = 0;
-				if(div > oldDiv) {
-					oldDiv = div;
-					this.renderMap();
-				}
+            }
+
+            // Update de l'affichage de la map
+            int div = (int) (player.getTranslateX() / elementSize);
+            
+            if(div > oldDiv) {
+            	oldDiv = div;
+            	// Pourcentage, divisÃ© par 100 car on attend qqchose entre 0 et 1
+            	score = (div * 100 / fxFinish);
+            	progressProperty.set(score / 100) ;
+            	this.renderMap();
             }
         });
 		
        
 
         if(!preview) {
+        	Coin.setTextFill(Color.DARKGRAY);
+        	
+        	Ebus.get().register(this);
+        	
+        	// Hbox du score
+        	boxScore = new HBox();
+        	boxScore.setLayoutY(15);
+        	boxScore.setAlignment(Pos.CENTER);
+        	boxScore.setSpacing(20);
+        	
+        	// ProgressBar
+        	pBar = new ProgressBar();
+        	pBar.setPrefWidth(800);
+        	pBar.setProgress(0);
+        	pBar.progressProperty().bind(progressProperty);
+        	pBar.setStyle("-fx-accent: " + this.getHexColor(Level, "ground"));
+        	boxScore.getChildren().add(pBar);
+        	
+        	// Score
+        	Label lScore = new Label();
+        	lScore.textProperty().bind(bestProperty);
+        	lScore.setTextFill(Color.DARKGRAY);
+        	lScore.setFont(Font.font ("Courier new", 20));
+        	lScore.setStyle("-fx-font-weight: bold");
+        	boxScore.getChildren().add(lScore);
+        	
+        	boxScore.setLayoutX((screenBounds.getWidth() / 2) - (pBar.getPrefWidth() / 2));
+        	rootLayout.getChildren().add(boxScore);
+        	
+        	
         	// Charge le fichier des coins
         	loadCoin();
         	
@@ -327,7 +376,7 @@ public class MainController {
         		time = System.currentTimeMillis();
         		
         		// Let's go into the GAME !
-        		loop(120); 
+        		loop(150); 
         		
         		// Joue la musique
         		playMusic();
@@ -337,38 +386,6 @@ public class MainController {
 
 	}
 	
-	// Passe une couleur de String ï¿½ Color
-    private String getHexColor(JSONObject jsonObject, String mapElement){
-		String color;
-		String hexColor;
-		
-		color = (String) ((JSONObject) jsonObject.get("color")).get(mapElement);
-
-		hexColor = "#"+color.substring(2,8);
-		return hexColor;
-    }
-	
-	private Color parseColor(String colors) {
-		Color color = Color.BLUE; 
-		switch (colors) {
-			case "blue":
-				color = Color.BLUE;
-				break;
-				
-			case "red":
-				color = Color.RED;
-				break;
-				
-			case "green":
-				color = Color.GREEN;
-				break;
-				
-			case "yellow":
-				color = Color.YELLOW;
-				break;
-		}
-		return color;
-	}
 
 	/**
 	 * Chef d'orchestre du jeu, c'est un boucle qui update @fps fois par seconde
@@ -424,7 +441,7 @@ public class MainController {
 	
 	            	if (collisionDetected) {
 	            		finish = true;
-	            		stopMusic();
+	            		musicPlayer.stop();
 	            		fin(recc);
 	            	}
 	            }
@@ -484,87 +501,9 @@ public class MainController {
 			for(int x = (int) Math.max(0, init); x < (int) Math.min(mapRender[0].length, end); x++) {
 				
 				if(mapRender[y][x] != null && ((x * elementSize) > init && (x * elementSize) < end)) {
-					if(mapRender[y][x] instanceof Ground) {
-						platforms.add((Ground) mapRender[y][x]);
-						
-					} else if(mapRender[y][x] instanceof GroundSlab) {
-						platforms.add((GroundSlab) mapRender[y][x]);
-
-					} else if(mapRender[y][x] instanceof Pillar) {
-						platforms.add((Pillar) mapRender[y][x]);
-
-					} else if(mapRender[y][x] instanceof Obstacle) {
-						triangles.add((Obstacle) mapRender[y][x]);
-						
-					} else if(mapRender[y][x] instanceof ReverseObstacle) {
-						triangles.add((ReverseObstacle) mapRender[y][x]);
-						
-					} else if(mapRender[y][x] instanceof Coin) {
-						coins.add((Coin) mapRender[y][x]);
-						
-					} else if(mapRender[y][x] instanceof FinishBlock) {
-						finishBlocks.add((FinishBlock) mapRender[y][x]);
-					}
 					
-					rootLayout.getChildren().add(mapRender[y][x]);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Supprime les blocs qui ne sont plus dans le champ, et affiche ceux qui y arrivent
-	 */
-	private void renderMap() {
-		// constante de marges gauches et droites
-		final int spaceLeft = 7;
-		final int spaceRight = 4;
-		
-		double init = player.getTranslateX() - (elementSize * spaceLeft);
-		double end = player.getTranslateX() + (screenBounds.getWidth() - (elementSize * spaceRight));
-		
-		
-		// lis la map de haut en bas, seulement les x dont il a besoin
-		for(int y = 0; y < mapRender.length; y++) {
-			
-			for(int x = Math.max(0, (int) (init / elementSize) - 4); x < Math.min(mapRender[0].length, end / elementSize); x++) {
-				// Supprime ce qui est derriere
-				if(rootLayout.getChildren().contains(mapRender[y][x])) {
-					if(mapRender[y][x].getLayoutX() < init ) {
+					if(y > (player.getTranslateY() / elementSize) - 3) {
 						
-						// Suppr des listes de collisions
-						if(mapRender[y][x] instanceof Ground) {
-							platforms.remove((Ground) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof GroundSlab) {
-							platforms.remove((GroundSlab) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof Pillar) {
-							platforms.remove((Pillar) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof Obstacle) {
-							triangles.remove((Obstacle) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof ReverseObstacle) {
-							triangles.remove((ReverseObstacle) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof Coin) {
-							coins.remove((Coin) mapRender[y][x]);
-							
-						} else if(mapRender[y][x] instanceof FinishBlock) {
-							finishBlocks.remove((FinishBlock) mapRender[y][x]);
-						}
-						
-						// Suppr le visible
-						rootLayout.getChildren().remove(mapRender[y][x]);
-					}
-				}
-				
-				// Ajoute les cases si besoin
-				if(mapRender[y][x] != null && (mapRender[y][x].getLayoutX() > init) && (mapRender[y][x].getLayoutX() < player.getTranslateX() + end)) {
-					if(!rootLayout.getChildren().contains(mapRender[y][x])) {
-						
-						// Suppr des listes de collisions
 						if(mapRender[y][x] instanceof Ground) {
 							platforms.add((Ground) mapRender[y][x]);
 							
@@ -587,7 +526,103 @@ public class MainController {
 							finishBlocks.add((FinishBlock) mapRender[y][x]);
 						}
 						
+					}
+					if(!rootLayout.getChildren().contains(mapRender[y][x])) {
+						rootLayout.getChildren().add(mapRender[y][x]);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Supprime les blocs qui ne sont plus dans le champ, et affiche ceux qui y arrivent
+	 */
+	private void renderMap() {
+		// constante de marges gauches et droites
+		final int spaceLeft = 6;
+		final int spaceRight = 4;
+		
+		double init = player.getTranslateX() - (elementSize * spaceLeft);
+		double end = player.getTranslateX() + (screenBounds.getWidth() - (elementSize * spaceRight));
+		
+		
+		// lis la map de haut en bas, seulement les x dont il a besoin
+		for(int y = 0; y < mapRender.length; y++) {
+			
+			for(int x = Math.max(0, (int) (init / elementSize) - 4); x < Math.min(mapRender[0].length, end / elementSize); x++) {
+				
+				// Suppr ce qui est derrière le player
+				if(mapRender[y][x] != null && x < (player.getTranslateX() / elementSize) - 1) {
+//					System.out.println(x);
+					
+					// Suppr des listes de collisions
+					if(mapRender[y][x] instanceof Ground && platforms.contains(mapRender[y][x])) {
+						platforms.remove((Ground) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof GroundSlab && platforms.contains(mapRender[y][x])) {
+						platforms.remove((GroundSlab) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof Pillar && platforms.contains(mapRender[y][x])) {
+						platforms.remove((Pillar) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof Obstacle && triangles.contains(mapRender[y][x])) {
+						triangles.remove((Obstacle) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof ReverseObstacle && triangles.contains(mapRender[y][x])) {
+						triangles.remove((ReverseObstacle) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof Coin && coins.contains(mapRender[y][x])) {
+						coins.remove((Coin) mapRender[y][x]);
+						
+					} else if(mapRender[y][x] instanceof FinishBlock && finishBlocks.contains(mapRender[y][x])) {
+						finishBlocks.remove((FinishBlock) mapRender[y][x]);
+					}
+					
+				}
+				
+				// Supprime ce qui sort de l'écran (visuel)
+				if(mapRender[y][x] != null && mapRender[y][x].getLayoutX() < init) {
+					if(rootLayout.getChildren().contains(mapRender[y][x])) {
 						// Suppr le visible
+						rootLayout.getChildren().remove(mapRender[y][x]);
+					}
+				}
+				
+				
+				
+				// Ajoute les cases si besoin | Grand IF (visuel)
+				if(mapRender[y][x] != null && (mapRender[y][x].getLayoutX() > init) && (mapRender[y][x].getLayoutX() < player.getTranslateX() + end)) {
+					
+					// Petit if (collisions)
+					if(y > (player.getTranslateY() / elementSize) - 3 && x < (player.getTranslateX() / elementSize) + 3 && x > (player.getTranslateX() / elementSize)) {
+						
+						// Ajout aux listes de collisions
+						if(mapRender[y][x] instanceof Ground && !platforms.contains(mapRender[y][x])) {
+							platforms.add((Ground) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof GroundSlab && !platforms.contains(mapRender[y][x])) {
+							platforms.add((GroundSlab) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof Pillar && !platforms.contains(mapRender[y][x])) {
+							platforms.add((Pillar) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof Obstacle && !triangles.contains(mapRender[y][x])) {
+							triangles.add((Obstacle) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof ReverseObstacle && !triangles.contains(mapRender[y][x])) {
+							triangles.add((ReverseObstacle) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof Coin && !coins.contains(mapRender[y][x])) {
+							coins.add((Coin) mapRender[y][x]);
+							
+						} else if(mapRender[y][x] instanceof FinishBlock && !finishBlocks.contains(mapRender[y][x])) {
+							finishBlocks.add((FinishBlock) mapRender[y][x]);
+						}
+					}
+
+					if(!rootLayout.getChildren().contains(mapRender[y][x]) && x > (player.getTranslateX() / elementSize)) {
+						// ajoute le visible
 						rootLayout.getChildren().add(mapRender[y][x]);
 					}
 				}
@@ -603,7 +638,7 @@ public class MainController {
 			player.death(spawnX, spawnY, rootLayout, Coin);
 		}
 		// meurt quand tombe dans le vide
-		if(player.getTranslateY() > screenBounds.getHeight() - toolBarHeight) {
+		if(player.getTranslateY() > screenBounds.getHeight() - toolBarHeight || player.getTranslateY() < 0) {
 			player.death(spawnX, spawnY, rootLayout, Coin);
 			playSound("Roblox-Death-Sound-cut.wav", 4);
 		}
@@ -628,7 +663,7 @@ public class MainController {
 	        				verticalVelocity = 0;
 	        				collisionDetected = true;
 	        				System.out.println("Ca c le plafond -------------------------------------------------------------------------------------");
-	        				playSound("Minecraft-Death-Sound-cut.wav", 5);
+	        				playSound("Minecraft-Death-Sound-cut.wav", 4);
 						} else {
 							// Sol
 	        				player.setTranslateY(platform.getLayoutY() - (player.getHeight() - 0.0001));
@@ -650,7 +685,7 @@ public class MainController {
 						System.out.println("Ca c un bord -------------------------------------------------------------------------------------");
 						verticalVelocity = 0;
 						collisionDetected = true;
-						playSound("Minecraft-Death-Sound-cut.wav", 5);
+						playSound("Minecraft-Death-Sound-cut.wav", 4);
         			}
         		}
         	}
@@ -671,7 +706,7 @@ public class MainController {
 				if (intersect.getBoundsInLocal().getWidth() != -1) {
 					collisionDetected = true;
 					System.out.println("Ca c un triangle -------------------------------------------------------------------------------------");
-					playSound("Roblox-Death-Sound-cut.wav", 4);
+					playSound("Roblox-Death-Sound-cut.wav", 3);
 					verticalVelocity = 0;
 				}
 			}
@@ -855,7 +890,6 @@ public class MainController {
 			popup();
 			
 			recc = false;
-			System.out.println("fin");
 		}
 	}
 	
@@ -911,7 +945,7 @@ public class MainController {
 
 	public void setStop() {
 		time1.stop();
-		stopMusic();
+		musicPlayer.stop();
 		
 	}
 	
@@ -923,11 +957,21 @@ public class MainController {
 			// Sauf si la timeline est stop,
 			if(time1.getStatus() != Animation.Status.STOPPED) {
 				// Le joueur respawn
+				oldDiv = 0;
+				
+				// Reset de la cam
+		    	rootLayout.setLayoutX(0); // TP la camï¿½ra au dï¿½but du jeu
+		    	Coin.setLayoutX(0);
+				boxScore.setLayoutX((screenBounds.getWidth() / 2) - (pBar.getPrefWidth() / 2));
+				progressProperty.set(0);
+				
 				running = e.getState();
 				dead = !e.getState();
 				
-				playMusic();
+				musicPlayer.play();
 				this.loadSpawn();
+				Coin.toFront();
+				boxScore.toFront();
 			}
 			
 			rootLayout.getChildren().remove(ragdoll);
@@ -947,8 +991,12 @@ public class MainController {
 			rootLayout.getChildren().add(ragdoll);
 			
 			saveCoin(pieces);
-			stopMusic();
+			musicPlayer.stop();
 			
+			if(bestScore < score) {
+				bestScore = Math.floor(score);
+				bestProperty.set("Best : " + bestScore + "%");				
+			}
 		}
 	}
 	
@@ -961,9 +1009,9 @@ public class MainController {
 	private void playSound(String name, double volume) {
 		File file = new File("resources/audio/" + name);
 		
-		Media media = new Media(file.toURI().toString());
+		mediaSound = new Media(file.toURI().toString());
 		
-		mediaPlayer = new MediaPlayer(media);
+		mediaPlayer = new MediaPlayer(mediaSound);
 		
 		mediaPlayer.setVolume(volume / 10);
 		mediaPlayer.play();
@@ -980,9 +1028,36 @@ public class MainController {
 		musicPlayer.play();
 	}
 	
-	private void stopMusic() {
-		
-		musicPlayer.stop();
-		
+	private Color parseColor(String colors) {
+		Color color = Color.BLUE; 
+		switch (colors) {
+			case "blue":
+				color = Color.BLUE;
+				break;
+				
+			case "red":
+				color = Color.RED;
+				break;
+				
+			case "green":
+				color = Color.GREEN;
+				break;
+				
+			case "yellow":
+				color = Color.YELLOW;
+				break;
+		}
+		return color;
 	}
+	// Passe une couleur de String ï¿½ Color
+    private String getHexColor(JSONObject jsonObject, String mapElement){
+		String color;
+		String hexColor;
+		
+		color = (String) ((JSONObject) jsonObject.get("color")).get(mapElement);
+
+		hexColor = "#"+color.substring(2,8);
+		return hexColor;
+    }
+	
 }
