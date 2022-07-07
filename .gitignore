@@ -33,3 +33,4 @@ local.properties
 #Ressources
 !resources/maps/*
 !Color.json
+pieces.json
