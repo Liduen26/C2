@@ -51,7 +51,7 @@ public class GameMenuController {
 	
 	public void LaunchGame(ActionEvent event) throws IOException, ParseException {
 		// D�finis la map � utiliser, attend un JSONArray
-		Level.setJsonLevel(readJSON("Map2.0"));
+		Level.setJsonLevel(readJSON("Map2.6"));
 		
 		// Load root layout from fxml file.
 		FXMLLoader loader = new FXMLLoader();

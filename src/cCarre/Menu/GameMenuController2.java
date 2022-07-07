@@ -58,7 +58,7 @@ public class GameMenuController2 {
 	@FXML
 	private void initialize() throws IOException, ParseException {
 		
-		mapList.add("Map2.5");
+		mapList.add("Map2.6");
 		
 		handlePreview();
 	}
