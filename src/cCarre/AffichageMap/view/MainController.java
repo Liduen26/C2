@@ -184,7 +184,7 @@ public class MainController {
 
 	    // Création du tableau dans lequel seront stockées toutes les formes de la map
 		mapRender = new Shape[levelHeight][levelLength];
-		int xFinish = 500;
+		int xFinish = levelLength;
 		
 		for(int y = 0; y < levelHeight; y++) {
 			for(int x = 0; x < levelLength; x++) {
@@ -554,7 +554,6 @@ public class MainController {
 				
 				// Suppr ce qui est derri�re le player
 				if(mapRender[y][x] != null && x < (player.getTranslateX() / elementSize) - 1) {
-//					System.out.println(x);
 					
 					// Suppr des listes de collisions
 					if(mapRender[y][x] instanceof Ground && platforms.contains(mapRender[y][x])) {
@@ -920,21 +919,24 @@ public class MainController {
 		retour.setStyle("-fx-font-size: 30px; -fx-padding: 10 30 10 30");
 		retour.setOnAction(evt -> {
 			rootLayout.getChildren().remove(popup);
-			Parent menu = null;
-			try {
-				menu = FXMLLoader.load(getClass().getResource("../../Menu/GameMenu.fxml"));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Scene GameMenu = new Scene(menu);
 			
-			Stage window = (Stage) rootLayout.getScene().getWindow();
-			window.setScene(GameMenu);
-			window.setMaximized(true);
-			window.setHeight(1080);
-			window.setWidth(1920);
-			window.show();
+			if(!edit) {
+				Parent menu = null;
+				try {
+					menu = FXMLLoader.load(getClass().getResource("../../Menu/GameMenu.fxml"));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Scene GameMenu = new Scene(menu);
+				
+				Stage window = (Stage) rootLayout.getScene().getWindow();
+				window.setScene(GameMenu);
+				window.setMaximized(true);
+				window.setHeight(1080);
+				window.setWidth(1920);
+				window.show();
+			}
 		});
 		
 		popup.getChildren().add(text);
