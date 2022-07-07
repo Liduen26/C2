@@ -50,7 +50,7 @@ public class GameMenuController2 {
 	
 	// Tableau des maps
 	ArrayList<String> mapList = new ArrayList<String>();
-	int indexMap = 0;
+	public int indexMap = 0;
 	
 	// Vars preview
 	int elementSize = 60;
@@ -62,6 +62,22 @@ public class GameMenuController2 {
 		
 		handlePreview();
 	}
+	public void nextLevel() {
+		indexMap += 1;
+		System.out.println(indexMap);
+		if (indexMap >= 1) {
+			indexMap = 0;
+		}
+	}
+	
+	public void prevLevel() {
+		indexMap -= 1;
+		System.out.println(indexMap);
+		if (indexMap <= 0) {
+			indexMap = 1;
+		}
+	}
+	
 	
 	public void handlePreview() throws IOException, ParseException {
 		// Settings de la preview
