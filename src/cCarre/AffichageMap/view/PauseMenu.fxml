@@ -9,17 +9,17 @@
    <children>
       <Label layoutX="807.0" layoutY="124.0" styleClass="a" stylesheets="@button2.css" text="PAUSE">
          <font>
-            <Font size="96.0" />
+            <Font name="Courier New Bold" size="96.0" />
          </font>
       </Label>
       <Button layoutX="807.0" layoutY="426.0" mnemonicParsing="false" onAction="#GoToGameAgain" styleClass="a" stylesheets="@button2.css" text="Reprendre">
          <font>
-            <Font size="48.0" />
+            <Font name="Courier New Bold" size="48.0" />
          </font>
       </Button>
       <Button layoutX="760.0" layoutY="786.0" mnemonicParsing="false" onAction="#GoToBaseMenu" styleClass="a" stylesheets="@button2.css" text="Menu Principal">
          <font>
-            <Font size="48.0" />
+            <Font name="Courier New Bold" size="48.0" />
          </font>
       </Button>
    </children>
