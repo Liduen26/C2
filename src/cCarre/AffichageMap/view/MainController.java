@@ -93,7 +93,7 @@ public class MainController {
 	boolean onGround = true;
 	
 	String level = "";
-	Pane game = null;
+	Pane pauseMenu = null;
 
 	boolean running = true;
 	boolean pause = false;
@@ -794,17 +794,21 @@ public class MainController {
 			pause = true;
 			Ebus.get().post(new PauseEvent());
 			
-			FXMLLoader gameLoader = new FXMLLoader();
-			gameLoader.setLocation(MainMenu.class.getResource("./AffichageMap/view/PauseMenu.fxml"));
-			game = (Pane) gameLoader.load();
-			game.setLayoutX(-rootLayout.getLayoutX());
+			FXMLLoader pauseLoader = new FXMLLoader();
+			pauseLoader.setLocation(MainMenu.class.getResource("./AffichageMap/view/PauseMenu.fxml"));
+			pauseMenu = (Pane) pauseLoader.load();
+			pauseMenu.setLayoutX(-rootLayout.getLayoutX());
+			PauseMenuController PauseController = pauseLoader.getController();
+			
+			PauseController.setController(this);
+			
 			// Met le jeu par dessus la grille
-			rootLayout.getChildren().add(game);
+			rootLayout.getChildren().add(pauseMenu);
 			
 			musicPlayer.pause();
 		}else if (pause && !finish){
 			pause = false;
-			rootLayout.getChildren().remove(game);
+			rootLayout.getChildren().remove(pauseMenu);
 			Ebus.get().post(new PauseEvent());
 			if(!dead) {
 				musicPlayer.play();
@@ -815,7 +819,7 @@ public class MainController {
 	@Subscribe
 	public void restart(RestartGameEvent e) {
 		pause = false;
-		rootLayout.getChildren().remove(game);
+		rootLayout.getChildren().remove(pauseMenu);
 		Ebus.get().post(new PauseEvent());
 		if(!dead) {
 			musicPlayer.play();

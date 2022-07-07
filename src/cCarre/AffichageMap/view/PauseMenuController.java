@@ -16,10 +16,13 @@ import javafx.stage.Stage;
 public class PauseMenuController {
 	
 	@FXML public Button GoToGameMenu;
+	
+	private MainController mainController;
 
 	public void GoToBaseMenu(ActionEvent event) throws IOException {
 		Parent tableViewParent = FXMLLoader.load(getClass().getResource("../../Menu/GameMenu2.fxml"));
 		Scene tableViewScene = new Scene(tableViewParent);
+		Ebus.get().unregister(mainController);
 		
 		Stage window = (Stage) (((Node) event.getSource()).getScene().getWindow());
 		
@@ -31,5 +34,9 @@ public class PauseMenuController {
 	public void GoToGameAgain(ActionEvent event) throws IOException {
 		Ebus.get().post(new RestartGameEvent());
 		System.out.println("reprendre le jeu");
+	}
+	
+	public void setController(MainController cont) {
+		this.mainController = cont;
 	}
 }
