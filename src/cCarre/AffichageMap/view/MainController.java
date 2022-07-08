@@ -553,7 +553,7 @@ public class MainController {
 			
 			for(int x = Math.max(0, (int) (init / elementSize) - 4); x < Math.min(mapRender[0].length, end / elementSize); x++) {
 				
-				// Suppr ce qui est derrière le player
+				// Suppr ce qui est derriï¿½re le player
 				if(mapRender[y][x] != null && x < (player.getTranslateX() / elementSize) - 1) {
 					
 					// Suppr des listes de collisions
@@ -581,7 +581,7 @@ public class MainController {
 					
 				}
 				
-				// Supprime ce qui sort de l'écran (visuel)
+				// Supprime ce qui sort de l'ï¿½cran (visuel)
 				if(mapRender[y][x] != null && mapRender[y][x].getLayoutX() < init) {
 					if(rootLayout.getChildren().contains(mapRender[y][x])) {
 						// Suppr le visible
@@ -934,6 +934,7 @@ public class MainController {
 					e.printStackTrace();
 				}
 				Scene GameMenu = new Scene(menu);
+				Ebus.get().unregister(this);
 				
 				Stage window = (Stage) rootLayout.getScene().getWindow();
 				window.setScene(GameMenu);
@@ -941,6 +942,7 @@ public class MainController {
 				window.setHeight(1080);
 				window.setWidth(1920);
 				window.show();
+				
 			}
 		});
 		

@@ -24,7 +24,7 @@ public class MainMenu extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("C²");
+		this.primaryStage.setTitle("CÂ²");
 		
 		// Set the application icon.
         this.primaryStage.getIcons().add(new Image(new File("resources/images/logo.png").toURI().toString()));
